@@ -57,10 +57,8 @@ github_repo_contributors <- function (owner, repo, coverage = 0.95) {
 github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
     repo <- parse_github_repo_url (repo_url)
 
-    message ("Fetching contributors for ", repo$owner, "/", repo$repo, "...")
     contributors <- github_repo_contributors (repo$owner, repo$repo, coverage = primary_coverage)
 
-    message ("Fetching issues for ", repo$owner, "/", repo$repo, "...")
     issues <- github_api_get_all (
         stringr::str_glue ("/repos/{repo$owner}/{repo$repo}/issues"),
         query = list (state = "all")
