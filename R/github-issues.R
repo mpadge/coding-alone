@@ -67,6 +67,7 @@ github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
 
     if (length (issues) == 0) {
         return (tibble::tibble (
+            repo_url = character (),
             issue_number = integer (),
             author = character (),
             created_at = character (),
@@ -82,5 +83,6 @@ github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
             created_at = i$created_at,
             is_contributor = author %in% contributors
         )
-    })
+    }) |>
+        dplyr::mutate (repo_url = repo_url, .before = issue_number)
 }
