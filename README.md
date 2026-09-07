@@ -147,43 +147,74 @@ repo_tbl
 ## GitHub issue authors
 
 Fetch issue-author data for every repo in `repo_tbl` via
-`github_issue_authors()`, run in parallel across repos (each repo’s
-calls are independent of the others, so this is embarrassingly
-parallel). `repo_url` is the natural unique identifier here (rather than
-`name`, which is only unique within a single `source`), so results are
-keyed on it and written alongside it, and `repo_tbl` is deduplicated on
-it before joining so a repo appearing under multiple sources doesn’t fan
-out the join.
+`github_issue_authors()` (which now returns `repo_url` as one of its
+columns directly). `repo_url` is the natural unique identifier here
+(rather than `name`, which is only unique within a single `source`), so
+`repo_tbl` is deduplicated on it before joining, so a repo appearing
+under multiple sources doesn’t fan out the join.
+
+Calls are made sequentially in small batches. Progress is checkpointed
+to disk after every batch, and repos already done are skipped on
+re-running the chunk, so an interrupted run - rate-limited or
+otherwise - just picks back up rather than starting over.
 
 ``` r
 library (progressify)
-handlers ("progress", global = TRUE)
+handlers (global = TRUE)
+
+BATCH_SIZE <- 50L
+issue_authors_csv <- file.path (OUT_DIR, "issue-authors.csv")
+issue_authors_done_rds <- file.path (OUT_DIR, "issue-authors-done.rds")
+
+issue_authors_col_types <- readr::cols (
+    repo_url = readr::col_character (),
+    issue_number = readr::col_integer (),
+    author = readr::col_character (),
+    created_at = readr::col_character (),
+    is_contributor = readr::col_logical ()
+)
+issue_authors_tbl <- if (file.exists (issue_authors_csv)) {
+    readr::read_csv (issue_authors_csv, col_types = issue_authors_col_types)
+} else {
+    tibble::tibble (
+        repo_url = character (), issue_number = integer (),
+        author = character (), created_at = character (), is_contributor = logical ()
+    )
+}
+repo_urls_done <- if (file.exists (issue_authors_done_rds)) readRDS (issue_authors_done_rds) else character ()
+
 repo_urls <- unique (repo_tbl$repo_url)
+repo_urls_todo <- setdiff (repo_urls, repo_urls_done)
+cli::cli_alert_info (
+    "Issue authors: {length (repo_urls_done)} of {length (repo_urls)} repos already done, {length (repo_urls_todo)} remaining..."
+)
 
 get_issue_authors_safe <- function (repo_url) {
     tryCatch (
         github_issue_authors (repo_url),
         error = function (e) {
             cli::cli_alert_warning ("Issue authors: failed for {repo_url}: {conditionMessage (e)}")
-            NULL
+            tibble::tibble (repo_url = repo_url) [0, ]
         }
     )
 }
 
-cli::cli_alert_info ("Issue authors: fetching for {length (repo_urls)} repos in parallel...")
-issue_authors_list <- lapply (repo_urls, get_issue_authors_safe) |>
-    progressify::progressify () |>
-    futurize::futurize ()
-names (issue_authors_list) <- repo_urls
+batches <- split (repo_urls_todo, ceiling (seq_along (repo_urls_todo) / BATCH_SIZE))
+for (b in seq_along (batches)) {
+    batch <- batches [[b]]
+    cli::cli_alert_info ("Issue authors: batch {b}/{length (batches)} ({length (batch)} repos)...")
 
-issue_authors_tbl <- purrr::imap_dfr (issue_authors_list, \ (res, url) {
-    if (is.null (res) || nrow (res) == 0) {
-        return (NULL)
-    }
-    tibble::add_column (res, repo_url = url, .before = 1)
-})
-readr::write_csv (issue_authors_tbl, file.path (OUT_DIR, "issue-authors.csv"))
-cli::cli_alert_success ("Issue authors: wrote {nrow(issue_authors_tbl)} rows to {file.path(OUT_DIR, 'issue-authors.csv')}")
+    batch_tbl <- lapply (batch, get_issue_authors_safe) |>
+        progressify () |>
+        futurize::futurize ()
+    batch_tbl <- purrr::map_dfr (batch, get_issue_authors_safe)
+    issue_authors_tbl <- dplyr::bind_rows (issue_authors_tbl, batch_tbl)
+    repo_urls_done <- c (repo_urls_done, batch)
+
+    readr::write_csv (issue_authors_tbl, issue_authors_csv)
+    saveRDS (repo_urls_done, issue_authors_done_rds)
+}
+cli::cli_alert_success ("Issue authors: wrote {nrow(issue_authors_tbl)} rows to {issue_authors_csv}")
 
 repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
 issue_authors_tbl <- dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
