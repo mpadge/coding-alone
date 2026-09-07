@@ -107,36 +107,7 @@ Combine the four input tables into a single table of names, GitHub URLs, and
 download/star metrics, tagged with their `source`.
 
 ```{r}
-source_patterns <- c (pypi = "pypi", npm = "npm", joss = "joss", ropensci = "ropensci")
-
-source_for_file <- function (path) {
-    fname <- fs::path_file (path)
-    hit <- vapply (source_patterns, grepl, x = fname, FUN.VALUE = logical (1))
-    names (source_patterns) [hit]
-}
-
-flist <- fs::dir_ls (OUT_DIR, glob = "*.csv")
-flist <- flist [lengths (lapply (flist, source_for_file)) > 0]
-
-read_one <- function (path) {
-    tbl <- readr::read_csv (path, show_col_types = FALSE)
-    name_col <- intersect (c ("name", "package", "title"), names (tbl)) [1]
-
-    name <- tbl [[name_col]]
-    if (name_col == "title") {
-        name <- sub ("^\\[REVIEW\\]:\\s*", "", name)
-    }
-
-    tibble::tibble (
-        name = name,
-        repo_url = tbl$repo_url,
-        downloads = if ("downloads" %in% names (tbl)) tbl$downloads else NA_integer_,
-        stars = if ("stars" %in% names (tbl)) tbl$stars else NA_integer_,
-        source = source_for_file (path)
-    )
-}
-
-repo_tbl <- purrr::map_dfr (flist, read_one)
+repo_tbl <- build_repo_tbl (OUT_DIR)
 repo_tbl
 ```
 
@@ -155,64 +126,7 @@ so an interrupted run - rate-limited or otherwise - just picks back up rather
 than starting over.
 
 ```{r issue-authors, eval = FALSE}
-library (progressify)
-handlers (global = TRUE)
-
-BATCH_SIZE <- 50L
-issue_authors_csv <- file.path (OUT_DIR, "issue-authors.csv")
-issue_authors_done_rds <- file.path (OUT_DIR, "issue-authors-done.rds")
-
-issue_authors_col_types <- readr::cols (
-    repo_url = readr::col_character (),
-    issue_number = readr::col_integer (),
-    author = readr::col_character (),
-    created_at = readr::col_character (),
-    is_contributor = readr::col_logical ()
-)
-issue_authors_tbl <- if (file.exists (issue_authors_csv)) {
-    readr::read_csv (issue_authors_csv, col_types = issue_authors_col_types)
-} else {
-    tibble::tibble (
-        repo_url = character (), issue_number = integer (),
-        author = character (), created_at = character (), is_contributor = logical ()
-    )
-}
-repo_urls_done <- if (file.exists (issue_authors_done_rds)) readRDS (issue_authors_done_rds) else character ()
-
-repo_urls <- unique (repo_tbl$repo_url)
-repo_urls_todo <- setdiff (repo_urls, repo_urls_done)
-cli::cli_alert_info (
-    "Issue authors: {length (repo_urls_done)} of {length (repo_urls)} repos already done, {length (repo_urls_todo)} remaining..."
-)
-
-get_issue_authors_safe <- function (repo_url) {
-    tryCatch (
-        github_issue_authors (repo_url),
-        error = function (e) {
-            cli::cli_alert_warning ("Issue authors: failed for {repo_url}: {conditionMessage (e)}")
-            tibble::tibble (repo_url = repo_url) [0, ]
-        }
-    )
-}
-
-batches <- split (repo_urls_todo, ceiling (seq_along (repo_urls_todo) / BATCH_SIZE))
-for (b in seq_along (batches)) {
-    batch <- batches [[b]]
-    cli::cli_alert_info ("Issue authors: batch {b}/{length (batches)} ({length (batch)} repos)...")
-
-    batch_tbl <- lapply (batch, get_issue_authors_safe) |>
-        progressify () |>
-        futurize::futurize ()
-    batch_tbl <- purrr::map_dfr (batch, get_issue_authors_safe)
-    issue_authors_tbl <- dplyr::bind_rows (issue_authors_tbl, batch_tbl)
-    repo_urls_done <- c (repo_urls_done, batch)
-
-    readr::write_csv (issue_authors_tbl, issue_authors_csv)
-    saveRDS (repo_urls_done, issue_authors_done_rds)
-}
-cli::cli_alert_success ("Issue authors: wrote {nrow(issue_authors_tbl)} rows to {issue_authors_csv}")
-
-repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
-issue_authors_tbl <- dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
+issue_authors_tbl <- fetch_issue_authors (repo_tbl$repo_url, OUT_DIR)
+issue_authors_tbl <- join_repo_metadata (issue_authors_tbl, repo_tbl)
 issue_authors_tbl
 ```

@@ -55,6 +55,9 @@ github_repo_contributors <- function (owner, repo, coverage = 0.95) {
 #' `created_at`, and `is_contributor`.
 #' @export
 github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
+
+    issue_number <- NULL # rm no visible binding note
+
     repo <- parse_github_repo_url (repo_url)
 
     contributors <- github_repo_contributors (repo$owner, repo$repo, coverage = primary_coverage)
