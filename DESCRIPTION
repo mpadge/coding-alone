@@ -1,0 +1,23 @@
+Package: longtail
+Title: The Long-Tailed Distribution of Software Repositories
+Version: 0.0.1
+Authors@R: c(
+    person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-2172-5265"))
+  )
+Description: Code to analyse GitHub repository activity in relation to "popularity" metrics.
+License: GPL-3
+URL: https://github.com/mpadge/longtail
+BugReports: https://github.com/mpadge/longtail/issues
+Imports:
+    cli,
+    dplyr,
+    httr2,
+    purrr,
+    readr,
+    stringr,
+    tibble
+Encoding: UTF-8
+Language: en-GB
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0
