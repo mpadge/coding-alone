@@ -1,6 +1,6 @@
 Package: longtail
 Title: AI and The Long-Tailed Distribution of Software Repositories
-Version: 0.0.1.011
+Version: 0.0.1.012
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
@@ -18,8 +18,6 @@ Imports:
     stringr,
     tibble,
     utils
-Suggests:
-    readr
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)

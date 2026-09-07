@@ -1,0 +1,81 @@
+
+# longtail
+
+Code to analyse GitHub repository activity in relation to “popularity”
+metrics.
+
+``` r
+devtools::load_all ()
+#> ℹ Loading longtail
+```
+
+## Input data
+
+The chunks below build tables of sample repositories from PyPI and npm,
+and full repo details from JOSS and rOpenSci. All data are dumped to the
+`OUT_DIR` specified below. These contain repository URLs and popularity
+metrics. The section after this then analyses each of the URLs to
+extract data on GitHub issue activity.
+
+For PyPI and npm, samples are stratified by download popularity (a
+deterministic head of the most-downloaded packages, plus a random draw
+from the long tail), filtered down to packages with resolvable GitHub
+repo URLs.
+
+## Config
+
+``` r
+WORKING_SAMPLE_TAIL_SIZE <- 40000L # random draw size, outside the known head
+TOP_N_HEAD <- 15000L # deterministic head inclusion
+OUT_DIR <- "repo-data-out"
+dir.create (OUT_DIR, showWarnings = FALSE)
+```
+
+## PyPI
+
+``` r
+cli::cli_alert_info ("PyPI: fetching full download-count population via ClickHouse (fast)...")
+downloads_tbl <- pypi_downloads_full ()
+
+working_sample <- build_working_sample (downloads_tbl, TOP_N_HEAD, WORKING_SAMPLE_TAIL_SIZE, label = "PyPI")
+
+cli::cli_alert_info ("PyPI: resolving GitHub repo URLs for {nrow(working_sample)} packages...")
+pypi_tbl <- resolve_repo_urls (working_sample, pypi_repo_urls_many)
+readr::write_csv (pypi_tbl, file.path (OUT_DIR, "pypi.csv"))
+cli::cli_alert_success ("PyPI: wrote {nrow(pypi_tbl)} rows to {file.path(OUT_DIR, 'pypi.csv')}")
+```
+
+## npm
+
+``` r
+cli::cli_alert_info ("npm: fetching full download-count population via download-counts package (fast)...")
+downloads_tbl <- npm_downloads_full ()
+
+working_sample <- build_working_sample (downloads_tbl, TOP_N_HEAD, WORKING_SAMPLE_TAIL_SIZE, label = "npm")
+
+cli::cli_alert_info ("npm: resolving GitHub repo URLs for {nrow(working_sample)} packages...")
+npm_tbl <- resolve_repo_urls (working_sample, npm_repo_urls_many)
+readr::write_csv (npm_tbl, file.path (OUT_DIR, "npm.csv"))
+cli::cli_alert_success ("npm: wrote {nrow(npm_tbl)} rows to {file.path(OUT_DIR, 'npm.csv')}")
+```
+
+## JOSS
+
+Accepted JOSS submissions and their repo URLs.
+
+``` r
+joss_tbl <- build_joss_table ()
+readr::write_csv (joss_tbl, file.path (OUT_DIR, "joss.csv"))
+cli::cli_alert_success ("JOSS: wrote {nrow(joss_tbl)} rows to {file.path(OUT_DIR, 'joss.csv')}")
+```
+
+## rOpenSci
+
+Packages in the rOpenSci r-universe, their repo URLs, and rOpenSci
+software review status.
+
+``` r
+ropensci_tbl <- build_ropensci_table ()
+readr::write_csv (ropensci_tbl, file.path (OUT_DIR, "ropensci.csv"))
+cli::cli_alert_success ("rOpenSci: wrote {nrow(ropensci_tbl)} rows to {file.path(OUT_DIR, 'ropensci.csv')}")
+```
