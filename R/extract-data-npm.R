@@ -1,13 +1,6 @@
-# Build (name, downloads, repo_url) table for npm, filtered to packages with
-# a resolvable GitHub repo URL.
-
-# ---- config ----------------------------------------------------------
-
-WORKING_SAMPLE_TAIL_SIZE <- 40000L # random draw size, outside the known head
-TOP_N_HEAD <- 15000L # deterministic head inclusion
-MAX_ACTIVE_META <- 40L # concurrent repo-metadata requests to registry.npmjs.org
-OUT_DIR <- "repo-data-out"
-dir.create(OUT_DIR, showWarnings = FALSE)
+# Functions to build a (name, downloads, repo_url) table for npm, filtered
+# to packages with a resolvable GitHub repo URL. See README.Rmd for the
+# script that drives these to actually build the table.
 
 #' Full npm monthly download-count population (~3.77M packages), via the
 #' `download-counts` npm package: https://www.npmjs.com/package/download-counts
@@ -46,35 +39,13 @@ npm_downloads_full <- function() {
 #' full registry doc, not the abbreviated `install-v1+json` metadata, which
 #' omits `repository` entirely.
 npm_repo_urls_many <- function(names_vec) {
-    urls <- stringr::str_glue("https://registry.npmjs.org/{URLencode(names_vec)}")
-    bodies <- perform_json_parallel(urls)
-    purrr::map_chr(bodies, \(body) {
-        if (is.null(body)) {
-            return(NA_character_)
+    registry_repo_urls_many(
+        names_vec,
+        url_fn = \(names_vec) stringr::str_glue("https://registry.npmjs.org/{URLencode(names_vec)}"),
+        extract_candidates = \(body) {
+            repo <- body$repository
+            repo_url <- if (is.list(repo)) repo$url else repo
+            c(repo_url, body$homepage)
         }
-        repo <- body$repository
-        repo_url <- if (is.list(repo)) repo$url else repo
-        find_github_url(c(repo_url, body$homepage))
-    })
-}
-
-# ---- build table ----------------------------------------------------------
-
-if (sys.nframe() == 0) {
-    cli::cli_alert_info("npm: fetching full download-count population via download-counts package (fast)...")
-    downloads_tbl <- npm_downloads_full()
-
-    cli::cli_alert_info("npm: building working sample (head + random tail)...")
-    head_tbl <- downloads_tbl |> dplyr::slice_max(downloads, n = TOP_N_HEAD)
-    tail_pool <- downloads_tbl |> dplyr::anti_join(head_tbl, by = "name")
-    tail_tbl <- tail_pool |> dplyr::slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
-    working_sample <- dplyr::bind_rows(head_tbl, tail_tbl)
-
-    cli::cli_alert_info("npm: resolving GitHub repo URLs for {nrow(working_sample)} packages (parallel, max_active={MAX_ACTIVE_META})...")
-    npm_tbl <- working_sample |>
-        dplyr::mutate(repo_url = npm_repo_urls_many(name)) |>
-        dplyr::filter(!is.na(repo_url)) |>
-        dplyr::select(name, downloads, repo_url)
-    readr::write_csv(npm_tbl, file.path(OUT_DIR, "npm.csv"))
-    cli::cli_alert_success("npm: wrote {nrow(npm_tbl)} rows to {file.path(OUT_DIR, 'npm.csv')}")
+    )
 }

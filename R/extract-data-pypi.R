@@ -1,18 +1,9 @@
-# Build (name, downloads, repo_url) table for PyPI, filtered to packages with
-# a resolvable GitHub repo URL.
+# Functions to build a (name, downloads, repo_url) table for PyPI, filtered
+# to packages with a resolvable GitHub repo URL. See README.Rmd for the
+# script that drives these to actually build the table.
 
-# ---- config ----------------------------------------------------------
-
-WORKING_SAMPLE_TAIL_SIZE <- 40000L # random draw size, outside the known head
-TOP_N_HEAD <- 15000L # deterministic head inclusion
-MAX_ACTIVE_META <- 40L # concurrent repo-metadata requests to pypi.org
 CLICKHOUSE_URL <- "https://sql-clickhouse.clickhouse.com"
 CLICKHOUSE_PAGE_SIZE <- 100000L # server-enforced max rows per query on the public `demo` user
-OUT_DIR <- "repo-data-out"
-dir.create(OUT_DIR, showWarnings = FALSE)
-
-# ---- shared helpers ----------------------------------------------------
-
 
 #' Run a read-only SQL query against ClickHouse's public playground (the
 #' `demo` user), which mirrors the same PyPI downloads dataset BigQuery's
@@ -73,34 +64,9 @@ pypi_downloads_full <- function() {
 #' Repo URLs for many PyPI packages at once (concurrent requests).
 #' info.project_urls (free-text keys) + info.home_page.
 pypi_repo_urls_many <- function(names_vec) {
-    urls <- stringr::str_glue("https://pypi.org/pypi/{URLencode(names_vec)}/json")
-    bodies <- perform_json_parallel(urls)
-    purrr::map_chr(bodies, \(body) {
-        if (is.null(body)) {
-            return(NA_character_)
-        }
-        info <- body$info
-        find_github_url(c(unlist(info$project_urls, use.names = FALSE), info$home_page))
-    })
-}
-
-# ---- build table ----------------------------------------------------------
-
-if (sys.nframe() == 0) {
-    cli::cli_alert_info("PyPI: fetching full download-count population via ClickHouse (fast)...")
-    downloads_tbl <- pypi_downloads_full()
-
-    cli::cli_alert_info("PyPI: building working sample (head + random tail)...")
-    head_tbl <- downloads_tbl |> dplyr::slice_max(downloads, n = TOP_N_HEAD)
-    tail_pool <- downloads_tbl |> dplyr::anti_join(head_tbl, by = "name")
-    tail_tbl <- tail_pool |> dplyr::slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
-    working_sample <- dplyr::bind_rows(head_tbl, tail_tbl)
-
-    cli::cli_alert_info("PyPI: resolving GitHub repo URLs for {nrow(working_sample)} packages (parallel, max_active={MAX_ACTIVE_META})...")
-    pypi_tbl <- working_sample |>
-        dplyr::mutate(repo_url = pypi_repo_urls_many(name)) |>
-        dplyr::filter(!is.na(repo_url)) |>
-        dplyr::select(name, downloads, repo_url)
-    readr::write_csv(pypi_tbl, file.path(OUT_DIR, "pypi.csv"))
-    cli::cli_alert_success("PyPI: wrote {nrow(pypi_tbl)} rows to {file.path(OUT_DIR, 'pypi.csv')}")
+    registry_repo_urls_many(
+        names_vec,
+        url_fn = \(names_vec) stringr::str_glue("https://pypi.org/pypi/{URLencode(names_vec)}/json"),
+        extract_candidates = \(body) c(unlist(body$info$project_urls, use.names = FALSE), body$info$home_page)
+    )
 }
