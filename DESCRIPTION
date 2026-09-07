@@ -1,5 +1,5 @@
 Package: longtail
-Title: The Long-Tailed Distribution of Software Repositories
+Title: AI and The Long-Tailed Distribution of Software Repositories
 Version: 0.0.1
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
