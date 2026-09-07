@@ -26,7 +26,7 @@ library(tibble)
 REPO <- "openjournals/joss-reviews"
 LABEL <- "accepted"
 PER_PAGE <- 100L
-OUT_FILE <- "joss-repos.csv"
+OUT_FILE <- "data-joss.csv"
 
 # ---- GitHub API access --------------------------------------------------
 
