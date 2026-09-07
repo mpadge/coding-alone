@@ -2,3 +2,4 @@
 
 export(build_joss_table)
 export(build_working_sample)
+export(resolve_repo_urls)

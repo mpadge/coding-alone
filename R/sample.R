@@ -31,4 +31,29 @@ build_working_sample <- function (downloads_tbl = NULL,
     tail_tbl <- tail_pool |> dplyr::slice_sample (n = min (tail_size, nrow (tail_pool)))
     dplyr::bind_rows (head_tbl, tail_tbl)
 }
-utils::globalVariables ("downloads")
+
+#' Resolve GitHub repo URLs for a working sample, and filter down to the
+#' packages for which one was found.
+#'
+#' @description Applies `repo_urls_fn` to the `name` column of
+#' `working_sample` (e.g. `pypi_repo_urls_many()` or `npm_repo_urls_many()`),
+#' then drops rows for which no GitHub repo URL could be resolved. Shared
+#' post-processing step for both the PyPI and npm working samples.
+#'
+#' @param working_sample A tibble with at least `name` and `downloads`
+#' columns, as returned by `build_working_sample()`.
+#' @param repo_urls_fn A function taking a character vector of package names
+#' and returning a character vector of the same length, with a resolved
+#' GitHub repo URL or `NA` for each.
+#'
+#' @return A tibble with `name`, `downloads`, and `repo_url` columns,
+#' filtered to rows with a non-missing `repo_url`.
+#' @export
+resolve_repo_urls <- function (working_sample = NULL, repo_urls_fn = NULL) {
+    working_sample |>
+        dplyr::mutate (repo_url = repo_urls_fn (name)) |>
+        dplyr::filter (!is.na (repo_url)) |>
+        dplyr::select (name, downloads, repo_url)
+}
+
+utils::globalVariables (c ("downloads", "name", "repo_url"))
