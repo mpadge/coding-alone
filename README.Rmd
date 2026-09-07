@@ -71,10 +71,19 @@ cli::cli_alert_success ("npm: wrote {nrow(npm_tbl)} rows to {file.path(OUT_DIR, 
 
 ## JOSS
 
-Accepted JOSS submissions and their repo URLs.
+Accepted JOSS submissions and their repo URLs, GitHub stars (fetched via the
+GraphQL API), and language label. Also matches repo URLs against the PyPI
+and npm tables above (if already written to `OUT_DIR`) to fill in
+`downloads` where a JOSS submission's repo happens to also appear in one of
+those.
 
 ```{r joss, eval = FALSE}
-joss_tbl <- build_joss_table ()
+pypi_csv <- file.path (OUT_DIR, "pypi.csv")
+npm_csv <- file.path (OUT_DIR, "npm.csv")
+pypi_tbl <- if (file.exists (pypi_csv)) readr::read_csv (pypi_csv, show_col_types = FALSE) else NULL
+npm_tbl <- if (file.exists (npm_csv)) readr::read_csv (npm_csv, show_col_types = FALSE) else NULL
+
+joss_tbl <- build_joss_table (pypi_tbl = pypi_tbl, npm_tbl = npm_tbl)
 readr::write_csv (joss_tbl, file.path (OUT_DIR, "joss.csv"))
 cli::cli_alert_success ("JOSS: wrote {nrow(joss_tbl)} rows to {file.path(OUT_DIR, 'joss.csv')}")
 ```
@@ -88,4 +97,90 @@ review status.
 ropensci_tbl <- build_ropensci_table ()
 readr::write_csv (ropensci_tbl, file.path (OUT_DIR, "ropensci.csv"))
 cli::cli_alert_success ("rOpenSci: wrote {nrow(ropensci_tbl)} rows to {file.path(OUT_DIR, 'ropensci.csv')}")
+```
+
+---
+
+## Analyses
+
+Combine the four input tables into a single table of names, GitHub URLs, and
+download/star metrics, tagged with their `source`.
+
+```{r}
+source_patterns <- c (pypi = "pypi", npm = "npm", joss = "joss", ropensci = "ropensci")
+
+source_for_file <- function (path) {
+    fname <- fs::path_file (path)
+    hit <- vapply (source_patterns, grepl, x = fname, FUN.VALUE = logical (1))
+    names (source_patterns) [hit]
+}
+
+flist <- fs::dir_ls (OUT_DIR, glob = "*.csv")
+flist <- flist [lengths (lapply (flist, source_for_file)) > 0]
+
+read_one <- function (path) {
+    tbl <- readr::read_csv (path, show_col_types = FALSE)
+    name_col <- intersect (c ("name", "package", "title"), names (tbl)) [1]
+
+    name <- tbl [[name_col]]
+    if (name_col == "title") {
+        name <- sub ("^\\[REVIEW\\]:\\s*", "", name)
+    }
+
+    tibble::tibble (
+        name = name,
+        repo_url = tbl$repo_url,
+        downloads = if ("downloads" %in% names (tbl)) tbl$downloads else NA_integer_,
+        stars = if ("stars" %in% names (tbl)) tbl$stars else NA_integer_,
+        source = source_for_file (path)
+    )
+}
+
+repo_tbl <- purrr::map_dfr (flist, read_one)
+repo_tbl
+```
+
+## GitHub issue authors
+
+Fetch issue-author data for every repo in `repo_tbl` via
+`github_issue_authors()`, run in parallel across repos (each repo's calls
+are independent of the others, so this is embarrassingly parallel).
+`repo_url` is the natural unique identifier here (rather than `name`, which
+is only unique within a single `source`), so results are keyed on it and
+written alongside it, and `repo_tbl` is deduplicated on it before joining
+so a repo appearing under multiple sources doesn't fan out the join.
+
+```{r issue-authors, eval = FALSE}
+library (progressify)
+handlers ("progress", global = TRUE)
+repo_urls <- unique (repo_tbl$repo_url)
+
+get_issue_authors_safe <- function (repo_url) {
+    tryCatch (
+        github_issue_authors (repo_url),
+        error = function (e) {
+            cli::cli_alert_warning ("Issue authors: failed for {repo_url}: {conditionMessage (e)}")
+            NULL
+        }
+    )
+}
+
+cli::cli_alert_info ("Issue authors: fetching for {length (repo_urls)} repos in parallel...")
+issue_authors_list <- lapply (repo_urls, get_issue_authors_safe) |>
+    progressify::progressify () |>
+    futurize::futurize ()
+names (issue_authors_list) <- repo_urls
+
+issue_authors_tbl <- purrr::imap_dfr (issue_authors_list, \ (res, url) {
+    if (is.null (res) || nrow (res) == 0) {
+        return (NULL)
+    }
+    tibble::add_column (res, repo_url = url, .before = 1)
+})
+readr::write_csv (issue_authors_tbl, file.path (OUT_DIR, "issue-authors.csv"))
+cli::cli_alert_success ("Issue authors: wrote {nrow(issue_authors_tbl)} rows to {file.path(OUT_DIR, 'issue-authors.csv')}")
+
+repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
+issue_authors_tbl <- dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
+issue_authors_tbl
 ```
