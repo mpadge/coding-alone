@@ -3,8 +3,16 @@
 \name{npm_repo_urls_many}
 \alias{npm_repo_urls_many}
 \title{Repo URL for many npm packages at once (concurrent requests). Uses the
-full registry doc, not the abbreviated \code{install-v1+json} metadata, which
-omits \code{repository} entirely.}
+\verb{/latest} endpoint (the latest version's package.json-equivalent, which
+still carries \code{repository} and \code{homepage}), not the full registry doc —
+the full doc includes every published version ever, and for
+heavily-versioned packages that's enormous: \code{react}'s full doc is ~7MB
+vs ~2KB for \verb{/latest}, \code{webpack}'s ~5MB vs ~12KB (confirmed by direct
+request). Fetching the full doc concurrently for thousands of packages —
+worst case exactly the most-downloaded ones, which tend to have the most
+published versions — was blowing up memory badly enough to crash the R
+session entirely. The abbreviated \code{install-v1+json} metadata was ruled
+out instead, since it omits \code{repository} entirely.}
 \usage{
 npm_repo_urls_many(names_vec)
 }
@@ -13,6 +21,14 @@ npm_repo_urls_many(names_vec)
 }
 \description{
 Repo URL for many npm packages at once (concurrent requests). Uses the
-full registry doc, not the abbreviated \code{install-v1+json} metadata, which
-omits \code{repository} entirely.
+\verb{/latest} endpoint (the latest version's package.json-equivalent, which
+still carries \code{repository} and \code{homepage}), not the full registry doc —
+the full doc includes every published version ever, and for
+heavily-versioned packages that's enormous: \code{react}'s full doc is ~7MB
+vs ~2KB for \verb{/latest}, \code{webpack}'s ~5MB vs ~12KB (confirmed by direct
+request). Fetching the full doc concurrently for thousands of packages —
+worst case exactly the most-downloaded ones, which tend to have the most
+published versions — was blowing up memory badly enough to crash the R
+session entirely. The abbreviated \code{install-v1+json} metadata was ruled
+out instead, since it omits \code{repository} entirely.
 }

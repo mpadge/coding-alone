@@ -17,68 +17,6 @@
 
 REPO <- "openjournals/joss-reviews"
 LABEL <- "accepted"
-PER_PAGE <- 100L
-
-# ---- GitHub API access --------------------------------------------------
-
-#' GITHUB_TOKEN/GITHUB_PAT if set, else NA (falls back to unauthenticated
-#' requests: 60/hour, vs 5000/hour authenticated). ~3,700 accepted issues at
-#' 100/page is ~38 requests, which just fits unauthenticated with no retry
-#' margin — a token is recommended but not required.
-#' @noRd
-github_token <- function () {
-    tok <- Sys.getenv ("GITHUB_TOKEN", Sys.getenv ("GITHUB_PAT", ""))
-    if (nzchar (tok)) tok else NA_character_
-}
-
-#' @noRd
-fetch_issues_page <- function (page, token) {
-    req <- httr2::request (stringr::str_glue ("https://api.github.com/repos/{REPO}/issues")) |>
-        httr2::req_url_query (labels = LABEL, state = "all", per_page = PER_PAGE, page = page) |>
-        httr2::req_headers (Accept = "application/vnd.github+json", `User-Agent` = "joss-repos.R") |>
-        httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i)
-    if (!is.na (token)) req <- httr2::req_headers (req, Authorization = stringr::str_glue ("Bearer {token}"))
-    httr2::req_perform (req)
-}
-
-#' Sleep until quota resets if we're about to run out, rather than erroring.
-#' @noRd
-respect_rate_limit <- function (resp) {
-    remaining <- suppressWarnings (as.numeric (httr2::resp_header (resp, "x-ratelimit-remaining")))
-    if (!is.na (remaining) && remaining <= 1) {
-        reset_at <- suppressWarnings (as.numeric (httr2::resp_header (resp, "x-ratelimit-reset")))
-        wait <- max (0, reset_at - as.numeric (Sys.time ())) + 2
-        message (stringr::str_glue ("Rate limit nearly exhausted, waiting {round(wait)}s for reset..."))
-        Sys.sleep (wait)
-    }
-}
-
-#' All issues labeled "accepted" (raw parsed GitHub issue objects), paginated.
-#' @noRd
-fetch_all_accepted_issues <- function () {
-    token <- github_token ()
-    if (is.na (token)) {
-        message (
-            "No GITHUB_TOKEN/GITHUB_PAT set - using unauthenticated requests ",
-            "(60/hour limit). This run needs ~38 requests, so it fits but with ",
-            "no margin; set a token in the environment to avoid ever waiting."
-        )
-    }
-
-    pages <- list ()
-    page <- 1L
-    repeat {
-        resp <- fetch_issues_page (page, token)
-        body <- httr2::resp_body_json (resp, simplifyVector = FALSE)
-        if (length (body) == 0) break
-        pages [[length (pages) + 1]] <- body
-        message (stringr::str_glue ("Fetched page {page} ({length(body)} issues)"))
-        respect_rate_limit (resp)
-        if (length (body) < PER_PAGE) break
-        page <- page + 1L
-    }
-    purrr::flatten (pages)
-}
 
 # ---- repo URL extraction -------------------------------------------------
 
@@ -115,7 +53,10 @@ extract_repo_url <- function (body) {
 #' @export
 build_joss_table <- function () {
     message ("Fetching all '", LABEL, "'-labeled issues from ", REPO, "...")
-    issues <- fetch_all_accepted_issues ()
+    issues <- github_api_get_all (
+        stringr::str_glue ("/repos/{REPO}/issues"),
+        query = list (labels = LABEL, state = "all")
+    )
     issues <- purrr::keep (issues, \ (i) is.null (i$pull_request)) # this repo shouldn't have any, but be safe
 
     message ("Extracting repo URLs from ", length (issues), " issue bodies...")

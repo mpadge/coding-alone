@@ -2,4 +2,5 @@
 
 export(build_joss_table)
 export(build_working_sample)
+export(github_issue_authors)
 export(resolve_repo_urls)
