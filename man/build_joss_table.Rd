@@ -2,15 +2,23 @@
 % Please edit documentation in R/extract-data-joss.R
 \name{build_joss_table}
 \alias{build_joss_table}
-\title{Build a (issue_number, title, issue_url, repo_url) table for every JOSS
-submission whose review issue carries the "accepted" label.}
+\title{Build a (issue_number, title, issue_url, repo_url, language, stars,
+downloads) table for every JOSS submission whose review issue carries the
+"accepted" label.}
 \usage{
-build_joss_table()
+build_joss_table(pypi_tbl = NULL, npm_tbl = NULL)
+}
+\arguments{
+\item{pypi_tbl}{Optional PyPI working-sample table (as written by the
+README.Rmd PyPI chunk) to match repo URLs against for \code{downloads}.}
+
+\item{npm_tbl}{Optional npm working-sample table, likewise.}
 }
 \value{
 A tibble with one row per accepted JOSS submission.
 }
 \description{
-Build a (issue_number, title, issue_url, repo_url) table for every JOSS
-submission whose review issue carries the "accepted" label.
+Build a (issue_number, title, issue_url, repo_url, language, stars,
+downloads) table for every JOSS submission whose review issue carries the
+"accepted" label.
 }
