@@ -9,15 +9,7 @@
 #' PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
 #' BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
 #' are never exported anywhere public; only pre-aggregated counts are
-#' exposed, via the REST API), so this precomputed community package is the
-#' fast path instead of paginating api.npmjs.org's 128-per-request bulk
-#' endpoint across all ~4.3M names (~34,000 sequential requests, the actual
-#' cause of this script's slowness before, not any lack of a bulk endpoint
-#' — that endpoint just isn't feasible to walk over the entire registry).
-#' Verified: downloads (~28MB tarball) in ~1.5s, parses in R in ~20-30s.
-#' NB: it's only as fresh as its monthly build job — fine for a relative-
-#' popularity proxy, but check `version` (encodes the build date) if exact
-#' recency matters.
+#' exposed, via the REST API).
 npm_downloads_full <- function () {
     meta <- httr2::resp_body_json (
         httr2::req_perform (httr2::request ("https://registry.npmjs.org/download-counts/latest")),
@@ -36,13 +28,16 @@ npm_downloads_full <- function () {
 }
 
 #' Repo URL for many npm packages at once (concurrent requests). Uses the
-#' full registry doc, not the abbreviated `install-v1+json` metadata, which
-#' omits `repository` entirely.
+#' `/latest` endpoint (the latest version's package.json-equivalent, which
+#' still carries `repository` and `homepage`), not the full registry doc —
+#' the full doc includes every published version ever, and for
+#' heavily-versioned packages that's enormous.
+#'
 #' @param names_vec Character vector of npm package names.
 npm_repo_urls_many <- function (names_vec) {
     registry_repo_urls_many (
         names_vec,
-        url_fn = \ (names_vec) stringr::str_glue ("https://registry.npmjs.org/{URLencode(names_vec)}"),
+        url_fn = \ (names_vec) stringr::str_glue ("https://registry.npmjs.org/{URLencode(names_vec)}/latest"),
         extract_candidates = \ (body) {
             repo <- body$repository
             repo_url <- if (is.list (repo)) repo$url else repo

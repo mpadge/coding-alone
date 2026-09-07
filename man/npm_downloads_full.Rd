@@ -9,15 +9,7 @@ to last-month download count. This is npm's practical equivalent of
 PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
 BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
 are never exported anywhere public; only pre-aggregated counts are
-exposed, via the REST API), so this precomputed community package is the
-fast path instead of paginating api.npmjs.org's 128-per-request bulk
-endpoint across all ~4.3M names (~34,000 sequential requests, the actual
-cause of this script's slowness before, not any lack of a bulk endpoint
-— that endpoint just isn't feasible to walk over the entire registry).
-Verified: downloads (~28MB tarball) in ~1.5s, parses in R in ~20-30s.
-NB: it's only as fresh as its monthly build job — fine for a relative-
-popularity proxy, but check \code{version} (encodes the build date) if exact
-recency matters.}
+exposed, via the REST API).}
 \usage{
 npm_downloads_full()
 }
@@ -29,13 +21,5 @@ to last-month download count. This is npm's practical equivalent of
 PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
 BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
 are never exported anywhere public; only pre-aggregated counts are
-exposed, via the REST API), so this precomputed community package is the
-fast path instead of paginating api.npmjs.org's 128-per-request bulk
-endpoint across all ~4.3M names (~34,000 sequential requests, the actual
-cause of this script's slowness before, not any lack of a bulk endpoint
-— that endpoint just isn't feasible to walk over the entire registry).
-Verified: downloads (~28MB tarball) in ~1.5s, parses in R in ~20-30s.
-NB: it's only as fresh as its monthly build job — fine for a relative-
-popularity proxy, but check \code{version} (encodes the build date) if exact
-recency matters.
+exposed, via the REST API).
 }
