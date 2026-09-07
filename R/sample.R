@@ -31,3 +31,4 @@ build_working_sample <- function (downloads_tbl = NULL,
     tail_tbl <- tail_pool |> dplyr::slice_sample (n = min (tail_size, nrow (tail_pool)))
     dplyr::bind_rows (head_tbl, tail_tbl)
 }
+utils::globalVariables ("downloads")

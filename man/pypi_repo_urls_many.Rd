@@ -7,6 +7,9 @@ info.project_urls (free-text keys) + info.home_page.}
 \usage{
 pypi_repo_urls_many(names_vec)
 }
+\arguments{
+\item{names_vec}{Character vector of PyPI package names.}
+}
 \description{
 Repo URLs for many PyPI packages at once (concurrent requests).
 info.project_urls (free-text keys) + info.home_page.

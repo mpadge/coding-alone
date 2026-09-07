@@ -8,6 +8,9 @@ omits \code{repository} entirely.}
 \usage{
 npm_repo_urls_many(names_vec)
 }
+\arguments{
+\item{names_vec}{Character vector of npm package names.}
+}
 \description{
 Repo URL for many npm packages at once (concurrent requests). Uses the
 full registry doc, not the abbreviated \code{install-v1+json} metadata, which

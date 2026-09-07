@@ -21,19 +21,19 @@ CLICKHOUSE_PAGE_SIZE <- 100000L # server-enforced max rows per query on the publ
 #' matters a lot here — the naive per-row list parse is ~100x slower at
 #' 100k+ rows and was the actual bottleneck in early testing, not the network.
 #' @noRd
-clickhouse_query <- function(sql) {
-    resp <- httr2::request(CLICKHOUSE_URL) |>
-        httr2::req_url_query(user = "demo", default_format = "JSONCompact") |>
-        httr2::req_body_raw(sql) |>
-        httr2::req_retry(max_tries = 5, backoff = \(i) 2^i) |>
-        httr2::req_perform()
-    httr2::resp_body_json(resp, simplifyVector = TRUE)$data
+clickhouse_query <- function (sql) {
+    resp <- httr2::request (CLICKHOUSE_URL) |>
+        httr2::req_url_query (user = "demo", default_format = "JSONCompact") |>
+        httr2::req_body_raw (sql) |>
+        httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i) |>
+        httr2::req_perform ()
+    httr2::resp_body_json (resp, simplifyVector = TRUE)$data
 }
 
 #' Full PyPI download-count population (~870k packages, last complete
 #' calendar month), paginated in chunks of CLICKHOUSE_PAGE_SIZE. Typically
 #' ~9 requests, well under a minute, no rate limiting encountered.
-pypi_downloads_full <- function() {
+pypi_downloads_full <- function () {
     base_sql <- "
     SELECT SUM(count) AS downloads, project
     FROM pypi.pypi_downloads_per_month
@@ -45,28 +45,29 @@ pypi_downloads_full <- function() {
     ORDER BY downloads DESC
     LIMIT %d OFFSET %d"
 
-    pages <- list()
+    pages <- list ()
     offset <- 0L
     repeat {
-        rows <- clickhouse_query(sprintf(base_sql, CLICKHOUSE_PAGE_SIZE, offset))
-        n <- if (is.matrix(rows)) nrow(rows) else length(rows) # length(rows) == 0 for an empty result
+        rows <- clickhouse_query (sprintf (base_sql, CLICKHOUSE_PAGE_SIZE, offset))
+        n <- if (is.matrix (rows)) nrow (rows) else length (rows) # length(rows) == 0 for an empty result
         if (n == 0) break
-        pages[[length(pages) + 1]] <- tibble::tibble(
-            downloads = as.numeric(rows[, 1]),
-            name = rows[, 2]
+        pages [[length (pages) + 1]] <- tibble::tibble (
+            downloads = as.numeric (rows [, 1]),
+            name = rows [, 2]
         )
         if (n < CLICKHOUSE_PAGE_SIZE) break
         offset <- offset + CLICKHOUSE_PAGE_SIZE
     }
-    dplyr::bind_rows(pages)
+    dplyr::bind_rows (pages)
 }
 
 #' Repo URLs for many PyPI packages at once (concurrent requests).
 #' info.project_urls (free-text keys) + info.home_page.
-pypi_repo_urls_many <- function(names_vec) {
-    registry_repo_urls_many(
+#' @param names_vec Character vector of PyPI package names.
+pypi_repo_urls_many <- function (names_vec) {
+    registry_repo_urls_many (
         names_vec,
-        url_fn = \(names_vec) stringr::str_glue("https://pypi.org/pypi/{URLencode(names_vec)}/json"),
-        extract_candidates = \(body) c(unlist(body$info$project_urls, use.names = FALSE), body$info$home_page)
+        url_fn = \ (names_vec) stringr::str_glue ("https://pypi.org/pypi/{URLencode(names_vec)}/json"),
+        extract_candidates = \ (body) c (unlist (body$info$project_urls, use.names = FALSE), body$info$home_page)
     )
 }
