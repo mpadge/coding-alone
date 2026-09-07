@@ -1,14 +1,6 @@
 # Build (name, downloads, repo_url) table for PyPI, filtered to packages with
 # a resolvable GitHub repo URL.
 
-library(httr2)
-library(jsonlite)
-library(purrr)
-library(dplyr)
-library(readr)
-library(stringr)
-library(tibble)
-
 # ---- config ----------------------------------------------------------
 
 WORKING_SAMPLE_TAIL_SIZE <- 40000L # random draw size, outside the known head
@@ -30,16 +22,16 @@ normalize_github_url <- function(url) {
     if (is.null(url) || is.na(url) || !nzchar(url)) {
         return(NA_character_)
     }
-    m <- str_match(url, github_url_re)
+    m <- stringr::str_match(url, github_url_re)
     if (is.na(m[1, 1])) {
-        m <- str_match(url, github_shorthand_re)
+        m <- stringr::str_match(url, github_shorthand_re)
     }
     if (is.na(m[1, 1])) {
         return(NA_character_)
     }
     owner <- m[1, 2]
-    repo <- str_remove(m[1, 3], "\\.git$")
-    str_glue("https://github.com/{owner}/{repo}")
+    repo <- stringr::str_remove(m[1, 3], "\\.git$")
+    stringr::str_glue("https://github.com/{owner}/{repo}")
 }
 
 #' First github.com URL found among a set of candidate URL strings, or NA.
@@ -65,13 +57,17 @@ find_github_url <- function(candidates) {
 #' throttle, which was the actual bottleneck (~1.9 hours for a 55k-package
 #' working sample) — not the download-count fetch, which is already fast.
 perform_json_parallel <- function(urls, max_active = MAX_ACTIVE_META) {
-    reqs <- map(urls, \(u) request(u) |> req_retry(max_tries = 3) |> req_error(is_error = \(resp) FALSE))
-    resps <- req_perform_parallel(reqs, on_error = "continue", max_active = max_active)
-    map(resps, \(resp) {
-        if (inherits(resp, "error") || resp_status(resp) >= 400) {
+    reqs <- purrr::map(urls, \(u) {
+        httr2::request(u) |>
+            httr2::req_retry(max_tries = 3) |>
+            httr2::req_error(is_error = \(resp) FALSE)
+    })
+    resps <- httr2::req_perform_parallel(reqs, on_error = "continue", max_active = max_active)
+    purrr::map(resps, \(resp) {
+        if (inherits(resp, "error") || httr2::resp_status(resp) >= 400) {
             return(NULL)
         }
-        tryCatch(resp_body_json(resp, simplifyVector = FALSE), error = \(e) NULL)
+        tryCatch(httr2::resp_body_json(resp, simplifyVector = FALSE), error = \(e) NULL)
     })
 }
 
@@ -91,12 +87,12 @@ perform_json_parallel <- function(urls, max_active = MAX_ACTIVE_META) {
 #' matters a lot here — the naive per-row list parse is ~100x slower at
 #' 100k+ rows and was the actual bottleneck in early testing, not the network.
 clickhouse_query <- function(sql) {
-    resp <- request(CLICKHOUSE_URL) |>
-        req_url_query(user = "demo", default_format = "JSONCompact") |>
-        req_body_raw(sql) |>
-        req_retry(max_tries = 5, backoff = \(i) 2^i) |>
-        req_perform()
-    resp_body_json(resp, simplifyVector = TRUE)$data
+    resp <- httr2::request(CLICKHOUSE_URL) |>
+        httr2::req_url_query(user = "demo", default_format = "JSONCompact") |>
+        httr2::req_body_raw(sql) |>
+        httr2::req_retry(max_tries = 5, backoff = \(i) 2^i) |>
+        httr2::req_perform()
+    httr2::resp_body_json(resp, simplifyVector = TRUE)$data
 }
 
 #' Full PyPI download-count population (~870k packages, last complete
@@ -120,22 +116,22 @@ pypi_downloads_full <- function() {
         rows <- clickhouse_query(sprintf(base_sql, CLICKHOUSE_PAGE_SIZE, offset))
         n <- if (is.matrix(rows)) nrow(rows) else length(rows) # length(rows) == 0 for an empty result
         if (n == 0) break
-        pages[[length(pages) + 1]] <- tibble(
+        pages[[length(pages) + 1]] <- tibble::tibble(
             downloads = as.numeric(rows[, 1]),
             name = rows[, 2]
         )
         if (n < CLICKHOUSE_PAGE_SIZE) break
         offset <- offset + CLICKHOUSE_PAGE_SIZE
     }
-    bind_rows(pages)
+    dplyr::bind_rows(pages)
 }
 
 #' Repo URLs for many PyPI packages at once (concurrent requests).
 #' info.project_urls (free-text keys) + info.home_page.
 pypi_repo_urls_many <- function(names_vec) {
-    urls <- str_glue("https://pypi.org/pypi/{URLencode(names_vec)}/json")
+    urls <- stringr::str_glue("https://pypi.org/pypi/{URLencode(names_vec)}/json")
     bodies <- perform_json_parallel(urls)
-    map_chr(bodies, \(body) {
+    purrr::map_chr(bodies, \(body) {
         if (is.null(body)) {
             return(NA_character_)
         }
@@ -151,16 +147,16 @@ if (sys.nframe() == 0) {
     downloads_tbl <- pypi_downloads_full()
 
     cli::cli_alert_info("PyPI: building working sample (head + random tail)...")
-    head_tbl <- downloads_tbl |> slice_max(downloads, n = TOP_N_HEAD)
-    tail_pool <- downloads_tbl |> anti_join(head_tbl, by = "name")
-    tail_tbl <- tail_pool |> slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
-    working_sample <- bind_rows(head_tbl, tail_tbl)
+    head_tbl <- downloads_tbl |> dplyr::slice_max(downloads, n = TOP_N_HEAD)
+    tail_pool <- downloads_tbl |> dplyr::anti_join(head_tbl, by = "name")
+    tail_tbl <- tail_pool |> dplyr::slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
+    working_sample <- dplyr::bind_rows(head_tbl, tail_tbl)
 
     cli::cli_alert_info("PyPI: resolving GitHub repo URLs for {nrow(working_sample)} packages (parallel, max_active={MAX_ACTIVE_META})...")
     pypi_tbl <- working_sample |>
-        mutate(repo_url = pypi_repo_urls_many(name)) |>
-        filter(!is.na(repo_url)) |>
-        select(name, downloads, repo_url)
-    write_csv(pypi_tbl, file.path(OUT_DIR, "pypi.csv"))
+        dplyr::mutate(repo_url = pypi_repo_urls_many(name)) |>
+        dplyr::filter(!is.na(repo_url)) |>
+        dplyr::select(name, downloads, repo_url)
+    readr::write_csv(pypi_tbl, file.path(OUT_DIR, "pypi.csv"))
     cli::cli_alert_success("PyPI: wrote {nrow(pypi_tbl)} rows to {file.path(OUT_DIR, 'pypi.csv')}")
 }

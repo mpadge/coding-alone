@@ -1,14 +1,6 @@
 # Build (name, downloads, repo_url) table for npm, filtered to packages with
 # a resolvable GitHub repo URL.
 
-library(httr2)
-library(jsonlite)
-library(purrr)
-library(dplyr)
-library(readr)
-library(stringr)
-library(tibble)
-
 # ---- config ----------------------------------------------------------
 
 WORKING_SAMPLE_TAIL_SIZE <- 40000L # random draw size, outside the known head
@@ -28,16 +20,16 @@ normalize_github_url <- function(url) {
     if (is.null(url) || is.na(url) || !nzchar(url)) {
         return(NA_character_)
     }
-    m <- str_match(url, github_url_re)
+    m <- stringr::str_match(url, github_url_re)
     if (is.na(m[1, 1])) {
-        m <- str_match(url, github_shorthand_re)
+        m <- stringr::str_match(url, github_shorthand_re)
     }
     if (is.na(m[1, 1])) {
         return(NA_character_)
     }
     owner <- m[1, 2]
-    repo <- str_remove(m[1, 3], "\\.git$")
-    str_glue("https://github.com/{owner}/{repo}")
+    repo <- stringr::str_remove(m[1, 3], "\\.git$")
+    stringr::str_glue("https://github.com/{owner}/{repo}")
 }
 
 #' First github.com URL found among a set of candidate URL strings, or NA.
@@ -64,13 +56,17 @@ find_github_url <- function(candidates) {
 #' 55k-package working sample) — not the download-count fetch below, which
 #' is already fast.
 perform_json_parallel <- function(urls, max_active = MAX_ACTIVE_META) {
-    reqs <- map(urls, \(u) request(u) |> req_retry(max_tries = 3) |> req_error(is_error = \(resp) FALSE))
-    resps <- req_perform_parallel(reqs, on_error = "continue", max_active = max_active)
-    map(resps, \(resp) {
-        if (inherits(resp, "error") || resp_status(resp) >= 400) {
+    reqs <- purrr::map(urls, \(u) {
+        httr2::request(u) |>
+            httr2::req_retry(max_tries = 3) |>
+            httr2::req_error(is_error = \(resp) FALSE)
+    })
+    resps <- httr2::req_perform_parallel(reqs, on_error = "continue", max_active = max_active)
+    purrr::map(resps, \(resp) {
+        if (inherits(resp, "error") || httr2::resp_status(resp) >= 400) {
             return(NULL)
         }
-        tryCatch(resp_body_json(resp, simplifyVector = FALSE), error = \(e) NULL)
+        tryCatch(httr2::resp_body_json(resp, simplifyVector = FALSE), error = \(e) NULL)
     })
 }
 
@@ -91,26 +87,29 @@ perform_json_parallel <- function(urls, max_active = MAX_ACTIVE_META) {
 #' popularity proxy, but check `version` (encodes the build date) if exact
 #' recency matters.
 npm_downloads_full <- function() {
-    meta <- resp_body_json(req_perform(request("https://registry.npmjs.org/download-counts/latest")), simplifyVector = FALSE)
+    meta <- httr2::resp_body_json(
+        httr2::req_perform(httr2::request("https://registry.npmjs.org/download-counts/latest")),
+        simplifyVector = FALSE
+    )
     cli::cli_alert_info("npm: using download-counts@{meta$version} (monthly snapshot, may be a few months old)")
 
     tmp_tgz <- tempfile(fileext = ".tgz")
     tmp_dir <- tempfile()
     dir.create(tmp_dir)
-    req_perform(request(meta$dist$tarball), path = tmp_tgz)
+    httr2::req_perform(httr2::request(meta$dist$tarball), path = tmp_tgz)
     untar(tmp_tgz, exdir = tmp_dir)
     counts_json <- list.files(tmp_dir, pattern = "counts\\.json$", recursive = TRUE, full.names = TRUE)[1]
-    counts <- fromJSON(counts_json)
-    tibble(name = names(counts), downloads = as.numeric(unlist(counts, use.names = FALSE)))
+    counts <- jsonlite::fromJSON(counts_json)
+    tibble::tibble(name = names(counts), downloads = as.numeric(unlist(counts, use.names = FALSE)))
 }
 
 #' Repo URL for many npm packages at once (concurrent requests). Uses the
 #' full registry doc, not the abbreviated `install-v1+json` metadata, which
 #' omits `repository` entirely.
 npm_repo_urls_many <- function(names_vec) {
-    urls <- str_glue("https://registry.npmjs.org/{URLencode(names_vec)}")
+    urls <- stringr::str_glue("https://registry.npmjs.org/{URLencode(names_vec)}")
     bodies <- perform_json_parallel(urls)
-    map_chr(bodies, \(body) {
+    purrr::map_chr(bodies, \(body) {
         if (is.null(body)) {
             return(NA_character_)
         }
@@ -127,16 +126,16 @@ if (sys.nframe() == 0) {
     downloads_tbl <- npm_downloads_full()
 
     cli::cli_alert_info("npm: building working sample (head + random tail)...")
-    head_tbl <- downloads_tbl |> slice_max(downloads, n = TOP_N_HEAD)
-    tail_pool <- downloads_tbl |> anti_join(head_tbl, by = "name")
-    tail_tbl <- tail_pool |> slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
-    working_sample <- bind_rows(head_tbl, tail_tbl)
+    head_tbl <- downloads_tbl |> dplyr::slice_max(downloads, n = TOP_N_HEAD)
+    tail_pool <- downloads_tbl |> dplyr::anti_join(head_tbl, by = "name")
+    tail_tbl <- tail_pool |> dplyr::slice_sample(n = min(WORKING_SAMPLE_TAIL_SIZE, nrow(tail_pool)))
+    working_sample <- dplyr::bind_rows(head_tbl, tail_tbl)
 
     cli::cli_alert_info("npm: resolving GitHub repo URLs for {nrow(working_sample)} packages (parallel, max_active={MAX_ACTIVE_META})...")
     npm_tbl <- working_sample |>
-        mutate(repo_url = npm_repo_urls_many(name)) |>
-        filter(!is.na(repo_url)) |>
-        select(name, downloads, repo_url)
-    write_csv(npm_tbl, file.path(OUT_DIR, "npm.csv"))
+        dplyr::mutate(repo_url = npm_repo_urls_many(name)) |>
+        dplyr::filter(!is.na(repo_url)) |>
+        dplyr::select(name, downloads, repo_url)
+    readr::write_csv(npm_tbl, file.path(OUT_DIR, "npm.csv"))
     cli::cli_alert_success("npm: wrote {nrow(npm_tbl)} rows to {file.path(OUT_DIR, 'npm.csv')}")
 }
