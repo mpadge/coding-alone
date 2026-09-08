@@ -18,6 +18,7 @@ plot_activity_by_source(
   n_strata = 4L,
   window_start = as.Date("2015-01-01"),
   window_end = NULL,
+  relative = TRUE,
   start_year = NULL
 )
 }
@@ -33,6 +34,14 @@ popularity, \code{n_strata} = highest), matching one of \code{issue_rate_tbl()}'
 \item{n_strata, window_start, window_end}{Passed to each source's
 \code{issue_rate_tbl()} call; must be the same \code{n_strata} \code{stratum} is a
 level of.}
+
+\item{relative}{If \code{TRUE} (default), rescale each source by its own
+mean before plotting - sources sit on very different absolute rate
+scales (e.g. pypi's raw issue traffic dwarfs ropensci's), which would
+otherwise squash the smaller sources' trends to flat lines near zero.
+Puts every line at a comparable "around 1 = that source's own average"
+scale, so trends are comparable even though absolute rates aren't. Set
+\code{FALSE} to plot absolute rates instead.}
 
 \item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
 window from; \code{NULL} (default) plots the full \code{window_start}-\code{window_end}

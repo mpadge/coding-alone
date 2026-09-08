@@ -265,6 +265,13 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' @param n_strata,window_start,window_end Passed to each source's
 #' `issue_rate_tbl()` call; must be the same `n_strata` `stratum` is a
 #' level of.
+#' @param relative If `TRUE` (default), rescale each source by its own
+#' mean before plotting - sources sit on very different absolute rate
+#' scales (e.g. pypi's raw issue traffic dwarfs ropensci's), which would
+#' otherwise squash the smaller sources' trends to flat lines near zero.
+#' Puts every line at a comparable "around 1 = that source's own average"
+#' scale, so trends are comparable even though absolute rates aren't. Set
+#' `FALSE` to plot absolute rates instead.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots the full `window_start`-`window_end`
 #' window.
@@ -274,6 +281,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      n_strata = 4L,
                                      window_start = as.Date ("2015-01-01"),
                                      window_end = NULL,
+                                     relative = TRUE,
                                      start_year = NULL) {
     month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
 
@@ -293,18 +301,17 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     })
     rate_tbl$source_name <- factor (rate_tbl$source_name, levels = sources)
 
-    # Sources sit on very different absolute rate scales (e.g. pypi's raw
-    # issue traffic dwarfs ropensci's), which would otherwise squash the
-    # smaller sources' trends to flat lines near zero. Rescaling each
-    # source by its own mean - before the start_year crop below, so the
-    # scale factor doesn't shift depending on what window is displayed -
-    # puts every line at a comparable "around 1 = that source's own
-    # average" scale, so trends are comparable even though absolute rates
-    # aren't.
-    rate_tbl <- rate_tbl |>
-        dplyr::group_by (source_name) |>
-        dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
-        dplyr::ungroup ()
+    # Rescaling (when requested) happens before the start_year crop below,
+    # so the scale factor doesn't shift depending on what window is
+    # displayed.
+    y_lab <- "Issues opened per repo-month (non-contributor authors)"
+    if (relative) {
+        rate_tbl <- rate_tbl |>
+            dplyr::group_by (source_name) |>
+            dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
+            dplyr::ungroup ()
+        y_lab <- paste (y_lab, "- relative to each source's own mean")
+    }
 
     if (!is.null (start_year)) {
         rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
@@ -316,7 +323,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     ) +
         activity_plot_layers (rate_tbl, "source_name") +
         ggplot2::labs (
-            y = "Issues opened per repo-month, relative to each source's own mean",
+            y = y_lab,
             colour = "Source",
             title = stringr::str_glue ("Popularity stratum {stratum} of {n_strata}")
         )
