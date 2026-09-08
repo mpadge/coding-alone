@@ -61,8 +61,8 @@ issue_rate_tbl <- function (issue_authors_tbl,
                             window_end = NULL) {
 
     # rm no visible binding notes
-    source <- repo_url <- month <- popularity_stratum <-
-        n_issues <- n_repo_months <- is_contributor <-
+    source <- repo_url <- .data <- month <- metric <-
+        popularity_stratum <- n_issues <- n_repo_months <- is_contributor <-
         created_at <- repo_created_at <- NULL
 
     metric_col <- unname (POPULARITY_METRIC [source_name])

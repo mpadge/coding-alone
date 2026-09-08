@@ -1,6 +1,6 @@
 Package: longtail
 Title: AI and The Long-Tailed Distribution of Software Repositories
-Version: 0.0.1.023
+Version: 0.0.1.024
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
@@ -9,6 +9,7 @@ Description: Code to analyse GitHub repository activity in relation to "populari
 License: GPL-3
 URL: https://github.com/mpadge/longtail
 BugReports: https://github.com/mpadge/longtail/issues
+Depends: R (>= 4.1.0)
 Imports:
     cli,
     dplyr,
