@@ -4,9 +4,9 @@
 \alias{build_repo_tbl}
 \title{Combine the PyPI/npm/JOSS/rOpenSci output tables in \code{out_dir} into a
 single table of names, GitHub URLs, and download/star metrics, tagged
-with their \code{source}. Files are matched by name (\code{pypi}/\code{npm}/\code{joss}/
-\code{ropensci} substring), so anything else written to \code{out_dir} (e.g. the
-issue-authors output below) is ignored rather than breaking the read.}
+with their \code{source}. Files are matched by exact basename, so anything
+else written to \code{out_dir} (e.g. the issue-authors output below) is
+ignored rather than breaking the read.}
 \usage{
 build_repo_tbl(out_dir)
 }
@@ -20,7 +20,7 @@ A tibble with columns \code{name}, \code{repo_url}, \code{downloads}, \code{star
 \description{
 Combine the PyPI/npm/JOSS/rOpenSci output tables in \code{out_dir} into a
 single table of names, GitHub URLs, and download/star metrics, tagged
-with their \code{source}. Files are matched by name (\code{pypi}/\code{npm}/\code{joss}/
-\code{ropensci} substring), so anything else written to \code{out_dir} (e.g. the
-issue-authors output below) is ignored rather than breaking the read.
+with their \code{source}. Files are matched by exact basename, so anything
+else written to \code{out_dir} (e.g. the issue-authors output below) is
+ignored rather than breaking the read.
 }

@@ -38,11 +38,16 @@ popularity_strata <- function (x, n_strata = 4L) {
 
 #' Build the (popularity stratum-x-month) issue-rate table for one source:
 #' non-contributor issues opened per repo-month of exposure, where a repo's
-#' exposure begins at its GitHub creation date.
+#' exposure begins at its GitHub creation date. `repo_created_at` lives on
+#' `issue_authors_tbl` (fetched alongside each repo's issues by
+#' `github_issue_authors()`/`fetch_issue_authors()`), not `repo_tbl`, so a
+#' repo only contributes exposure once it's been fetched at least once -
+#' repos with zero issues fetched (either not yet fetched at all, or
+#' fetched and genuinely having none) don't have a `repo_created_at` on
+#' file and are excluded here rather than analyzed.
 #'
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
-#' @param repo_created_tbl As returned by `fetch_repo_created_at()`.
 #' @param source_name One of `repo_tbl$source` (`"pypi"`, `"npm"`, `"joss"`,
 #' `"ropensci"`).
 #' @param n_strata Number of popularity strata.
@@ -54,7 +59,6 @@ popularity_strata <- function (x, n_strata = 4L) {
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
-                            repo_created_tbl,
                             source_name,
                             n_strata = 4L,
                             window_start = as.Date ("2015-01-01"),
@@ -73,6 +77,10 @@ issue_rate_tbl <- function (issue_authors_tbl,
     if (is.null (window_end)) {
         window_end <- floor_month (Sys.Date ())
     }
+
+    repo_created_tbl <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at)
 
     repos <- repo_tbl |>
         dplyr::filter (source == source_name) |>

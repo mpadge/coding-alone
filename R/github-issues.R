@@ -41,19 +41,26 @@ github_repo_contributors <- function (owner, repo, coverage = 0.95) {
 }
 
 #' GitHub-recorded creation timestamp for a single repo, used as a proxy for
-#' when it became "at risk" of receiving issues (there's no cheaper way to
-#' get this - the repos endpoint only returns one repo's data per call).
+#' when it became "at risk" of receiving issues. Fetched via GraphQL rather
+#' than the REST `/repos/{owner}/{repo}` endpoint (which returns the whole
+#' repo object just to get this one field) - same aliased-field GraphQL
+#' pattern as `build_stars_query()` in extract-data-joss.R, minus the
+#' aliasing since this is a single repo per call rather than a batch.
 #' @return An ISO-8601 timestamp string.
 #' @noRd
 github_repo_created_at <- function (owner, repo) {
-    info <- github_api_get_one (stringr::str_glue ("/repos/{owner}/{repo}"))
-    info$created_at
+    query <- stringr::str_glue ('query {{ repository(owner: "{owner}", name: "{repo}") {{ createdAt }} }}')
+    body <- gh::gh_gql (query)
+    body$data$repository$createdAt
 }
 
 #' Extract every issue (pull requests excluded) opened against a single GitHub
 #' repo, with the opener's handle and a cheap `is_contributor` flag: whether
 #' that handle is among the repo's primary contributors (see the note at the
 #' top of this file for how "primary" is defined from contribution counts).
+#' Also fetches the repo's own GitHub creation timestamp (one extra cheap
+#' call), used elsewhere as the start of a repo's exposure window - fetched
+#' here rather than separately so every issue-authors row already carries it.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
 #' @param primary_coverage Cumulative share (0-1) of all commits that the
@@ -62,7 +69,8 @@ github_repo_created_at <- function (owner, repo) {
 #' of all commits).
 #'
 #' @return A tibble with one row per issue: `issue_number`, `author`,
-#' `created_at`, and `is_contributor`.
+#' `created_at`, `is_contributor`, and `repo_created_at` (the repo's own
+#' GitHub creation timestamp, repeated on every row).
 #' @export
 github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
 
@@ -71,6 +79,7 @@ github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
     repo <- parse_github_repo_url (repo_url)
 
     contributors <- github_repo_contributors (repo$owner, repo$repo, coverage = primary_coverage)
+    repo_created_at <- github_repo_created_at (repo$owner, repo$repo)
 
     issues <- github_api_get_all (
         stringr::str_glue ("/repos/{repo$owner}/{repo$repo}/issues"),
@@ -84,7 +93,8 @@ github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
             issue_number = integer (),
             author = character (),
             created_at = character (),
-            is_contributor = logical ()
+            is_contributor = logical (),
+            repo_created_at = character ()
         ))
     }
 
@@ -97,5 +107,6 @@ github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
             is_contributor = author %in% contributors
         )
     }) |>
-        dplyr::mutate (repo_url = repo_url, .before = issue_number)
+        dplyr::mutate (repo_url = repo_url, .before = issue_number) |>
+        dplyr::mutate (repo_created_at = repo_created_at)
 }

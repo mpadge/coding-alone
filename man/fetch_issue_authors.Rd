@@ -2,7 +2,9 @@
 % Please edit documentation in R/analyses.R
 \name{fetch_issue_authors}
 \alias{fetch_issue_authors}
-\title{Fetch issue-author data (\code{github_issue_authors()}) for many repos,
+\title{Fetch issue-author data (\code{github_issue_authors()}, which now also
+returns each repo's own GitHub creation timestamp as \code{repo_created_at} -
+used elsewhere as the start of a repo's exposure window) for many repos,
 batched and checkpointed to disk. Repos already recorded as done (in
 \verb{<out_dir>/issue-authors-done.rds}, tracked independently of row count so
 a repo with zero issues isn't retried forever) are skipped, so
@@ -24,11 +26,13 @@ fetch_issue_authors(repo_urls, out_dir, batch_size = 50L)
 }
 \value{
 A tibble with columns \code{repo_url}, \code{issue_number}, \code{author},
-\code{created_at}, \code{is_contributor} - the full accumulated result, including
-rows from any previous run(s).
+\code{created_at}, \code{is_contributor}, \code{repo_created_at} - the full accumulated
+result, including rows from any previous run(s).
 }
 \description{
-Fetch issue-author data (\code{github_issue_authors()}) for many repos,
+Fetch issue-author data (\code{github_issue_authors()}, which now also
+returns each repo's own GitHub creation timestamp as \code{repo_created_at} -
+used elsewhere as the start of a repo's exposure window) for many repos,
 batched and checkpointed to disk. Repos already recorded as done (in
 \verb{<out_dir>/issue-authors-done.rds}, tracked independently of row count so
 a repo with zero issues isn't retried forever) are skipped, so

@@ -5,7 +5,10 @@
 \title{Extract every issue (pull requests excluded) opened against a single GitHub
 repo, with the opener's handle and a cheap \code{is_contributor} flag: whether
 that handle is among the repo's primary contributors (see the note at the
-top of this file for how "primary" is defined from contribution counts).}
+top of this file for how "primary" is defined from contribution counts).
+Also fetches the repo's own GitHub creation timestamp (one extra cheap
+call), used elsewhere as the start of a repo's exposure window - fetched
+here rather than separately so every issue-authors row already carries it.}
 \usage{
 github_issue_authors(repo_url = NULL, primary_coverage = 0.95)
 }
@@ -19,11 +22,15 @@ of all commits).}
 }
 \value{
 A tibble with one row per issue: \code{issue_number}, \code{author},
-\code{created_at}, and \code{is_contributor}.
+\code{created_at}, \code{is_contributor}, and \code{repo_created_at} (the repo's own
+GitHub creation timestamp, repeated on every row).
 }
 \description{
 Extract every issue (pull requests excluded) opened against a single GitHub
 repo, with the opener's handle and a cheap \code{is_contributor} flag: whether
 that handle is among the repo's primary contributors (see the note at the
 top of this file for how "primary" is defined from contribution counts).
+Also fetches the repo's own GitHub creation timestamp (one extra cheap
+call), used elsewhere as the start of a repo's exposure window - fetched
+here rather than separately so every issue-authors row already carries it.
 }

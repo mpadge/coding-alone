@@ -4,12 +4,17 @@
 \alias{issue_rate_tbl}
 \title{Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date.}
+exposure begins at its GitHub creation date. \code{repo_created_at} lives on
+\code{issue_authors_tbl} (fetched alongside each repo's issues by
+\code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
+repo only contributes exposure once it's been fetched at least once -
+repos with zero issues fetched (either not yet fetched at all, or
+fetched and genuinely having none) don't have a \code{repo_created_at} on
+file and are excluded here rather than analyzed.}
 \usage{
 issue_rate_tbl(
   issue_authors_tbl,
   repo_tbl,
-  repo_created_tbl,
   source_name,
   n_strata = 4L,
   window_start = as.Date("2015-01-01"),
@@ -20,8 +25,6 @@ issue_rate_tbl(
 \item{issue_authors_tbl}{As returned by \code{fetch_issue_authors()}.}
 
 \item{repo_tbl}{As returned by \code{build_repo_tbl()}.}
-
-\item{repo_created_tbl}{As returned by \code{fetch_repo_created_at()}.}
 
 \item{source_name}{One of \code{repo_tbl$source} (\code{"pypi"}, \code{"npm"}, \code{"joss"},
 \code{"ropensci"}).}
@@ -39,5 +42,11 @@ A tibble with one row per (popularity stratum, month):
 \description{
 Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date.
+exposure begins at its GitHub creation date. \code{repo_created_at} lives on
+\code{issue_authors_tbl} (fetched alongside each repo's issues by
+\code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
+repo only contributes exposure once it's been fetched at least once -
+repos with zero issues fetched (either not yet fetched at all, or
+fetched and genuinely having none) don't have a \code{repo_created_at} on
+file and are excluded here rather than analyzed.
 }
