@@ -40,6 +40,16 @@ github_repo_contributors <- function (owner, repo, coverage = 0.95) {
     logins [seq_len (n_primary)]
 }
 
+#' GitHub-recorded creation timestamp for a single repo, used as a proxy for
+#' when it became "at risk" of receiving issues (there's no cheaper way to
+#' get this - the repos endpoint only returns one repo's data per call).
+#' @return An ISO-8601 timestamp string.
+#' @noRd
+github_repo_created_at <- function (owner, repo) {
+    info <- github_api_get_one (stringr::str_glue ("/repos/{owner}/{repo}"))
+    info$created_at
+}
+
 #' Extract every issue (pull requests excluded) opened against a single GitHub
 #' repo, with the opener's handle and a cheap `is_contributor` flag: whether
 #' that handle is among the repo's primary contributors (see the note at the

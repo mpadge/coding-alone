@@ -66,6 +66,28 @@ github_respect_rate_limit <- function (resp) {
     }
 }
 
+#' Fetch a single-resource GitHub REST API endpoint (e.g.
+#' `/repos/{owner}/{repo}`, which returns one JSON object rather than a
+#' paginated list), and return the parsed JSON.
+#' @noRd
+github_api_get_one <- function (path, token = github_token ()) {
+    if (is.na (token)) {
+        message (
+            "No GITHUB_TOKEN/GITHUB_PAT set - using unauthenticated requests ",
+            "(60/hour limit). Set a token in the environment to raise this to 5000/hour."
+        )
+    }
+
+    req <- httr2::request (stringr::str_glue ("https://api.github.com{path}")) |>
+        httr2::req_headers (Accept = "application/vnd.github+json", `User-Agent` = "longtail-R-package") |>
+        httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i)
+    if (!is.na (token)) req <- httr2::req_headers (req, Authorization = stringr::str_glue ("Bearer {token}"))
+    resp <- httr2::req_perform (req)
+    body <- httr2::resp_body_json (resp, simplifyVector = FALSE)
+    github_respect_rate_limit (resp)
+    body
+}
+
 #' Fetch every page of a paginated GitHub REST API list endpoint (e.g.
 #' `/repos/{owner}/{repo}/issues`), and return the concatenated list of
 #' parsed JSON items across all pages. `query` carries any extra query
