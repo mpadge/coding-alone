@@ -114,11 +114,14 @@ repo_tbl
 ## GitHub issue authors
 
 Fetch issue-author data for every repo in `repo_tbl` via
-`github_issue_authors()` (which now returns `repo_url` as one of its
-columns directly). `repo_url` is the natural unique identifier here (rather
-than `name`, which is only unique within a single `source`), so `repo_tbl`
-is deduplicated on it before joining, so a repo appearing under multiple
-sources doesn't fan out the join.
+`github_issue_authors()`, which returns `repo_url` as one of its columns
+directly, along with each repo's own GitHub creation date
+(`repo_created_at`, one extra cheap API call per repo) - used by the
+issue-rate analysis below as the start of a repo's exposure window.
+`repo_url` is the natural unique identifier here (rather than `name`, which
+is only unique within a single `source`), so `repo_tbl` is deduplicated on
+it before joining, so a repo appearing under multiple sources doesn't fan
+out the join.
 
 Calls are made sequentially in small batches. Progress is checkpointed to disk
 after every batch, and repos already done are skipped on re-running the chunk,
@@ -129,4 +132,23 @@ than starting over.
 issue_authors_tbl <- fetch_issue_authors (repo_tbl$repo_url, OUT_DIR)
 issue_authors_tbl <- join_repo_metadata (issue_authors_tbl, repo_tbl)
 issue_authors_tbl
+```
+
+## Issue-rate analysis
+
+For each fully-fetched source, compute the monthly issue-opening rate
+(non-contributor issues per repo-month) stratified by popularity (`downloads`
+for `npm`, `stars` for `joss`), fit the interaction model testing whether
+that rate trends differently across popularity strata, and plot it.
+
+```{r activity-npm, eval = FALSE}
+rate_tbl_npm <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "npm")
+summary (fit_activity_model (rate_tbl_npm))
+plot_activity (rate_tbl_npm)
+```
+
+```{r activity-joss, eval = FALSE}
+rate_tbl_joss <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "joss")
+summary (fit_activity_model (rate_tbl_joss))
+plot_activity (rate_tbl_joss)
 ```

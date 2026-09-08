@@ -99,30 +99,33 @@ and download/star metrics, tagged with their `source`.
 ``` r
 repo_tbl <- build_repo_tbl (OUT_DIR)
 repo_tbl
-#> # A tibble: 46,460 × 5
+#> # A tibble: 42,754 × 5
 #>    name                                          repo_url downloads stars source
 #>    <chr>                                         <chr>        <dbl> <dbl> <chr> 
-#>  1 TanML: Automated Model Validation Toolkit fo… https:/…        NA    NA joss  
-#>  2 nsEVDx: A Python library for modeling non-st… https:/…        NA    NA joss  
-#>  3 priorsense: Efficient prior and likelihood s… https:/…        NA    NA joss  
-#>  4 Haarpy: a Python library for Weingarten calc… https:/…        NA    NA joss  
-#>  5 Bristlecone: an F# library for the long-term… https:/…        NA    NA joss  
-#>  6 AlgebraOfGraphics.jl: A Makie-powererd algeb… https:/…        NA    NA joss  
-#>  7 TEGAT: A Lightweight and Reusable Gateway fo… https:/…        NA    NA joss  
-#>  8 ConVer-G: A Suite for Versioning, Querying a… https:/…        NA    NA joss  
-#>  9 PyMC-Marketing: Bayesian Marketing Mix Model… https:/…        NA    NA joss  
+#>  1 TanML: Automated Model Validation Toolkit fo… https:/…        NA     9 joss  
+#>  2 nsEVDx: A Python library for modeling non-st… https:/…        NA    14 joss  
+#>  3 priorsense: Efficient prior and likelihood s… https:/…        NA    82 joss  
+#>  4 Haarpy: a Python library for Weingarten calc… https:/…        NA     8 joss  
+#>  5 Bristlecone: an F# library for the long-term… https:/…        NA    12 joss  
+#>  6 AlgebraOfGraphics.jl: A Makie-powererd algeb… https:/…        NA   518 joss  
+#>  7 TEGAT: A Lightweight and Reusable Gateway fo… https:/…        NA     1 joss  
+#>  8 ConVer-G: A Suite for Versioning, Querying a… https:/…        NA     5 joss  
+#>  9 PyMC-Marketing: Bayesian Marketing Mix Model… https:/…    174377  1255 joss  
 #> 10 Links and Nodes: Middleware for distributed … https:/…        NA    NA joss  
-#> # ℹ 46,450 more rows
+#> # ℹ 42,744 more rows
 ```
 
 ## GitHub issue authors
 
 Fetch issue-author data for every repo in `repo_tbl` via
-`github_issue_authors()` (which now returns `repo_url` as one of its
-columns directly). `repo_url` is the natural unique identifier here
-(rather than `name`, which is only unique within a single `source`), so
-`repo_tbl` is deduplicated on it before joining, so a repo appearing
-under multiple sources doesn’t fan out the join.
+`github_issue_authors()`, which returns `repo_url` as one of its columns
+directly, along with each repo’s own GitHub creation date
+(`repo_created_at`, one extra cheap API call per repo) - used by the
+issue-rate analysis below as the start of a repo’s exposure window.
+`repo_url` is the natural unique identifier here (rather than `name`,
+which is only unique within a single `source`), so `repo_tbl` is
+deduplicated on it before joining, so a repo appearing under multiple
+sources doesn’t fan out the join.
 
 Calls are made sequentially in small batches. Progress is checkpointed
 to disk after every batch, and repos already done are skipped on
@@ -133,4 +136,24 @@ otherwise - just picks back up rather than starting over.
 issue_authors_tbl <- fetch_issue_authors (repo_tbl$repo_url, OUT_DIR)
 issue_authors_tbl <- join_repo_metadata (issue_authors_tbl, repo_tbl)
 issue_authors_tbl
+```
+
+## Issue-rate analysis
+
+For each fully-fetched source, compute the monthly issue-opening rate
+(non-contributor issues per repo-month) stratified by popularity
+(`downloads` for `npm`, `stars` for `joss`), fit the interaction model
+testing whether that rate trends differently across popularity strata,
+and plot it.
+
+``` r
+rate_tbl_npm <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "npm")
+summary (fit_activity_model (rate_tbl_npm))
+plot_activity (rate_tbl_npm)
+```
+
+``` r
+rate_tbl_joss <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "joss")
+summary (fit_activity_model (rate_tbl_joss))
+plot_activity (rate_tbl_joss)
 ```
