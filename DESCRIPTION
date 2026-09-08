@@ -1,6 +1,6 @@
 Package: longtail
 Title: AI and The Long-Tailed Distribution of Software Repositories
-Version: 0.0.1.022
+Version: 0.0.1.023
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
@@ -14,6 +14,7 @@ Imports:
     dplyr,
     fs,
     gh,
+    ggplot2,
     httr2,
     jsonlite,
     purrr,

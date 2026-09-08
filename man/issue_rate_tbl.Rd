@@ -2,13 +2,9 @@
 % Please edit documentation in R/analyse-activity.R
 \name{issue_rate_tbl}
 \alias{issue_rate_tbl}
-\title{Build the (popularity stratum x month) issue-rate table for one source:
+\title{Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date (\code{repo_created_tbl}, from
-\code{fetch_repo_created_at()}). Only repos with a known creation date are
-included, so a source whose creation-date fetch hasn't run yet (see
-analysis-plan.md's deferred-sources decision) simply yields an empty
-table rather than an error.}
+exposure begins at its GitHub creation date.}
 \usage{
 issue_rate_tbl(
   issue_authors_tbl,
@@ -27,8 +23,8 @@ issue_rate_tbl(
 
 \item{repo_created_tbl}{As returned by \code{fetch_repo_created_at()}.}
 
-\item{source_name}{One of \code{repo_tbl$source} (\code{"pypi"}, \code{"npm"},
-\code{"joss"}, \code{"ropensci"}).}
+\item{source_name}{One of \code{repo_tbl$source} (\code{"pypi"}, \code{"npm"}, \code{"joss"},
+\code{"ropensci"}).}
 
 \item{n_strata}{Number of popularity strata.}
 
@@ -41,11 +37,7 @@ A tibble with one row per (popularity stratum, month):
 \code{n_repo_months}, \code{rate}.
 }
 \description{
-Build the (popularity stratum x month) issue-rate table for one source:
+Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date (\code{repo_created_tbl}, from
-\code{fetch_repo_created_at()}). Only repos with a known creation date are
-included, so a source whose creation-date fetch hasn't run yet (see
-analysis-plan.md's deferred-sources decision) simply yields an empty
-table rather than an error.
+exposure begins at its GitHub creation date.
 }
