@@ -168,6 +168,32 @@ fit_activity_model <- function (rate_tbl) {
     )
 }
 
+#' Range of fitted values across each stratum's loess smooth, fit with the
+#' same formula/defaults as `plot_activity()`'s `geom_smooth()` (span 0.75,
+#' degree 2), so the y-axis can be sized relative to the smoothed curves
+#' rather than the noisier raw points. Strata with too few non-NA points to
+#' fit a loess (`geom_smooth()` would silently skip these too) are ignored.
+#' @return Length-2 numeric vector, `c(min, max)` of fitted values pooled
+#' across all strata.
+#' @noRd
+loess_range <- function (rate_tbl) {
+    popularity_stratum <- rate <- NULL # rm no visible binding notes
+
+    rate_tbl <- dplyr::filter (rate_tbl, !is.na (rate))
+    fitted <- lapply (split (rate_tbl, rate_tbl$popularity_stratum), \ (df) {
+        if (nrow (df) < 5) {
+            return (NULL)
+        }
+        fit <- tryCatch (
+            stats::loess (rate ~ as.numeric (month), data = df),
+            error = function (e) NULL
+        )
+        if (is.null (fit)) NULL else stats::predict (fit)
+    })
+    fitted <- unlist (fitted)
+    c (min (fitted, na.rm = TRUE), max (fitted, na.rm = TRUE))
+}
+
 #' Plot monthly issue rate (non-contributor issues per repo-month) over
 #' time, one line per popularity stratum.
 #'
@@ -177,12 +203,17 @@ fit_activity_model <- function (rate_tbl) {
 plot_activity <- function (rate_tbl) {
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
 
+    rng <- loess_range (rate_tbl)
+    lower <- if (rng [1] < 0) 0 else NA
+    upper <- 1.25 * rng [2]
+
     ggplot2::ggplot (
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
         ggplot2::geom_line (alpha = 0.3) +
         ggplot2::geom_smooth (se = FALSE, method = "loess", formula = y ~ x) +
+        ggplot2::coord_cartesian (ylim = c (lower, upper)) +
         ggplot2::labs (
             x = NULL,
             y = "Issues opened per repo-month (non-contributor authors)",
