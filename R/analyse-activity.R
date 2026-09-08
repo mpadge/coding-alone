@@ -168,19 +168,24 @@ fit_activity_model <- function (rate_tbl) {
     )
 }
 
-#' Range of fitted values across each stratum's loess smooth, fit with the
-#' same formula/defaults as `plot_activity()`'s `geom_smooth()` (span 0.75,
-#' degree 2), so the y-axis can be sized relative to the smoothed curves
-#' rather than the noisier raw points. Strata with too few non-NA points to
-#' fit a loess (`geom_smooth()` would silently skip these too) are ignored.
+#' Range of fitted values across each group's loess smooth, fit with the
+#' same formula/defaults as `geom_smooth()` (span 0.75, degree 2), so a
+#' plot's y-axis can be sized relative to the smoothed curves rather than
+#' the noisier raw points. Groups with too few non-NA points to fit a
+#' loess (`geom_smooth()` would silently skip these too) are ignored.
+#'
+#' @param rate_tbl As returned by `issue_rate_tbl()` (or a row-bound
+#' combination of several, as in `plot_activity_by_source()`).
+#' @param group_col Column to fit one loess per group on - the line/colour
+#' grouping of whichever plot this is sizing.
 #' @return Length-2 numeric vector, `c(min, max)` of fitted values pooled
-#' across all strata.
+#' across all groups.
 #' @noRd
-loess_range <- function (rate_tbl) {
-    popularity_stratum <- rate <- NULL # rm no visible binding notes
+loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
+    rate <- NULL # rm no visible binding note
 
     rate_tbl <- dplyr::filter (rate_tbl, !is.na (rate))
-    fitted <- lapply (split (rate_tbl, rate_tbl$popularity_stratum), \ (df) {
+    fitted <- lapply (split (rate_tbl, rate_tbl [[group_col]]), \ (df) {
         if (nrow (df) < 5) {
             return (NULL)
         }
@@ -194,30 +199,125 @@ loess_range <- function (rate_tbl) {
     c (min (fitted, na.rm = TRUE), max (fitted, na.rm = TRUE))
 }
 
+#' Common y-axis + theme layers shared by `plot_activity()` and
+#' `plot_activity_by_source()`: zoomed (not filtered - `coord_cartesian()`,
+#' not `ylim()`/`scale_y_continuous()`, so the loess fits themselves aren't
+#' distorted by dropping out-of-range points) so it's sized relative to the
+#' smoothed curves rather than the raw points: capped at `1.25 *` the
+#' fitted loess curves' own max, and floored at zero only if some fitted
+#' loess value actually dips below it (a loess smooth over near-zero rates
+#' can do this even though the raw rate never goes negative) - otherwise
+#' left at ggplot2's own default lower limit.
+#' @noRd
+activity_plot_layers <- function (rate_tbl, group_col) {
+    rng <- loess_range (rate_tbl, group_col)
+    lower <- if (rng [1] < 0) 0 else NA
+    upper <- 1.25 * rng [2]
+
+    list (
+        ggplot2::geom_line (alpha = 0.3),
+        ggplot2::geom_smooth (se = FALSE, method = "loess", formula = y ~ x),
+        ggplot2::coord_cartesian (ylim = c (lower, upper)),
+        ggplot2::labs (x = NULL, y = "Issues opened per repo-month (non-contributor authors)"),
+        ggplot2::theme_minimal ()
+    )
+}
+
 #' Plot monthly issue rate (non-contributor issues per repo-month) over
 #' time, one line per popularity stratum.
 #'
 #' @param rate_tbl As returned by `issue_rate_tbl()`.
+#' @param start_year Optional year (e.g. `2018`) to start the plotted
+#' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
+#' crops the display - `rate_tbl` isn't refetched, so this can't extend
+#' the window beyond what `issue_rate_tbl()` was already called with.
 #' @return A ggplot object.
 #' @export
-plot_activity <- function (rate_tbl) {
+plot_activity <- function (rate_tbl, start_year = NULL) {
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
 
-    rng <- loess_range (rate_tbl)
-    lower <- if (rng [1] < 0) 0 else NA
-    upper <- 1.25 * rng [2]
+    if (!is.null (start_year)) {
+        rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
+    }
 
     ggplot2::ggplot (
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
-        ggplot2::geom_line (alpha = 0.3) +
-        ggplot2::geom_smooth (se = FALSE, method = "loess", formula = y ~ x) +
-        ggplot2::coord_cartesian (ylim = c (lower, upper)) +
+        activity_plot_layers (rate_tbl, "popularity_stratum") +
+        ggplot2::labs (colour = "Popularity\nstratum")
+}
+
+#' Compare monthly issue rate across all four sources (`pypi`, `npm`,
+#' `joss`, `ropensci`), for one popularity stratum. Note that "stratum" is
+#' relative to each source's own distribution (see `issue_rate_tbl()`/
+#' `popularity_strata()`) - e.g. pypi's Q4 download count and joss's Q4
+#' star count aren't the same absolute popularity, just each source's own
+#' top quarter. A source with no data yet for the requested window (e.g.
+#' not fully fetched - see `analysis-plan.md`) just contributes no line,
+#' rather than erroring.
+#'
+#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
+#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @param stratum Integer popularity stratum to compare (`1` = lowest
+#' popularity, `n_strata` = highest), matching one of `issue_rate_tbl()`'s
+#' `popularity_stratum` levels (`"Q<stratum>"`).
+#' @param n_strata,window_start,window_end Passed to each source's
+#' `issue_rate_tbl()` call; must be the same `n_strata` `stratum` is a
+#' level of.
+#' @param start_year Optional year (e.g. `2018`) to start the plotted
+#' window from; `NULL` (default) plots the full `window_start`-`window_end`
+#' window.
+#' @return A ggplot object.
+#' @export
+plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
+                                     n_strata = 4L,
+                                     window_start = as.Date ("2015-01-01"),
+                                     window_end = NULL,
+                                     start_year = NULL) {
+    month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
+
+    if (is.null (window_end)) {
+        window_end <- floor_month (Sys.Date ())
+    }
+    stratum_label <- paste0 ("Q", stratum)
+    sources <- names (POPULARITY_METRIC)
+
+    rate_tbl <- purrr::map_dfr (sources, \ (src) {
+        issue_rate_tbl (
+            issue_authors_tbl, repo_tbl, src,
+            n_strata = n_strata, window_start = window_start, window_end = window_end
+        ) |>
+            dplyr::filter (popularity_stratum == stratum_label) |>
+            dplyr::mutate (source_name = src)
+    })
+    rate_tbl$source_name <- factor (rate_tbl$source_name, levels = sources)
+
+    # Sources sit on very different absolute rate scales (e.g. pypi's raw
+    # issue traffic dwarfs ropensci's), which would otherwise squash the
+    # smaller sources' trends to flat lines near zero. Rescaling each
+    # source by its own mean - before the start_year crop below, so the
+    # scale factor doesn't shift depending on what window is displayed -
+    # puts every line at a comparable "around 1 = that source's own
+    # average" scale, so trends are comparable even though absolute rates
+    # aren't.
+    rate_tbl <- rate_tbl |>
+        dplyr::group_by (source_name) |>
+        dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
+        dplyr::ungroup ()
+
+    if (!is.null (start_year)) {
+        rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
+    }
+
+    ggplot2::ggplot (
+        rate_tbl,
+        ggplot2::aes (month, rate, colour = source_name)
+    ) +
+        activity_plot_layers (rate_tbl, "source_name") +
         ggplot2::labs (
-            x = NULL,
-            y = "Issues opened per repo-month (non-contributor authors)",
-            colour = "Popularity\nstratum"
-        ) +
-        ggplot2::theme_minimal ()
+            y = "Issues opened per repo-month, relative to each source's own mean",
+            colour = "Source",
+            title = stringr::str_glue ("Popularity stratum {stratum} of {n_strata}")
+        )
 }

@@ -5,10 +5,15 @@
 \title{Plot monthly issue rate (non-contributor issues per repo-month) over
 time, one line per popularity stratum.}
 \usage{
-plot_activity(rate_tbl)
+plot_activity(rate_tbl, start_year = NULL)
 }
 \arguments{
 \item{rate_tbl}{As returned by \code{issue_rate_tbl()}.}
+
+\item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
+window from; \code{NULL} (default) plots \code{rate_tbl}'s full window. Only
+crops the display - \code{rate_tbl} isn't refetched, so this can't extend
+the window beyond what \code{issue_rate_tbl()} was already called with.}
 }
 \value{
 A ggplot object.
