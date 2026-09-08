@@ -26,8 +26,8 @@ fetch_issue_authors(repo_urls, out_dir, batch_size = 50L)
 }
 \value{
 A tibble with columns \code{repo_url}, \code{issue_number}, \code{author},
-\code{created_at}, \code{contribution}, \code{repo_created_at} - the full accumulated
-result, including rows from any previous run(s).
+\code{created_at}, \code{n_comments}, \code{contribution}, \code{repo_created_at} - the full
+accumulated result, including rows from any previous run(s).
 }
 \description{
 Fetch issue-author data (\code{github_issue_authors()}, which now also

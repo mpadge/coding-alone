@@ -8,8 +8,9 @@ handle's fractional share (0-1) of all commits ever landed on the repo's
 default branch, or 0 if the author isn't a contributor at all (see the
 note at the top of this file for why this is a coarser but far cheaper
 substitute for "was this author already a contributor at the time they
-opened the issue"). Also carries the repo's own GitHub creation
-timestamp, used elsewhere as the start of a repo's exposure window.}
+opened the issue"). Also carries each issue's comment count, and the
+repo's own GitHub creation timestamp, used elsewhere as the start of a
+repo's exposure window.}
 \usage{
 github_issue_authors(repo_url = NULL)
 }
@@ -18,8 +19,9 @@ github_issue_authors(repo_url = NULL)
 }
 \value{
 A tibble with one row per issue: \code{repo_url}, \code{issue_number},
-\code{author}, \code{created_at}, \code{contribution}, and \code{repo_created_at} (the repo's
-own GitHub creation timestamp, repeated on every row).
+\code{author}, \code{created_at}, \code{n_comments}, \code{contribution}, and
+\code{repo_created_at} (the repo's own GitHub creation timestamp, repeated on
+every row).
 }
 \description{
 Extract every issue (pull requests excluded) opened against a single
@@ -28,6 +30,7 @@ handle's fractional share (0-1) of all commits ever landed on the repo's
 default branch, or 0 if the author isn't a contributor at all (see the
 note at the top of this file for why this is a coarser but far cheaper
 substitute for "was this author already a contributor at the time they
-opened the issue"). Also carries the repo's own GitHub creation
-timestamp, used elsewhere as the start of a repo's exposure window.
+opened the issue"). Also carries each issue's comment count, and the
+repo's own GitHub creation timestamp, used elsewhere as the start of a
+repo's exposure window.
 }

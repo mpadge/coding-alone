@@ -44,12 +44,12 @@ github_repo_contributors <- function (owner, repo) {
     tibble::tibble (login = logins, contribution = contributions / sum (contributions))
 }
 
-#' GraphQL query for one page of a repo's issues (creator login + creation
-#' timestamp only), plus the repo's own creation timestamp. Values are
-#' interpolated directly into the query string (as elsewhere in this
-#' package, e.g. `build_stars_query()` in extract-data-joss.R) rather than
-#' passed as separate GraphQL variables, since `gh::gh_gql()` has no support
-#' for the latter.
+#' GraphQL query for one page of a repo's issues (creator login, creation
+#' timestamp, and comment count), plus the repo's own creation timestamp.
+#' Values are interpolated directly into the query string (as elsewhere in
+#' this package, e.g. `build_stars_query()` in extract-data-joss.R) rather
+#' than passed as separate GraphQL variables, since `gh::gh_gql()` has no
+#' support for the latter.
 #' @noRd
 build_issues_query <- function (owner, repo, cursor = NULL) {
     after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
@@ -59,7 +59,7 @@ build_issues_query <- function (owner, repo, cursor = NULL) {
                 createdAt
                 issues(first: 100{after}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
                     pageInfo {{ hasNextPage endCursor }}
-                    nodes {{ number createdAt author {{ login }} }}
+                    nodes {{ number createdAt author {{ login }} comments {{ totalCount }} }}
                 }}
             }}
         }}'
@@ -74,7 +74,8 @@ build_issues_query <- function (owner, repo, cursor = NULL) {
 #' separate REST `/repos/{owner}/{repo}` call just for that one field).
 #' Pages via GraphQL cursors until `hasNextPage` is `FALSE`.
 #' @return A list with `repo_created_at` (an ISO-8601 timestamp string) and
-#' `issues` (a tibble with `issue_number`, `author`, `created_at`).
+#' `issues` (a tibble with `issue_number`, `author`, `created_at`,
+#' `n_comments`).
 #' @noRd
 github_repo_issues_graphql <- function (owner, repo) {
     cursor <- NULL
@@ -96,7 +97,8 @@ github_repo_issues_graphql <- function (owner, repo) {
                     issue_nodes,
                     \ (n) purrr::pluck (n, "author", "login", .default = NA_character_)
                 ),
-                created_at = purrr::map_chr (issue_nodes, "createdAt")
+                created_at = purrr::map_chr (issue_nodes, "createdAt"),
+                n_comments = purrr::map_int (issue_nodes, \ (n) n$comments$totalCount)
             )
         }
 
@@ -107,7 +109,10 @@ github_repo_issues_graphql <- function (owner, repo) {
     }
 
     issues <- if (length (pages) == 0) {
-        tibble::tibble (issue_number = integer (), author = character (), created_at = character ())
+        tibble::tibble (
+            issue_number = integer (), author = character (),
+            created_at = character (), n_comments = integer ()
+        )
     } else {
         dplyr::bind_rows (pages)
     }
@@ -121,14 +126,16 @@ github_repo_issues_graphql <- function (owner, repo) {
 #' default branch, or 0 if the author isn't a contributor at all (see the
 #' note at the top of this file for why this is a coarser but far cheaper
 #' substitute for "was this author already a contributor at the time they
-#' opened the issue"). Also carries the repo's own GitHub creation
-#' timestamp, used elsewhere as the start of a repo's exposure window.
+#' opened the issue"). Also carries each issue's comment count, and the
+#' repo's own GitHub creation timestamp, used elsewhere as the start of a
+#' repo's exposure window.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
 #'
 #' @return A tibble with one row per issue: `repo_url`, `issue_number`,
-#' `author`, `created_at`, `contribution`, and `repo_created_at` (the repo's
-#' own GitHub creation timestamp, repeated on every row).
+#' `author`, `created_at`, `n_comments`, `contribution`, and
+#' `repo_created_at` (the repo's own GitHub creation timestamp, repeated on
+#' every row).
 #' @export
 github_issue_authors <- function (repo_url = NULL) {
 
@@ -145,6 +152,7 @@ github_issue_authors <- function (repo_url = NULL) {
             issue_number = integer (),
             author = character (),
             created_at = character (),
+            n_comments = integer (),
             contribution = double (),
             repo_created_at = character ()
         ))

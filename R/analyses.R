@@ -54,6 +54,7 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
     issue_number = readr::col_integer (),
     author = readr::col_character (),
     created_at = readr::col_character (),
+    n_comments = readr::col_integer (),
     contribution = readr::col_double (),
     repo_created_at = readr::col_character ()
 )
@@ -75,8 +76,8 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
 #' @param out_dir Directory to read/write the CSV + done-list checkpoint files.
 #' @param batch_size Repos fetched (concurrently) per checkpoint.
 #' @return A tibble with columns `repo_url`, `issue_number`, `author`,
-#' `created_at`, `contribution`, `repo_created_at` - the full accumulated
-#' result, including rows from any previous run(s).
+#' `created_at`, `n_comments`, `contribution`, `repo_created_at` - the full
+#' accumulated result, including rows from any previous run(s).
 #' @export
 fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
@@ -93,7 +94,8 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
     } else {
         tibble::tibble (
             repo_url = character (), issue_number = integer (),
-            author = character (), created_at = character (), contribution = double (),
+            author = character (), created_at = character (), n_comments = integer (),
+            contribution = double (),
             repo_created_at = character ()
         )
     }
