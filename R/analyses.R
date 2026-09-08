@@ -15,11 +15,11 @@
 #' `source`.
 #' @export
 build_repo_tbl <- function (out_dir) {
-    source_patterns <- c (pypi = "pypi", npm = "npm", joss = "joss", ropensci = "ropensci")
+    source_patterns <- c (pypi = "pypi.csv", npm = "npm.csv", joss = "joss.csv", ropensci = "ropensci.csv")
 
     source_for_file <- function (path) {
         fname <- fs::path_file (path)
-        hit <- vapply (source_patterns, grepl, x = fname, FUN.VALUE = logical (1))
+        hit <- fname == source_patterns
         names (source_patterns) [hit]
     }
 
