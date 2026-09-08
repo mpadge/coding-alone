@@ -24,7 +24,7 @@ build_repo_tbl <- function (out_dir) {
     }
 
     read_one <- function (path) {
-        tbl <- readr::read_csv (path, show_col_types = FALSE)
+        tbl <- readr::read_csv (path, show_col_types = FALSE, progress = FALSE)
         name_col <- intersect (c ("name", "package", "title"), names (tbl)) [1]
 
         name <- tbl [[name_col]]
