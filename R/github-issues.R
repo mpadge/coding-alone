@@ -1,112 +1,158 @@
 # Functions to extract every issue opened against a single GitHub repo,
-# together with a cheap "is this person a primary contributor" flag for
-# each issue's author.
+# together with a cheap continuous "how core a contributor is this person"
+# score for each issue's author.
 #
-# A fully correct flag would need to know, for each issue, whether its
+# A fully correct score would need to know, for each issue, whether its
 # author had already contributed code *before* opening it. That is not viable
 # at the scale this is meant to run at. Instead this uses GitHub's
 # `/contributors` endpoint: a single cheap paginated call listing everyone who
 # has ever landed a commit on the default branch, with no timing information at
 # all. The tradeoff: someone who only contributed *after* their first issue is
-# misclassified as a contributor. Accepted here as the cheaper heuristic, since
-# it costs one extra endpoint per repo rather than a full commit-history walk.
+# credited with a nonzero score anyway. Accepted here as the cheaper
+# heuristic, since it costs one extra endpoint per repo rather than a full
+# commit-history walk.
 #
-# `is_contributor` is restricted to "primary" contributors: the smallest
-# prefix of the contributions-sorted list whose cumulative commit count
-# covers `primary_coverage` (default 80%) of all commits ever landed - a
-# Pareto-style core-team cutoff, still just the one cheap endpoint per repo.
+# `contribution` is that person's share of all commits ever landed, expressed
+# as a fraction (0-1) of the repo's total commit count - a continuous
+# stand-in for the coarser "primary contributor" cutoff this used to compute.
+#
+# Issue data itself is fetched via GraphQL rather than the REST `/issues`
+# endpoint: REST returns the entire issue object (labels, body, reactions,
+# etc.) just to get the author login and creation timestamp, and mixes PRs in
+# with issues that then have to be paged through and filtered back out.
+# GraphQL's `issues` connection is issues-only and lets the query ask for
+# exactly the two fields needed, cutting both payload size and page count.
 
-#' Primary contributor logins for a GitHub repo: the smallest prefix of the
-#' contributions-sorted contributor list whose cumulative commit count
-#' covers `coverage` of all commits ever landed on the default branch (see
-#' note above for why raw "ever committed once" is too noisy a signal).
-#' Excludes GitHub's anonymous-contributor placeholder entries, which carry
-#' no `login`, just a name/email pulled from the commit itself.
+#' Every contributor to a GitHub repo's default branch, with each one's
+#' share of all commits ever landed, expressed as a fraction (0-1) of the
+#' total. Excludes GitHub's anonymous-contributor placeholder entries, which
+#' carry no `login`, just a name/email pulled from the commit itself.
+#' @return A tibble with columns `login` and `contribution` (fraction of
+#' all commits ever landed), or a zero-row tibble if the repo has no
+#' (non-anonymous) contributors.
 #' @noRd
-github_repo_contributors <- function (owner, repo, coverage = 0.95) {
+github_repo_contributors <- function (owner, repo) {
     items <- github_api_get_all (stringr::str_glue ("/repos/{owner}/{repo}/contributors"))
     items <- purrr::keep (items, \ (x) !is.null (x$login))
     if (length (items) == 0) {
-        return (character ())
+        return (tibble::tibble (login = character (), contribution = double ()))
     }
 
     logins <- purrr::map_chr (items, "login")
     contributions <- purrr::map_dbl (items, "contributions")
-    ord <- order (contributions, decreasing = TRUE)
-    logins <- logins [ord]
-    contributions <- contributions [ord]
 
-    n_primary <- which (cumsum (contributions) / sum (contributions) >= coverage) [1]
-    logins [seq_len (n_primary)]
+    tibble::tibble (login = logins, contribution = contributions / sum (contributions))
 }
 
-#' GitHub-recorded creation timestamp for a single repo, used as a proxy for
-#' when it became "at risk" of receiving issues. Fetched via GraphQL rather
-#' than the REST `/repos/{owner}/{repo}` endpoint (which returns the whole
-#' repo object just to get this one field) - same aliased-field GraphQL
-#' pattern as `build_stars_query()` in extract-data-joss.R, minus the
-#' aliasing since this is a single repo per call rather than a batch.
-#' @return An ISO-8601 timestamp string.
+#' GraphQL query for one page of a repo's issues (creator login + creation
+#' timestamp only), plus the repo's own creation timestamp. Values are
+#' interpolated directly into the query string (as elsewhere in this
+#' package, e.g. `build_stars_query()` in extract-data-joss.R) rather than
+#' passed as separate GraphQL variables, since `gh::gh_gql()` has no support
+#' for the latter.
 #' @noRd
-github_repo_created_at <- function (owner, repo) {
-    query <- stringr::str_glue ('query {{ repository(owner: "{owner}", name: "{repo}") {{ createdAt }} }}')
-    body <- gh::gh_gql (query)
-    body$data$repository$createdAt
+build_issues_query <- function (owner, repo, cursor = NULL) {
+    after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
+    stringr::str_glue (
+        'query {{
+            repository(owner: "{owner}", name: "{repo}") {{
+                createdAt
+                issues(first: 100{after}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
+                    pageInfo {{ hasNextPage endCursor }}
+                    nodes {{ number createdAt author {{ login }} }}
+                }}
+            }}
+        }}'
+    )
 }
 
-#' Extract every issue (pull requests excluded) opened against a single GitHub
-#' repo, with the opener's handle and a cheap `is_contributor` flag: whether
-#' that handle is among the repo's primary contributors (see the note at the
-#' top of this file for how "primary" is defined from contribution counts).
-#' Also fetches the repo's own GitHub creation timestamp (one extra cheap
-#' call), used elsewhere as the start of a repo's exposure window - fetched
-#' here rather than separately so every issue-authors row already carries it.
+#' Every issue (pull requests excluded by construction - GraphQL keeps
+#' issues and pull requests in separate connections, unlike the REST
+#' `/issues` endpoint which mixes them) opened against a single GitHub repo,
+#' with the opener's login and creation timestamp, plus the repo's own
+#' GitHub creation timestamp (fetched in the same query, cheaper than a
+#' separate REST `/repos/{owner}/{repo}` call just for that one field).
+#' Pages via GraphQL cursors until `hasNextPage` is `FALSE`.
+#' @return A list with `repo_created_at` (an ISO-8601 timestamp string) and
+#' `issues` (a tibble with `issue_number`, `author`, `created_at`).
+#' @noRd
+github_repo_issues_graphql <- function (owner, repo) {
+    cursor <- NULL
+    repo_created_at <- NULL
+    pages <- list ()
+
+    repeat {
+        body <- gh::gh_gql (build_issues_query (owner, repo, cursor))
+        node <- body$data$repository
+        if (is.null (repo_created_at)) {
+            repo_created_at <- node$createdAt
+        }
+
+        issue_nodes <- node$issues$nodes
+        if (length (issue_nodes) > 0) {
+            pages [[length (pages) + 1]] <- tibble::tibble (
+                issue_number = purrr::map_int (issue_nodes, "number"),
+                author = purrr::map_chr (
+                    issue_nodes,
+                    \ (n) purrr::pluck (n, "author", "login", .default = NA_character_)
+                ),
+                created_at = purrr::map_chr (issue_nodes, "createdAt")
+            )
+        }
+
+        if (!isTRUE (node$issues$pageInfo$hasNextPage)) {
+            break
+        }
+        cursor <- node$issues$pageInfo$endCursor
+    }
+
+    issues <- if (length (pages) == 0) {
+        tibble::tibble (issue_number = integer (), author = character (), created_at = character ())
+    } else {
+        dplyr::bind_rows (pages)
+    }
+
+    list (repo_created_at = repo_created_at, issues = issues)
+}
+
+#' Extract every issue (pull requests excluded) opened against a single
+#' GitHub repo, with the opener's handle and a `contribution` score: that
+#' handle's fractional share (0-1) of all commits ever landed on the repo's
+#' default branch, or 0 if the author isn't a contributor at all (see the
+#' note at the top of this file for why this is a coarser but far cheaper
+#' substitute for "was this author already a contributor at the time they
+#' opened the issue"). Also carries the repo's own GitHub creation
+#' timestamp, used elsewhere as the start of a repo's exposure window.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
-#' @param primary_coverage Cumulative share (0-1) of all commits that the
-#' flagged "primary" contributors must account for, taken in descending
-#' order of commit count. Default 0.8 (the top contributors covering 80%
-#' of all commits).
 #'
-#' @return A tibble with one row per issue: `issue_number`, `author`,
-#' `created_at`, `is_contributor`, and `repo_created_at` (the repo's own
-#' GitHub creation timestamp, repeated on every row).
+#' @return A tibble with one row per issue: `repo_url`, `issue_number`,
+#' `author`, `created_at`, `contribution`, and `repo_created_at` (the repo's
+#' own GitHub creation timestamp, repeated on every row).
 #' @export
-github_issue_authors <- function (repo_url = NULL, primary_coverage = 0.95) {
+github_issue_authors <- function (repo_url = NULL) {
 
-    issue_number <- NULL # rm no visible binding note
+    issue_number <- contribution <- NULL # rm no visible binding notes
 
     repo <- parse_github_repo_url (repo_url)
 
-    contributors <- github_repo_contributors (repo$owner, repo$repo, coverage = primary_coverage)
-    repo_created_at <- github_repo_created_at (repo$owner, repo$repo)
+    contributors <- github_repo_contributors (repo$owner, repo$repo)
+    result <- github_repo_issues_graphql (repo$owner, repo$repo)
 
-    issues <- github_api_get_all (
-        stringr::str_glue ("/repos/{repo$owner}/{repo$repo}/issues"),
-        query = list (state = "all")
-    )
-    issues <- purrr::keep (issues, \ (i) is.null (i$pull_request))
-
-    if (length (issues) == 0) {
+    if (nrow (result$issues) == 0) {
         return (tibble::tibble (
             repo_url = character (),
             issue_number = integer (),
             author = character (),
             created_at = character (),
-            is_contributor = logical (),
+            contribution = double (),
             repo_created_at = character ()
         ))
     }
 
-    purrr::map_dfr (issues, \ (i) {
-        author <- i$user$login
-        tibble::tibble (
-            issue_number = i$number,
-            author = author,
-            created_at = i$created_at,
-            is_contributor = author %in% contributors
-        )
-    }) |>
+    result$issues |>
+        dplyr::left_join (contributors, by = c (author = "login")) |>
+        dplyr::mutate (contribution = dplyr::coalesce (contribution, 0)) |>
         dplyr::mutate (repo_url = repo_url, .before = issue_number) |>
-        dplyr::mutate (repo_created_at = repo_created_at)
+        dplyr::mutate (repo_created_at = result$repo_created_at)
 }

@@ -2,35 +2,32 @@
 % Please edit documentation in R/github-issues.R
 \name{github_issue_authors}
 \alias{github_issue_authors}
-\title{Extract every issue (pull requests excluded) opened against a single GitHub
-repo, with the opener's handle and a cheap \code{is_contributor} flag: whether
-that handle is among the repo's primary contributors (see the note at the
-top of this file for how "primary" is defined from contribution counts).
-Also fetches the repo's own GitHub creation timestamp (one extra cheap
-call), used elsewhere as the start of a repo's exposure window - fetched
-here rather than separately so every issue-authors row already carries it.}
+\title{Extract every issue (pull requests excluded) opened against a single
+GitHub repo, with the opener's handle and a \code{contribution} score: that
+handle's fractional share (0-1) of all commits ever landed on the repo's
+default branch, or 0 if the author isn't a contributor at all (see the
+note at the top of this file for why this is a coarser but far cheaper
+substitute for "was this author already a contributor at the time they
+opened the issue"). Also carries the repo's own GitHub creation
+timestamp, used elsewhere as the start of a repo's exposure window.}
 \usage{
-github_issue_authors(repo_url = NULL, primary_coverage = 0.95)
+github_issue_authors(repo_url = NULL)
 }
 \arguments{
 \item{repo_url}{A GitHub repo URL, e.g. \code{"https://github.com/owner/repo"}.}
-
-\item{primary_coverage}{Cumulative share (0-1) of all commits that the
-flagged "primary" contributors must account for, taken in descending
-order of commit count. Default 0.8 (the top contributors covering 80\%
-of all commits).}
 }
 \value{
-A tibble with one row per issue: \code{issue_number}, \code{author},
-\code{created_at}, \code{is_contributor}, and \code{repo_created_at} (the repo's own
-GitHub creation timestamp, repeated on every row).
+A tibble with one row per issue: \code{repo_url}, \code{issue_number},
+\code{author}, \code{created_at}, \code{contribution}, and \code{repo_created_at} (the repo's
+own GitHub creation timestamp, repeated on every row).
 }
 \description{
-Extract every issue (pull requests excluded) opened against a single GitHub
-repo, with the opener's handle and a cheap \code{is_contributor} flag: whether
-that handle is among the repo's primary contributors (see the note at the
-top of this file for how "primary" is defined from contribution counts).
-Also fetches the repo's own GitHub creation timestamp (one extra cheap
-call), used elsewhere as the start of a repo's exposure window - fetched
-here rather than separately so every issue-authors row already carries it.
+Extract every issue (pull requests excluded) opened against a single
+GitHub repo, with the opener's handle and a \code{contribution} score: that
+handle's fractional share (0-1) of all commits ever landed on the repo's
+default branch, or 0 if the author isn't a contributor at all (see the
+note at the top of this file for why this is a coarser but far cheaper
+substitute for "was this author already a contributor at the time they
+opened the issue"). Also carries the repo's own GitHub creation
+timestamp, used elsewhere as the start of a repo's exposure window.
 }

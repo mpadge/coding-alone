@@ -4,7 +4,10 @@
 \alias{issue_rate_tbl}
 \title{Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date. \code{repo_created_at} lives on
+exposure begins at its GitHub creation date. "Non-contributor" here means
+\code{contribution <= contribution_threshold} (see \code{github_issue_authors()}
+for how \code{contribution} - each author's fractional share of all commits
+ever landed on the repo - is computed). \code{repo_created_at} lives on
 \code{issue_authors_tbl} (fetched alongside each repo's issues by
 \code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
 repo only contributes exposure once it's been fetched at least once -
@@ -17,6 +20,7 @@ issue_rate_tbl(
   repo_tbl,
   source_name,
   n_strata = 4L,
+  contribution_threshold = 0,
   window_start = as.Date("2015-01-01"),
   window_end = NULL
 )
@@ -31,6 +35,12 @@ issue_rate_tbl(
 
 \item{n_strata}{Number of popularity strata.}
 
+\item{contribution_threshold}{Issues whose author's \code{contribution} is at
+or below this value count as "non-contributor" issues. Default 0 (only
+authors with no recorded commits at all), matching the previous exact
+\code{is_contributor} flag; raise it to also exclude issues from authors with
+a small-but-nonzero commit share.}
+
 \item{window_start, window_end}{Date bounds on the analysis window;
 \code{window_end} defaults to the start of the current month.}
 }
@@ -42,7 +52,10 @@ A tibble with one row per (popularity stratum, month):
 \description{
 Build the (popularity stratum-x-month) issue-rate table for one source:
 non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date. \code{repo_created_at} lives on
+exposure begins at its GitHub creation date. "Non-contributor" here means
+\code{contribution <= contribution_threshold} (see \code{github_issue_authors()}
+for how \code{contribution} - each author's fractional share of all commits
+ever landed on the repo - is computed). \code{repo_created_at} lives on
 \code{issue_authors_tbl} (fetched alongside each repo's issues by
 \code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
 repo only contributes exposure once it's been fetched at least once -

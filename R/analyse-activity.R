@@ -38,7 +38,10 @@ popularity_strata <- function (x, n_strata = 4L) {
 
 #' Build the (popularity stratum-x-month) issue-rate table for one source:
 #' non-contributor issues opened per repo-month of exposure, where a repo's
-#' exposure begins at its GitHub creation date. `repo_created_at` lives on
+#' exposure begins at its GitHub creation date. "Non-contributor" here means
+#' `contribution <= contribution_threshold` (see `github_issue_authors()`
+#' for how `contribution` - each author's fractional share of all commits
+#' ever landed on the repo - is computed). `repo_created_at` lives on
 #' `issue_authors_tbl` (fetched alongside each repo's issues by
 #' `github_issue_authors()`/`fetch_issue_authors()`), not `repo_tbl`, so a
 #' repo only contributes exposure once it's been fetched at least once -
@@ -51,6 +54,11 @@ popularity_strata <- function (x, n_strata = 4L) {
 #' @param source_name One of `repo_tbl$source` (`"pypi"`, `"npm"`, `"joss"`,
 #' `"ropensci"`).
 #' @param n_strata Number of popularity strata.
+#' @param contribution_threshold Issues whose author's `contribution` is at
+#' or below this value count as "non-contributor" issues. Default 0 (only
+#' authors with no recorded commits at all), matching the previous exact
+#' `is_contributor` flag; raise it to also exclude issues from authors with
+#' a small-but-nonzero commit share.
 #' @param window_start,window_end Date bounds on the analysis window;
 #' `window_end` defaults to the start of the current month.
 #' @return A tibble with one row per (popularity stratum, month):
@@ -61,12 +69,13 @@ issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
                             source_name,
                             n_strata = 4L,
+                            contribution_threshold = 0,
                             window_start = as.Date ("2015-01-01"),
                             window_end = NULL) {
 
     # rm no visible binding notes
     source <- repo_url <- .data <- month <- metric <-
-        popularity_stratum <- n_issues <- n_repo_months <- is_contributor <-
+        popularity_stratum <- n_issues <- n_repo_months <- contribution <-
         created_at <- repo_created_at <- NULL
 
     metric_col <- unname (POPULARITY_METRIC [source_name])
@@ -120,7 +129,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::count (popularity_stratum, month, name = "n_repo_months")
 
     issues <- issue_authors_tbl |>
-        dplyr::filter (repo_url %in% repos$repo_url, !is_contributor) |>
+        dplyr::filter (repo_url %in% repos$repo_url, contribution <= contribution_threshold) |>
         dplyr::mutate (month = floor_month (created_at)) |>
         dplyr::filter (month >= window_start, month <= window_end) |>
         dplyr::inner_join (
