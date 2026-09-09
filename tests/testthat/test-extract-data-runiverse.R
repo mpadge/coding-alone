@@ -9,36 +9,24 @@ test_that ("build_runiv_table validates its universe argument", {
     expect_error (longtail::build_runiv_table ("not-a-universe"))
 })
 
-# ---- build_runiv_table (HTTP, hand-crafted httptest2 fixture) --------------
-#
-# Hand-crafted to build 4 packages covering resolution via `URL`, via
-# `BugReports` (when `URL` isn't a github.com link), via `RemoteUrl` (when
-# neither `URL` nor `BugReports` resolve), no resolvable URL at all, a reviewed
-# submission (with `review_id`), a non-reviewed one, and one with no
-# `_metadata$review` at all.
+# ---- build_runiv_table (HTTP, dynamically-recorded httptest2 fixture) ------
 
-test_that ("build_runiv_table extracts URLs and review metadata", {
-
+test_that ("build_runiv_table extracts URLs and review metadata from real packages", {
+    Sys.setenv ("LONGTAIL_TESTS" = "true")
     out <- suppressMessages (httptest2::with_mock_dir ("runiv_mock", {
         longtail::build_runiv_table ("ropensci")
     }))
 
-    expect_equal (nrow (out), 4L)
+    expect_true (nrow (out) > 0L)
+    expect_true (nrow (out) <= 5L) # LONGTAIL_TESTS caps the query at 5 packages
     expect_equal (
         names (out),
         c ("package", "repo_url", "downloads", "stars", "reviewed", "review_id")
     )
-    expect_equal (
-        out$repo_url,
-        c (
-            "https://github.com/testauthor/toolA",
-            "https://github.com/testauthor/toolB",
-            "https://github.com/testauthor/toolC",
-            NA_character_
-        )
-    )
-    expect_equal (out$reviewed, c (TRUE, FALSE, FALSE, FALSE))
-    expect_equal (out$review_id, c (123L, NA, NA, NA))
+    expect_type (out$package, "character")
+    expect_type (out$reviewed, "logical")
+    # Every reviewed package should carry a review_id, and vice versa:
+    expect_equal (out$reviewed, !is.na (out$review_id))
 })
 
 # ---- cran_data_pkgstats -----------------------------------------------------

@@ -1,3 +1,7 @@
+runiv_packages_limit <- function () {
+    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) 5L else 100000L
+}
+
 #' Extract repo data for an r-universe
 #'
 #' @description Build a (package, title, package_url, repo_url) table for every
@@ -32,7 +36,7 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
 
     message ("Fetching ", universe, " r-universe package dump...")
     resp <- httr2::request (stringr::str_glue ("https://{host}/api/packages")) |>
-        httr2::req_url_query (limit = 100000L) |>
+        httr2::req_url_query (limit = runiv_packages_limit ()) |>
         httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i) |>
         httr2::req_perform ()
     pkgs <- httr2::resp_body_json (resp, simplifyVector = FALSE)

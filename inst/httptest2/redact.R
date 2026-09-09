@@ -56,5 +56,12 @@ function (resp) {
         fixed = TRUE
     )
 
+    resp <- httptest2::gsub_response (
+        resp,
+        "ropensci.r-universe.dev",
+        "ropensci",
+        fixed = TRUE
+    )
+
     return (resp)
 }
