@@ -86,9 +86,9 @@ trailing_roll_sum <- function (x, window) {
 #' @return A tibble with one row per (popularity stratum, month):
 #' `popularity_stratum`, `month` (Date, first-of-month), `n_metric`,
 #' `n_repo_months`, `rate` - the latter two already `window`-month trailing
-#' sums, not single-month counts. Also carries `metric` and `window` as
-#' attributes, so `plot_activity()` can label its y-axis correctly without
-#' being told them again.
+#' sums, not single-month counts. Also carries `metric`, `window`, and
+#' `contrib_threshold` as attributes, so `plot_activity()` can label its
+#' y-axis correctly without being told them again.
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
@@ -140,6 +140,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
         )
         attr (empty, "metric") <- metric
         attr (empty, "window") <- window
+        attr (empty, "contrib_threshold") <- contrib_threshold
         return (empty)
     }
 
@@ -207,6 +208,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
 
     attr (result, "metric") <- metric
     attr (result, "window") <- window
+    attr (result, "contrib_threshold") <- contrib_threshold
     result
 }
 
@@ -265,19 +267,22 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
     c (min (fitted, na.rm = TRUE), max (fitted, na.rm = TRUE))
 }
 
-#' Default y-axis label for a given `issue_rate_tbl()` `metric`/`window`.
-#' Both the numerator and the repo-months denominator are `window`-month
-#' trailing sums (see `issue_rate_tbl()`), so the value stays a per-
-#' repo-month rate rather than becoming a `window`-month total - just a
-#' trailing average of that rate rather than one raw month's value. The
-#' label says so explicitly, since a plain "per repo-month" label reads as
-#' single-month data.
+#' Default y-axis label for a given `issue_rate_tbl()` `metric`/`window`/
+#' `contrib_threshold`. Both the numerator and the repo-months denominator
+#' are `window`-month trailing sums (see `issue_rate_tbl()`), so the value
+#' stays a per-repo-month rate rather than becoming a `window`-month total
+#' - just a trailing average of that rate rather than one raw month's
+#' value. The label says so explicitly, since a plain "per repo-month"
+#' label reads as single-month data. `contrib_threshold` is reported as
+#' the literal cutoff value rather than the more informal "non-contributor
+#' authors", since what counts as "non-contributor" depends entirely on
+#' that value.
 #' @noRd
-activity_metric_label <- function (metric = c ("issues", "comments"), window = 12L) {
+activity_metric_label <- function (metric = c ("issues", "comments"), window = 12L, contrib_threshold = 0.01) {
     metric <- match.arg (metric)
     verb <- if (metric == "issues") "Issues opened" else "Comments received"
     stringr::str_glue (
-        "{verb} per repo-month (non-contributor authors, {window}-month trailing avg)"
+        "{verb} per repo-month ({window}-month trailing avg, contrib-threshold={contrib_threshold})"
     )
 }
 
@@ -297,7 +302,7 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
     upper <- 1.25 * rng [2]
 
     list (
-        ggplot2::geom_line (alpha = 0.3),
+        ggplot2::geom_line (alpha = 0.9, lty = 2),
         ggplot2::geom_smooth (se = FALSE, method = "loess", formula = y ~ x),
         ggplot2::coord_cartesian (ylim = c (lower, upper)),
         ggplot2::labs (x = NULL, y = y_lab),
@@ -309,9 +314,9 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
 #' its `metric` param for whether that's issues or comments per repo-month)
 #' over time, one line per popularity stratum.
 #'
-#' @param rate_tbl As returned by `issue_rate_tbl()` - its `metric` and
-#' `window` attributes are read straight off it to label the y-axis, rather
-#' than needing to be passed in again.
+#' @param rate_tbl As returned by `issue_rate_tbl()` - its `metric`,
+#' `window`, and `contrib_threshold` attributes are read straight off it to
+#' label the y-axis, rather than needing to be passed in again.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend
@@ -324,6 +329,8 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
     if (is.null (metric)) metric <- "issues"
     window <- attr (rate_tbl, "window")
     if (is.null (window)) window <- 12L
+    contrib_threshold <- attr (rate_tbl, "contrib_threshold")
+    if (is.null (contrib_threshold)) contrib_threshold <- 0.01
 
     if (!is.null (start_year)) {
         rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
@@ -333,7 +340,10 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
-        activity_plot_layers (rate_tbl, "popularity_stratum", activity_metric_label (metric, window)) +
+        activity_plot_layers (
+            rate_tbl, "popularity_stratum",
+            activity_metric_label (metric, window, contrib_threshold)
+        ) +
         ggplot2::labs (colour = "Popularity\nstratum")
 }
 
@@ -407,8 +417,9 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     rate_tbl$source_name <- factor (rate_tbl$source_name, levels = sources)
     attr (rate_tbl, "metric") <- metric
     attr (rate_tbl, "window") <- window
+    attr (rate_tbl, "contrib_threshold") <- contrib_threshold
 
-    y_lab <- activity_metric_label (metric, window)
+    y_lab <- activity_metric_label (metric, window, contrib_threshold)
     if (relative) {
         rate_tbl <- rate_tbl |>
             dplyr::group_by (source_name) |>
