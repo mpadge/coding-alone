@@ -380,14 +380,15 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
             rate_tbl, "popularity_stratum",
             activity_metric_label (metric, window, contrib_threshold)
         ) +
-        ggplot2::labs (colour = "Popularity\nstratum")
+        ggplot2::labs (colour = "Popularity\nstratum") +
+        ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
     if (!is.null (source_name)) {
         display_name <- unname (SOURCE_DISPLAY_NAME [source_name])
         if (is.na (display_name)) display_name <- source_name
         p <- p + ggplot2::annotate (
             "text",
-            x = Inf,
+            x = structure (Inf, class = "Date"),
             y = Inf,
             label = display_name,
             hjust = 1.1,
