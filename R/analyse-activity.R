@@ -10,6 +10,18 @@ POPULARITY_METRIC <- c (
     ropensci = "stars"
 )
 
+# Proper-cased display forms of each source's internal (lowercase)
+# `POPULARITY_METRIC`/`repo_tbl$source` key, for anywhere a source name is
+# shown to a reader rather than matched against data (e.g. plot
+# annotations). "npm" is genuinely lowercase as a name, not an
+# abbreviation, so it's left as-is.
+SOURCE_DISPLAY_NAME <- c (
+    pypi = "PyPI",
+    npm = "npm",
+    joss = "JOSS",
+    ropensci = "rOpenSci"
+)
+
 #' First-of-month for a Date/date-like vector.
 #' @noRd
 floor_month <- function (x) as.Date (format (as.Date (x), "%Y-%m-01"))
@@ -34,6 +46,22 @@ popularity_strata <- function (x, n_strata = 4L) {
     breaks [length (breaks)] <- Inf
     labels <- paste0 ("Q", seq_len (length (breaks) - 1))
     cut (log10 (x + 1), breaks = breaks, labels = labels, ordered_result = TRUE)
+}
+
+#' Relabel a `popularity_strata()` factor's lowest and highest levels as
+#' "(low)"/"(high)" for legend display (e.g. "Q1" -> "Q1 (low)"),
+#' leaving every level in between as its bare "Q<n>" label. Only renames
+#' levels in place - grouping/ordering is untouched, so this is safe to
+#' apply purely for display right before plotting.
+#' @noRd
+label_stratum_extremes <- function (x) {
+    lv <- levels (x)
+    if (length (lv) >= 2) {
+        lv [1] <- paste (lv [1], "(low)")
+        lv [length (lv)] <- paste (lv [length (lv)], "(high)")
+    }
+    levels (x) <- lv
+    x
 }
 
 #' Trailing rolling sum: `out[i]` is the sum of `x[(i - window + 1):i]`, or
@@ -86,9 +114,9 @@ trailing_roll_sum <- function (x, window) {
 #' @return A tibble with one row per (popularity stratum, month):
 #' `popularity_stratum`, `month` (Date, first-of-month), `n_metric`,
 #' `n_repo_months`, `rate` - the latter two already `window`-month trailing
-#' sums, not single-month counts. Also carries `metric`, `window`, and
-#' `contrib_threshold` as attributes, so `plot_activity()` can label its
-#' y-axis correctly without being told them again.
+#' sums, not single-month counts. Also carries `metric`, `window`,
+#' `contrib_threshold`, and `source_name` as attributes, so `plot_activity()`
+#' can label its y-axis correctly without being told them again.
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
@@ -141,6 +169,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
         attr (empty, "metric") <- metric
         attr (empty, "window") <- window
         attr (empty, "contrib_threshold") <- contrib_threshold
+        attr (empty, "source_name") <- source_name
         return (empty)
     }
 
@@ -209,6 +238,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
     attr (result, "metric") <- metric
     attr (result, "window") <- window
     attr (result, "contrib_threshold") <- contrib_threshold
+    attr (result, "source_name") <- source_name
     result
 }
 
@@ -315,8 +345,10 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
 #' over time, one line per popularity stratum.
 #'
 #' @param rate_tbl As returned by `issue_rate_tbl()` - its `metric`,
-#' `window`, and `contrib_threshold` attributes are read straight off it to
-#' label the y-axis, rather than needing to be passed in again.
+#' `window`, `contrib_threshold`, and `source_name` attributes are read
+#' straight off it, the first three to label the y-axis and `source_name`
+#' to annotate the plot panel directly (top-right corner), rather than
+#' needing to be passed in again.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend
@@ -331,12 +363,14 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
     if (is.null (window)) window <- 12L
     contrib_threshold <- attr (rate_tbl, "contrib_threshold")
     if (is.null (contrib_threshold)) contrib_threshold <- 0.01
+    source_name <- attr (rate_tbl, "source_name")
 
     if (!is.null (start_year)) {
         rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
     }
+    rate_tbl$popularity_stratum <- label_stratum_extremes (rate_tbl$popularity_stratum)
 
-    ggplot2::ggplot (
+    p <- ggplot2::ggplot (
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
@@ -345,6 +379,22 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
             activity_metric_label (metric, window, contrib_threshold)
         ) +
         ggplot2::labs (colour = "Popularity\nstratum")
+
+    if (!is.null (source_name)) {
+        display_name <- unname (SOURCE_DISPLAY_NAME [source_name])
+        if (is.na (display_name)) display_name <- source_name
+        p <- p + ggplot2::annotate (
+            "text",
+            x = Inf,
+            y = Inf,
+            label = display_name,
+            hjust = 1.1,
+            vjust = 1.5,
+            fontface = "bold",
+            size = 8
+        )
+    }
+    p
 }
 
 #' Compare monthly issue rate across all four sources (`pypi`, `npm`,
