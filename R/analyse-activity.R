@@ -86,7 +86,9 @@ trailing_roll_sum <- function (x, window) {
 #' @return A tibble with one row per (popularity stratum, month):
 #' `popularity_stratum`, `month` (Date, first-of-month), `n_metric`,
 #' `n_repo_months`, `rate` - the latter two already `window`-month trailing
-#' sums, not single-month counts.
+#' sums, not single-month counts. Also carries `metric` and `window` as
+#' attributes, so `plot_activity()` can label its y-axis correctly without
+#' being told them again.
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
@@ -129,13 +131,16 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
 
     if (nrow (repos) == 0) {
-        return (tibble::tibble (
+        empty <- tibble::tibble (
             popularity_stratum = factor (ordered = TRUE),
             month = as.Date (character ()),
             n_metric = double (),
             n_repo_months = integer (),
             rate = double ()
-        ))
+        )
+        attr (empty, "metric") <- metric
+        attr (empty, "window") <- window
+        return (empty)
     }
 
     repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
@@ -182,7 +187,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
         tibble::tibble (month = months)
     )
 
-    grid |>
+    result <- grid |>
         dplyr::left_join (exposure, by = c ("popularity_stratum", "month")) |>
         dplyr::left_join (issues, by = c ("popularity_stratum", "month")) |>
         dplyr::mutate (
@@ -199,6 +204,10 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::mutate (
             rate = dplyr::if_else (n_repo_months > 0, n_metric / n_repo_months, NA_real_)
         )
+
+    attr (result, "metric") <- metric
+    attr (result, "window") <- window
+    result
 }
 
 #' Fit the quasi-Poisson GLM described in analysis-plan.md: does the
@@ -300,20 +309,21 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
 #' its `metric` param for whether that's issues or comments per repo-month)
 #' over time, one line per popularity stratum.
 #'
-#' @param rate_tbl As returned by `issue_rate_tbl()`.
-#' @param metric,window Which `issue_rate_tbl()` `metric`/`window`
-#' `rate_tbl` was built with - only used to label the y-axis correctly,
-#' since `rate_tbl` itself doesn't record either. Defaults `"issues"`/`12`
-#' match `issue_rate_tbl()`'s own defaults.
+#' @param rate_tbl As returned by `issue_rate_tbl()` - its `metric` and
+#' `window` attributes are read straight off it to label the y-axis, rather
+#' than needing to be passed in again.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend
 #' the window beyond what `issue_rate_tbl()` was already called with.
 #' @return A ggplot object.
 #' @export
-plot_activity <- function (rate_tbl, metric = c ("issues", "comments"), window = 12L, start_year = NULL) {
+plot_activity <- function (rate_tbl, start_year = NULL) {
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
-    metric <- match.arg (metric)
+    metric <- attr (rate_tbl, "metric")
+    if (is.null (metric)) metric <- "issues"
+    window <- attr (rate_tbl, "window")
+    if (is.null (window)) window <- 12L
 
     if (!is.null (start_year)) {
         rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
@@ -341,9 +351,9 @@ plot_activity <- function (rate_tbl, metric = c ("issues", "comments"), window =
 #' @param stratum Integer popularity stratum to compare (`1` = lowest
 #' popularity, `n_strata` = highest), matching one of `issue_rate_tbl()`'s
 #' `popularity_stratum` levels (`"Q<stratum>"`).
-#' @param n_strata,contrib_threshold,metric,window,date_start,date_end
-#' Passed to each source's `issue_rate_tbl()` call; `n_strata` must be the
-#' same one `stratum` is a level of.
+#' @param n_strata,contrib_threshold,metric,window Passed to each source's
+#' `issue_rate_tbl()` call; `n_strata` must be the same one `stratum` is a
+#' level of.
 #' @param relative If `TRUE` (default), rescale each source by its own
 #' mean before plotting - sources sit on very different absolute rate
 #' scales (e.g. pypi's raw issue traffic dwarfs ropensci's), which would
@@ -351,9 +361,12 @@ plot_activity <- function (rate_tbl, metric = c ("issues", "comments"), window =
 #' Puts every line at a comparable "around 1 = that source's own average"
 #' scale, so trends are comparable even though absolute rates aren't. Set
 #' `FALSE` to plot absolute rates instead.
-#' @param start_year Optional year (e.g. `2018`) to start the plotted
-#' window from; `NULL` (default) plots the full `date_start`-`date_end`
-#' window.
+#' @param start_year Optional year (e.g. `2018`) to start the analysis
+#' from - passed straight through as each `issue_rate_tbl()` call's
+#' `date_start`, so it also governs the repo-months/rate calculations
+#' themselves, not just the plotted range. `NULL` (default) starts from
+#' 2015-01-01. There is no equivalent end-date control - analyses always
+#' run up to the current month.
 #' @return A ggplot object.
 #' @export
 plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
@@ -361,15 +374,15 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      contrib_threshold = 0.01,
                                      metric = c ("issues", "comments"),
                                      window = 12L,
-                                     date_start = as.Date ("2015-01-01"),
-                                     date_end = NULL,
                                      relative = TRUE,
                                      start_year = NULL) {
     month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
     metric <- match.arg (metric)
 
-    if (is.null (date_end)) {
-        date_end <- floor_month (Sys.Date ())
+    date_start <- if (is.null (start_year)) {
+        as.Date ("2015-01-01")
+    } else {
+        as.Date (stringr::str_glue ("{start_year}-01-01"))
     }
     stratum_label <- paste0 ("Q", stratum)
     sources <- names (POPULARITY_METRIC)
@@ -379,16 +392,15 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
             issue_authors_tbl, repo_tbl, src,
             n_strata = n_strata, contrib_threshold = contrib_threshold,
             metric = metric, window = window,
-            date_start = date_start, date_end = date_end
+            date_start = date_start
         ) |>
             dplyr::filter (popularity_stratum == stratum_label) |>
             dplyr::mutate (source_name = src)
     })
     rate_tbl$source_name <- factor (rate_tbl$source_name, levels = sources)
+    attr (rate_tbl, "metric") <- metric
+    attr (rate_tbl, "window") <- window
 
-    # Rescaling (when requested) happens before the start_year crop below,
-    # so the scale factor doesn't shift depending on what window is
-    # displayed.
     y_lab <- activity_metric_label (metric, window)
     if (relative) {
         rate_tbl <- rate_tbl |>
@@ -396,10 +408,6 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
             dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
             dplyr::ungroup ()
         y_lab <- paste (y_lab, "- relative to each source's own mean")
-    }
-
-    if (!is.null (start_year)) {
-        rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
     }
 
     ggplot2::ggplot (

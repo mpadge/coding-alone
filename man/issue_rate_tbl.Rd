@@ -57,7 +57,9 @@ preceding 11.}
 A tibble with one row per (popularity stratum, month):
 \code{popularity_stratum}, \code{month} (Date, first-of-month), \code{n_metric},
 \code{n_repo_months}, \code{rate} - the latter two already \code{window}-month trailing
-sums, not single-month counts.
+sums, not single-month counts. Also carries \code{metric} and \code{window} as
+attributes, so \code{plot_activity()} can label its y-axis correctly without
+being told them again.
 }
 \description{
 Each reported month is a trailing aggregate over \code{window} months (that

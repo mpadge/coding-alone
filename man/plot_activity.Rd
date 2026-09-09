@@ -6,20 +6,12 @@
 its \code{metric} param for whether that's issues or comments per repo-month)
 over time, one line per popularity stratum.}
 \usage{
-plot_activity(
-  rate_tbl,
-  metric = c("issues", "comments"),
-  window = 12L,
-  start_year = NULL
-)
+plot_activity(rate_tbl, start_year = NULL)
 }
 \arguments{
-\item{rate_tbl}{As returned by \code{issue_rate_tbl()}.}
-
-\item{metric, window}{Which \code{issue_rate_tbl()} \code{metric}/\code{window}
-\code{rate_tbl} was built with - only used to label the y-axis correctly,
-since \code{rate_tbl} itself doesn't record either. Defaults \code{"issues"}/\code{12}
-match \code{issue_rate_tbl()}'s own defaults.}
+\item{rate_tbl}{As returned by \code{issue_rate_tbl()} - its \code{metric} and
+\code{window} attributes are read straight off it to label the y-axis, rather
+than needing to be passed in again.}
 
 \item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
 window from; \code{NULL} (default) plots \code{rate_tbl}'s full window. Only

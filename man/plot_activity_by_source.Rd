@@ -19,8 +19,6 @@ plot_activity_by_source(
   contrib_threshold = 0.01,
   metric = c("issues", "comments"),
   window = 12L,
-  date_start = as.Date("2015-01-01"),
-  date_end = NULL,
   relative = TRUE,
   start_year = NULL
 )
@@ -34,8 +32,9 @@ plot_activity_by_source(
 popularity, \code{n_strata} = highest), matching one of \code{issue_rate_tbl()}'s
 \code{popularity_stratum} levels (\code{"Q<stratum>"}).}
 
-\item{n_strata, contrib_threshold, metric, window, date_start, date_end}{Passed to each source's \code{issue_rate_tbl()} call; \code{n_strata} must be the
-same one \code{stratum} is a level of.}
+\item{n_strata, contrib_threshold, metric, window}{Passed to each source's
+\code{issue_rate_tbl()} call; \code{n_strata} must be the same one \code{stratum} is a
+level of.}
 
 \item{relative}{If \code{TRUE} (default), rescale each source by its own
 mean before plotting - sources sit on very different absolute rate
@@ -45,9 +44,12 @@ Puts every line at a comparable "around 1 = that source's own average"
 scale, so trends are comparable even though absolute rates aren't. Set
 \code{FALSE} to plot absolute rates instead.}
 
-\item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
-window from; \code{NULL} (default) plots the full \code{date_start}-\code{date_end}
-window.}
+\item{start_year}{Optional year (e.g. \code{2018}) to start the analysis
+from - passed straight through as each \code{issue_rate_tbl()} call's
+\code{date_start}, so it also governs the repo-months/rate calculations
+themselves, not just the plotted range. \code{NULL} (default) starts from
+2015-01-01. There is no equivalent end-date control - analyses always
+run up to the current month.}
 }
 \value{
 A ggplot object.
