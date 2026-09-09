@@ -1,0 +1,9 @@
+{
+    "info": {
+        "home_page": null,
+        "project_urls": {
+            "Documentation": "https://requests.readthedocs.io",
+            "Source": "https://github.com/psf/requests"
+        }
+    }
+}

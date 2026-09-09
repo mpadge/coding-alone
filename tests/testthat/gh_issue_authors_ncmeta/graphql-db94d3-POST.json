@@ -1,0 +1,21 @@
+{
+    "data": {
+        "repository": {
+            "createdAt": "2017-06-10T03:38:22Z",
+            "issues": {
+                "pageInfo": {
+                    "hasNextPage": false,
+                    "endCursor": null
+                },
+                "nodes": [
+                    {
+                        "number": 3,
+                        "createdAt": "2018-01-01T00:00:00Z",
+                        "author": null,
+                        "comments": { "totalCount": 1 }
+                    }
+                ]
+            }
+        }
+    }
+}
