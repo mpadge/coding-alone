@@ -1,6 +1,6 @@
 Package: longtail
 Title: AI and The Long-Tailed Distribution of Software Repositories
-Version: 0.0.3.004
+Version: 0.0.4
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
@@ -25,9 +25,13 @@ Imports:
     utils
 Suggests:
     futurize,
+    httptest2,
     progressify,
-    progressr
+    progressr,
+    testthat (>= 3.0.0),
+    withr
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
+Config/testthat/edition: 3

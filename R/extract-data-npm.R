@@ -2,25 +2,41 @@
 # to packages with a resolvable GitHub repo URL. See README.Rmd for the
 # script that drives these to actually build the table.
 
+#' Fetch the `download-counts` npm package's latest metadata and tarball
+#' bytes.
+#'
+#' @return A list with `version` (the `download-counts` package version, for
+#' the "using download-counts@..." status message) and `tarball` (the raw
+#' bytes of its tarball).
+#' @noRd
+npm_download_counts_fetch <- function () {
+    meta <- httr2::resp_body_json (
+        httr2::req_perform (httr2::request ("https://registry.npmjs.org/download-counts/latest")),
+        simplifyVector = FALSE
+    )
+    tarball <- httr2::resp_body_raw (
+        httr2::req_perform (httr2::request (meta$dist$tarball))
+    )
+    list (version = meta$version, tarball = tarball)
+}
+
 #' Full npm monthly download-count population (~3.77M packages), via the
 #' `download-counts` npm package: https://www.npmjs.com/package/download-counts
 #' — a single static JSON object, republished monthly, mapping package name
 #' to last-month download count. This is npm's practical equivalent of
 #' PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
-#' BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
-#' are never exported anywhere public; only pre-aggregated counts are
-#' exposed, via the REST API).
+#' BigQuery's public PyPI download-log dataset.
+#'
+#' @return A table of all npm packages.
+#' @export
 npm_downloads_full <- function () {
-    meta <- httr2::resp_body_json (
-        httr2::req_perform (httr2::request ("https://registry.npmjs.org/download-counts/latest")),
-        simplifyVector = FALSE
-    )
-    cli::cli_alert_info ("npm: using download-counts@{meta$version} (monthly snapshot, may be a few months old)")
+    fetched <- npm_download_counts_fetch ()
+    cli::cli_alert_info ("npm: using download-counts@{fetched$version} (monthly snapshot, may be a few months old)")
 
     tmp_tgz <- tempfile (fileext = ".tgz")
     tmp_dir <- tempfile ()
     dir.create (tmp_dir)
-    httr2::req_perform (httr2::request (meta$dist$tarball), path = tmp_tgz)
+    writeBin (fetched$tarball, tmp_tgz)
     utils::untar (tmp_tgz, exdir = tmp_dir)
     counts_json <- list.files (tmp_dir, pattern = "counts\\.json$", recursive = TRUE, full.names = TRUE) [1]
     counts <- jsonlite::fromJSON (counts_json)
