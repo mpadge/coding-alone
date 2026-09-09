@@ -17,9 +17,8 @@ test_that ("popularity_strata splits into n_strata ordered quantile bins", {
     expect_true (out [1] <= out [length (out)]) # roughly monotonic ordering
 })
 
-test_that ("popularity_strata falls back to fewer strata when ties partially collapse breaks", {
-    # 10 tied low values + 1 high value: only the top quantile break differs,
-    # so 4 requested strata collapse to the 1 the data can actually support.
+test_that ("popularity_strata falls back when ties collapse", {
+
     x <- c (rep (1, 10), 1000)
     out <- popularity_strata (x, n_strata = 4L)
     expect_equal (nlevels (out), 1L)
@@ -27,12 +26,7 @@ test_that ("popularity_strata falls back to fewer strata when ties partially col
 })
 
 test_that ("popularity_strata errors when ALL values are identical", {
-    # Pre-existing edge case: when every quantile break collapses to a
-    # single value, `unique(breaks)` has length 1, and the subsequent
-    # `breaks[1] <- -Inf; breaks[length(breaks)] <- Inf` both target that
-    # same single element (ending on `Inf`), leaving `cut()` a length-1
-    # `breaks` argument - which `cut()` then treats as "number of
-    # intervals" rather than boundaries, and errors on `Inf` intervals.
+
     x <- rep (0, 20)
     expect_error (
         suppressWarnings (popularity_strata (x, n_strata = 4L)),
@@ -41,7 +35,12 @@ test_that ("popularity_strata errors when ALL values are identical", {
 })
 
 test_that ("label_stratum_extremes labels only the first/last levels", {
-    x <- factor (c ("Q1", "Q2", "Q3"), levels = c ("Q1", "Q2", "Q3"), ordered = TRUE)
+
+    x <- factor (
+        c ("Q1", "Q2", "Q3"),
+        levels = c ("Q1", "Q2", "Q3"),
+        ordered = TRUE
+    )
     out <- label_stratum_extremes (x)
     expect_equal (levels (out), c ("Q1 (low)", "Q2", "Q3 (high)"))
 })
@@ -59,7 +58,12 @@ test_that ("trailing_roll_sum sums a trailing window, partial at the start", {
 })
 
 test_that ("activity_metric_label reports metric verb, window, and threshold", {
-    lab <- activity_metric_label ("issues", window = 6L, contrib_threshold = 0.05)
+
+    lab <- activity_metric_label (
+        "issues",
+        window = 6L,
+        contrib_threshold = 0.05
+    )
     expect_match (lab, "Issues opened")
     expect_match (lab, "6-month trailing avg")
     expect_match (lab, "contrib-threshold=0.05")
@@ -72,20 +76,30 @@ test_that ("activity_metric_label reports metric verb, window, and threshold", {
 
 make_issue_authors_tbl <- function () {
     tibble::tibble (
-        repo_url = c ("https://github.com/o/popular", "https://github.com/o/niche"),
+        repo_url = c (
+            "https://github.com/o/popular",
+            "https://github.com/o/niche"
+        ),
         repo_created_at = c ("2020-01-01", "2020-01-01")
     ) |>
         dplyr::slice (rep (1:2, each = 1)) |>
         dplyr::distinct ()
 }
 
-test_that ("issue_rate_tbl returns the empty-shape tibble when no repos qualify", {
+test_that ("issue_rate_tbl returns empty tibble", {
+
     issue_authors_tbl <- tibble::tibble (
-        repo_url = character (), created_at = character (), n_comments = integer (),
-        contribution = double (), repo_created_at = character ()
+        repo_url = character (),
+        created_at = character (),
+        n_comments = integer (),
+        contribution = double (),
+        repo_created_at = character ()
     )
     repo_tbl <- tibble::tibble (
-        repo_url = character (), source = character (), downloads = double (), stars = double ()
+        repo_url = character (),
+        source = character (),
+        downloads = double (),
+        stars = double ()
     )
 
     out <- longtail::issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
@@ -98,12 +112,19 @@ test_that ("issue_rate_tbl returns the empty-shape tibble when no repos qualify"
 })
 
 test_that ("issue_rate_tbl errors on an unknown source", {
+
     issue_authors_tbl <- tibble::tibble (
-        repo_url = character (), created_at = character (), n_comments = integer (),
-        contribution = double (), repo_created_at = character ()
+        repo_url = character (),
+        created_at = character (),
+        n_comments = integer (),
+        contribution = double (),
+        repo_created_at = character ()
     )
     repo_tbl <- tibble::tibble (
-        repo_url = character (), source = character (), downloads = double (), stars = double ()
+        repo_url = character (),
+        source = character (),
+        downloads = double (),
+        stars = double ()
     )
     expect_error (
         longtail::issue_rate_tbl (issue_authors_tbl, repo_tbl, "not-a-source"),
@@ -111,18 +132,19 @@ test_that ("issue_rate_tbl errors on an unknown source", {
     )
 })
 
-test_that ("issue_rate_tbl computes exposure and rate for a small synthetic case", {
+test_that ("issue_rate_tbl computes exposure and rate", {
+
+    u <- three_gh_urls
+    u [2] <- u [1]
+
     repo_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/popular", "https://github.com/o/niche"),
+        repo_url = unique (u),
         source = "pypi",
         downloads = c (1e6, 10),
         stars = NA_real_
     )
     issue_authors_tbl <- tibble::tibble (
-        repo_url = c (
-            "https://github.com/o/popular", "https://github.com/o/popular",
-            "https://github.com/o/niche"
-        ),
+        repo_url = u,
         created_at = c ("2020-02-15", "2020-03-01", "2020-02-01"),
         n_comments = c (2L, 3L, 1L),
         contribution = c (0, 0, 0),
@@ -130,13 +152,19 @@ test_that ("issue_rate_tbl computes exposure and rate for a small synthetic case
     )
 
     out <- longtail::issue_rate_tbl (
-        issue_authors_tbl, repo_tbl, "pypi",
-        n_strata = 2L, window = 12L,
-        date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-03-01")
+        issue_authors_tbl,
+        repo_tbl,
+        "pypi",
+        n_strata = 2L,
+        window = 12L,
+        date_start = as.Date ("2020-01-01"),
+        date_end = as.Date ("2020-03-01")
     )
 
     expect_equal (nrow (out), 2L * 3L) # 2 strata x 3 months
-    expect_true (all (c ("popularity_stratum", "month", "n_metric", "n_repo_months", "rate") %in% names (out)))
+    expect_true (all (c (
+        "popularity_stratum", "month", "n_metric", "n_repo_months", "rate"
+    ) %in% names (out)))
 
     # By March, the popular repo has had 1 issue in Feb + 1 in Mar = 2 total,
     # accumulated (trailing window covers the whole span here).
@@ -153,18 +181,21 @@ test_that ("issue_rate_tbl computes exposure and rate for a small synthetic case
 })
 
 test_that ("issue_rate_tbl excludes contributor issues above threshold", {
-    # A second, issue-less repo with a different `downloads` value is
-    # included purely so `popularity_strata()` (called with n_strata = 1)
-    # sees more than one distinct value - a single repeated value collapses
-    # its quantile breaks to one point and errors (see the
-    # popularity_strata "errors when ALL values are identical" test above).
+
+    # `popularity_strata()` called with n_strata = 1 sees more than one
+    # distinct value - a single repeated value collapses its quantile breaks to
+    # one point and errors.
+
+    u <- three_gh_urls
+    u [2] <- u [1]
     repo_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/repo", "https://github.com/o/other"),
+        repo_url = unique (u),
         source = "pypi", downloads = c (100, 5), stars = NA_real_
     )
+    # 3rd 'created_at' is outside the analysis window
     issue_authors_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/repo", "https://github.com/o/repo", "https://github.com/o/other"),
-        created_at = c ("2020-01-15", "2020-01-16", "2010-01-01"), # 3rd is outside the analysis window
+        repo_url = u,
+        created_at = c ("2020-01-15", "2020-01-16", "2010-01-01"),
         n_comments = c (1L, 1L, 0L),
         contribution = c (0, 0.5, 0), # 2nd issue is by a core contributor
         repo_created_at = c ("2020-01-01", "2020-01-01", "2020-01-01")
@@ -175,17 +206,20 @@ test_that ("issue_rate_tbl excludes contributor issues above threshold", {
         n_strata = 1L, contrib_threshold = 0.01,
         date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-01-01")
     )
-    expect_equal (sum (out$n_metric), 1) # only the non-contributor issue counted
+    expect_equal (sum (out$n_metric), 1) # only non-ctb issue counted
 })
 
 test_that ("issue_rate_tbl supports metric = 'comments'", {
     repo_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/repo", "https://github.com/o/other"),
-        source = "pypi", downloads = c (100, 5), stars = NA_real_
+        repo_url = three_gh_urls,
+        source = "pypi",
+        downloads = c (500, 100, 5),
+        stars = NA_real_
     )
+    # 3rd 'created_at' is outside the analysis window:
     issue_authors_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/repo", "https://github.com/o/repo", "https://github.com/o/other"),
-        created_at = c ("2020-01-15", "2020-01-16", "2010-01-01"), # 3rd is outside the analysis window
+        repo_url = three_gh_urls,
+        created_at = c ("2020-01-15", "2020-01-16", "2010-01-01"),
         n_comments = c (2L, 5L, 0L),
         contribution = c (0, 0, 0),
         repo_created_at = c ("2020-01-01", "2020-01-01", "2020-01-01")
@@ -200,29 +234,39 @@ test_that ("issue_rate_tbl supports metric = 'comments'", {
     expect_equal (attr (out, "metric"), "comments")
 })
 
-test_that ("fit_activity_model fits a quasipoisson GLM with the interaction term", {
+test_that ("fit_activity_model fits GLM with interaction term", {
+
     rate_tbl <- tibble::tibble (
         popularity_stratum = factor (
             rep (c ("Q1", "Q2"), each = 6),
             levels = c ("Q1", "Q2"), ordered = TRUE
         ),
-        month = rep (seq (as.Date ("2020-01-01"), by = "month", length.out = 6), 2),
+        month = rep (seq (
+            as.Date ("2020-01-01"),
+            by = "month", length.out = 6
+        ), 2),
         n_metric = c (1:6, 6:1),
         n_repo_months = rep (10L, 12)
     )
 
     fit <- longtail::fit_activity_model (rate_tbl)
     expect_s3_class (fit, "glm")
-    expect_true (any (grepl ("month_num:popularity_stratum", names (stats::coef (fit)))))
+    expect_true (any (
+        grepl ("month_num:popularity_stratum", names (stats::coef (fit)))
+    ))
 })
 
 test_that ("fit_activity_model drops rows with zero repo-months exposure", {
+
     rate_tbl <- tibble::tibble (
         popularity_stratum = factor (
             rep (c ("Q1", "Q2"), each = 4),
             levels = c ("Q1", "Q2"), ordered = TRUE
         ),
-        month = rep (seq (as.Date ("2020-01-01"), by = "month", length.out = 4), 2),
+        month = rep (seq (
+            as.Date ("2020-01-01"),
+            by = "month", length.out = 4
+        ), 2),
         n_metric = c (0, 1, 2, 3, 1, 2, 3, 4),
         n_repo_months = c (0L, 10L, 10L, 10L, 10L, 10L, 10L, 10L)
     )
@@ -233,6 +277,7 @@ test_that ("fit_activity_model drops rows with zero repo-months exposure", {
 # ---- plotting ---------------------------------------------------------------
 
 make_rate_tbl <- function (n_strata = 2L, n_months = 12L) {
+
     strata <- paste0 ("Q", seq_len (n_strata))
     months <- seq (as.Date ("2020-01-01"), by = "month", length.out = n_months)
     tbl <- tidyr_expand_grid_stub (strata, months)
@@ -254,13 +299,16 @@ tidyr_expand_grid_stub <- function (strata, months) {
     }))
 }
 
-test_that ("plot_activity returns a ggplot with a colour-mapped line per stratum", {
+test_that ("plot_activity returns plot with a colour-mapped stratum lines", {
     rate_tbl <- make_rate_tbl ()
     attr (rate_tbl, "source_name") <- "pypi"
 
     p <- longtail::plot_activity (rate_tbl)
     expect_s3_class (p, "ggplot")
-    expect_true ("colour" %in% names (p$mapping) || "colour" %in% names (p$layers [[1]]$mapping))
+    expect_true (
+        "colour" %in% names (p$mapping) ||
+            "colour" %in% names (p$layers [[1]]$mapping)
+    )
 })
 
 test_that ("plot_activity honours start_year by cropping the plotted data", {
@@ -272,20 +320,27 @@ test_that ("plot_activity honours start_year by cropping the plotted data", {
     expect_true (min (p_full$data$month) < as.Date ("2021-01-01"))
 })
 
-test_that ("plot_activity_by_source builds one line per source for one stratum", {
+test_that ("plot_activity_by_source builds one line for one stratum", {
+
     # 2 repos per source (with different `downloads`/`stars`) so
     # popularity_strata() doesn't collapse to a single tied value within any
-    # source (see the note above `issue_rate_tbl excludes contributor
-    # issues...`), and every one of the 5 known sources has at least one
-    # repo, to avoid the bind_rows/factor-level mismatch documented in
-    # "errors when a source has no matching repos at all" below.
+    # source, and every one of the 5 known sources has at least one
+    # repo.
     sources <- c ("pypi", "npm", "joss", "ropensci", "cran")
     repo_tbl <- purrr::map_dfr (sources, \ (s) {
         tibble::tibble (
             repo_url = paste0 ("https://github.com/o/", s, c ("-1", "-2")),
             source = s,
-            downloads = if (s %in% c ("pypi", "npm", "cran")) c (1000, 50) else NA_real_,
-            stars = if (s %in% c ("joss", "ropensci")) c (1000, 50) else NA_real_
+            downloads = if (s %in% c ("pypi", "npm", "cran")) {
+                c (1000, 50)
+            } else {
+                NA_real_
+            },
+            stars = if (s %in% c ("joss", "ropensci")) {
+                c (1000, 50)
+            } else {
+                NA_real_
+            }
         )
     })
     issue_authors_tbl <- tibble::tibble (
@@ -305,22 +360,19 @@ test_that ("plot_activity_by_source builds one line per source for one stratum",
     expect_setequal (as.character (unique (p$data$source_name)), sources)
 })
 
-test_that ("plot_activity_by_source errors when a source has no matching repos at all", {
-    # Discovered edge case: the roxygen docs for plot_activity_by_source()
-    # claim "a source with no data yet for the requested window ... just
-    # contributes no line, rather than erroring" - but issue_rate_tbl()'s
-    # zero-row early return produces a `popularity_stratum` factor with NO
-    # levels, which is incompatible (for dplyr::bind_rows()) with the
-    # populated ordered factors from sources that DO have data. In practice
-    # this only bites when a source is entirely absent from repo_tbl, which
-    # doesn't happen once every source has been populated at all.
+test_that ("plot_activity_by_source errors when no repos match", {
+
     repo_tbl <- tibble::tibble (
-        repo_url = c ("https://github.com/o/a", "https://github.com/o/a2"),
-        source = "pypi", downloads = c (1000, 50), stars = NA_real_
+        repo_url = three_gh_urls,
+        source = "pypi",
+        downloads = c (1000, 200, 50),
+        stars = NA_real_
     )
     issue_authors_tbl <- tibble::tibble (
         repo_url = repo_tbl$repo_url,
-        created_at = "2020-01-15", n_comments = 1L, contribution = 0,
+        created_at = "2020-01-15",
+        n_comments = 1L,
+        contribution = 0,
         repo_created_at = "2020-01-01"
     )
 

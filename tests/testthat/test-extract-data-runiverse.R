@@ -11,15 +11,14 @@ test_that ("build_runiv_table validates its universe argument", {
 
 # ---- build_runiv_table (HTTP, hand-crafted httptest2 fixture) --------------
 #
-# The real ropensci.r-universe.dev dump is ~360 packages / ~8MB - too big to
-# check in as a fixture, and not paginated so there's no small natural
-# subset to record. Hand-crafted instead: 4 packages covering resolution via
-# `URL`, via `BugReports` (when `URL` isn't a github.com link), via
-# `RemoteUrl` (when neither `URL` nor `BugReports` resolve), no resolvable
-# URL at all, a reviewed submission (with `review_id`), a non-reviewed one,
-# and one with no `_metadata$review` at all.
+# Hand-crafted to build 4 packages covering resolution via `URL`, via
+# `BugReports` (when `URL` isn't a github.com link), via `RemoteUrl` (when
+# neither `URL` nor `BugReports` resolve), no resolvable URL at all, a reviewed
+# submission (with `review_id`), a non-reviewed one, and one with no
+# `_metadata$review` at all.
 
-test_that ("build_runiv_table extracts repo URLs and rOpenSci review metadata", {
+test_that ("build_runiv_table extracts URLs and review metadata", {
+
     out <- suppressMessages (httptest2::with_mock_dir ("runiv_mock", {
         longtail::build_runiv_table ("ropensci")
     }))
@@ -32,8 +31,10 @@ test_that ("build_runiv_table extracts repo URLs and rOpenSci review metadata", 
     expect_equal (
         out$repo_url,
         c (
-            "https://github.com/testauthor/toolA", "https://github.com/testauthor/toolB",
-            "https://github.com/testauthor/toolC", NA_character_
+            "https://github.com/testauthor/toolA",
+            "https://github.com/testauthor/toolB",
+            "https://github.com/testauthor/toolC",
+            NA_character_
         )
     )
     expect_equal (out$reviewed, c (TRUE, FALSE, FALSE, FALSE))
@@ -42,26 +43,27 @@ test_that ("build_runiv_table extracts repo URLs and rOpenSci review metadata", 
 
 # ---- cran_data_pkgstats -----------------------------------------------------
 #
-# Downloads its .Rds via a bare `download.file()` call, not httr2 - entirely
-# outside httptest2's reach. Mocked instead via
-# `local_mocked_bindings(download.file = ..., .package = "utils")`, per
-# testthat's own docs on mocking namespaced calls to another package (not
-# generally recommended, since it affects every `download.file()` call for
-# the duration of the test, but there is no source-level binding for
+# Mocked via `local_mocked_bindings(download.file = ..., .package = "utils")`,
+# per testthat's own docs on mocking namespaced calls to another package (not
+# generally recommended, since it affects every `download.file()` call for the
+# duration of the test, but there is no source-level binding for
 # `download.file` inside `longtail` itself for `local_mocked_bindings()` to
 # target with the usual `.package = "longtail"` form). The fixture
 # (fixtures/pkgstats-mini.Rds) is a hand-built 5-row stand-in for the real
-# `pkgstats-CRAN-current.Rds`, covering: two versions of the same package
-# (only the latest should survive `slice_max(date)`), a resolvable
-# comma-separated `urls` github.com entry, a github.com URL with a non-repo
-# path (`/issues` - 5 path segments, not the resolvable 4), a `urls` value
-# with no github.com entry at all, and a comma+newline-separated `urls`
-# value (exercising the alternate separator in the `strsplit()` regex).
+# `pkgstats-CRAN-current.Rds`, covering: two versions of the same package (only
+# the latest should survive `slice_max(date)`), a resolvable comma-separated
+# `urls` github.com entry, a github.com URL with a non-repo path (`/issues` - 5
+# path segments, not the resolvable 4), a `urls` value with no github.com entry
+# at all, and a comma+newline-separated `urls` value (exercising the alternate
+# separator in the `strsplit()` regex).
 
-test_that ("cran_data_pkgstats filters to the latest version with a resolvable github.com URL", {
+test_that ("cran_data_pkgstats filters with resolvable gh URL", {
+
     fixture <- test_path ("fixtures", "pkgstats-mini.Rds")
     testthat::local_mocked_bindings (
-        download.file = function (url, destfile, ...) file.copy (fixture, destfile, overwrite = TRUE),
+        download.file = function (url, destfile, ...) {
+            file.copy (fixture, destfile, overwrite = TRUE)
+        },
         .package = "utils"
     )
 
@@ -72,7 +74,10 @@ test_that ("cran_data_pkgstats filters to the latest version with a resolvable g
     expect_equal (out$version, c ("1.0.0", "3.0.0")) # latest of toolA's two versions
     expect_equal (
         out$repo_url,
-        c ("https://github.com/testauthor/toolA", "https://github.com/testauthor/toolD")
+        c (
+            "https://github.com/testauthor/toolA",
+            "https://github.com/testauthor/toolD"
+        )
     )
 })
 
