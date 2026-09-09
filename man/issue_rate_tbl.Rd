@@ -21,8 +21,8 @@ issue_rate_tbl(
   source_name,
   n_strata = 4L,
   contribution_threshold = 0,
-  window_start = as.Date("2015-01-01"),
-  window_end = NULL
+  date_start = as.Date("2015-01-01"),
+  date_end = NULL
 )
 }
 \arguments{
@@ -41,8 +41,8 @@ authors with no recorded commits at all), matching the previous exact
 \code{is_contributor} flag; raise it to also exclude issues from authors with
 a small-but-nonzero commit share.}
 
-\item{window_start, window_end}{Date bounds on the analysis window;
-\code{window_end} defaults to the start of the current month.}
+\item{date_start, date_end}{Date bounds on the analysis window;
+\code{date_end} defaults to the start of the current month.}
 }
 \value{
 A tibble with one row per (popularity stratum, month):

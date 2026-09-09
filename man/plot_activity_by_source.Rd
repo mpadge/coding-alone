@@ -16,8 +16,8 @@ plot_activity_by_source(
   repo_tbl,
   stratum,
   n_strata = 4L,
-  window_start = as.Date("2015-01-01"),
-  window_end = NULL,
+  date_start = as.Date("2015-01-01"),
+  date_end = NULL,
   relative = TRUE,
   start_year = NULL
 )
@@ -31,7 +31,7 @@ plot_activity_by_source(
 popularity, \code{n_strata} = highest), matching one of \code{issue_rate_tbl()}'s
 \code{popularity_stratum} levels (\code{"Q<stratum>"}).}
 
-\item{n_strata, window_start, window_end}{Passed to each source's
+\item{n_strata, date_start, date_end}{Passed to each source's
 \code{issue_rate_tbl()} call; must be the same \code{n_strata} \code{stratum} is a
 level of.}
 
@@ -44,7 +44,7 @@ scale, so trends are comparable even though absolute rates aren't. Set
 \code{FALSE} to plot absolute rates instead.}
 
 \item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
-window from; \code{NULL} (default) plots the full \code{window_start}-\code{window_end}
+window from; \code{NULL} (default) plots the full \code{date_start}-\code{date_end}
 window.}
 }
 \value{

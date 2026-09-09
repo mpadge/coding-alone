@@ -59,8 +59,8 @@ popularity_strata <- function (x, n_strata = 4L) {
 #' authors with no recorded commits at all), matching the previous exact
 #' `is_contributor` flag; raise it to also exclude issues from authors with
 #' a small-but-nonzero commit share.
-#' @param window_start,window_end Date bounds on the analysis window;
-#' `window_end` defaults to the start of the current month.
+#' @param date_start,date_end Date bounds on the analysis window;
+#' `date_end` defaults to the start of the current month.
 #' @return A tibble with one row per (popularity stratum, month):
 #' `popularity_stratum`, `month` (Date, first-of-month), `n_issues`,
 #' `n_repo_months`, `rate`.
@@ -70,8 +70,8 @@ issue_rate_tbl <- function (issue_authors_tbl,
                             source_name,
                             n_strata = 4L,
                             contribution_threshold = 0,
-                            window_start = as.Date ("2015-01-01"),
-                            window_end = NULL) {
+                            date_start = as.Date ("2015-01-01"),
+                            date_end = NULL) {
 
     # rm no visible binding notes
     source <- repo_url <- .data <- month <- metric <-
@@ -83,8 +83,8 @@ issue_rate_tbl <- function (issue_authors_tbl,
         stop ("Unknown source: ", source_name, call. = FALSE)
     }
 
-    if (is.null (window_end)) {
-        window_end <- floor_month (Sys.Date ())
+    if (is.null (date_end)) {
+        date_end <- floor_month (Sys.Date ())
     }
 
     repo_created_tbl <- issue_authors_tbl |>
@@ -113,7 +113,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
 
     repos$popularity_stratum <- popularity_strata (repos$metric, n_strata)
 
-    months <- seq (window_start, window_end, by = "month")
+    months <- seq (date_start, date_end, by = "month")
 
     exposure <- dplyr::cross_join (
         tibble::tibble (repo_url = repos$repo_url),
@@ -125,13 +125,13 @@ issue_rate_tbl <- function (issue_authors_tbl,
             ),
             by = "repo_url"
         ) |>
-        dplyr::filter (month >= pmax (repo_created_at, window_start)) |>
+        dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
         dplyr::count (popularity_stratum, month, name = "n_repo_months")
 
     issues <- issue_authors_tbl |>
         dplyr::filter (repo_url %in% repos$repo_url, contribution <= contribution_threshold) |>
         dplyr::mutate (month = floor_month (created_at)) |>
-        dplyr::filter (month >= window_start, month <= window_end) |>
+        dplyr::filter (month >= date_start, month <= date_end) |>
         dplyr::inner_join (
             dplyr::select (repos, repo_url, popularity_stratum),
             by = "repo_url"
@@ -271,7 +271,7 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' @param stratum Integer popularity stratum to compare (`1` = lowest
 #' popularity, `n_strata` = highest), matching one of `issue_rate_tbl()`'s
 #' `popularity_stratum` levels (`"Q<stratum>"`).
-#' @param n_strata,window_start,window_end Passed to each source's
+#' @param n_strata,date_start,date_end Passed to each source's
 #' `issue_rate_tbl()` call; must be the same `n_strata` `stratum` is a
 #' level of.
 #' @param relative If `TRUE` (default), rescale each source by its own
@@ -282,20 +282,20 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' scale, so trends are comparable even though absolute rates aren't. Set
 #' `FALSE` to plot absolute rates instead.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
-#' window from; `NULL` (default) plots the full `window_start`-`window_end`
+#' window from; `NULL` (default) plots the full `date_start`-`date_end`
 #' window.
 #' @return A ggplot object.
 #' @export
 plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      n_strata = 4L,
-                                     window_start = as.Date ("2015-01-01"),
-                                     window_end = NULL,
+                                     date_start = as.Date ("2015-01-01"),
+                                     date_end = NULL,
                                      relative = TRUE,
                                      start_year = NULL) {
     month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
 
-    if (is.null (window_end)) {
-        window_end <- floor_month (Sys.Date ())
+    if (is.null (date_end)) {
+        date_end <- floor_month (Sys.Date ())
     }
     stratum_label <- paste0 ("Q", stratum)
     sources <- names (POPULARITY_METRIC)
@@ -303,7 +303,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     rate_tbl <- purrr::map_dfr (sources, \ (src) {
         issue_rate_tbl (
             issue_authors_tbl, repo_tbl, src,
-            n_strata = n_strata, window_start = window_start, window_end = window_end
+            n_strata = n_strata, date_start = date_start, date_end = date_end
         ) |>
             dplyr::filter (popularity_stratum == stratum_label) |>
             dplyr::mutate (source_name = src)
