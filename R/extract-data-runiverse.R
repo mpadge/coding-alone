@@ -154,7 +154,15 @@ cran_data_downloads <- function (dat) {
     )
 
     reqs <- lapply (urls, httr2::request)
-    resps <- httr2::req_perform_parallel (reqs, on_error = "continue")
+
+    # See perform_json_parallel() in R/utils-httr2.R for why LONGTAIL_TESTS
+    # switches this to sequential req_perform() calls: httptest2 can only
+    # trace/record req_perform(), not req_perform_parallel().
+    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+        resps <- lapply (reqs, function (req) tryCatch (httr2::req_perform (req), error = function (e) e))
+    } else {
+        resps <- httr2::req_perform_parallel (reqs, on_error = "continue")
+    }
 
     dl <- do.call (rbind, lapply (resps, function (r) {
         if (!inherits (r, "httr2_response") || httr2::resp_is_error (r)) {

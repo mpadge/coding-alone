@@ -31,7 +31,7 @@ function (resp) {
     resp <- httptest2::gsub_response (
         resp,
         "https://pypi.org/pypi/",
-        "pypi/",
+        "",
         fixed = TRUE
     )
 
@@ -61,6 +61,16 @@ function (resp) {
         "ropensci.r-universe.dev",
         "ropensci",
         fixed = TRUE
+    )
+
+    # PyPi JSON data is mostly huge amounts of detail on every release. This
+    # 'gsub's away all release information. That's always followed by 'urls'.
+    resp <- httptest2::gsub_response (
+        resp,
+        '(?s)"releases":.*?"urls":',
+        '"releases": {}, "urls":',
+        perl = TRUE,
+        fixed = FALSE
     )
 
     return (resp)

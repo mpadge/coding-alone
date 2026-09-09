@@ -26,7 +26,19 @@ test_that ("npm_downloads_full untars and reshapes the counts.json download", {
     expect_equal (out$downloads [out$name == "is-number"], 5000000)
 })
 
+# npm_repo_urls_many() uses req_perform_parallel() internally
+# (registry_repo_urls_many() -> perform_json_parallel() in
+# R/utils-httr2.R), which httptest2 can't trace/record - so
+# LONGTAIL_TESTS = "true" switches perform_json_parallel() to sequential
+# req_perform() calls instead (see that function's comment). This fixture
+# is NOT hand-crafted: it holds real, live-recorded responses for 2 real
+# packages (is-number, left-pad) plus one nonexistent package for the
+# 404/NA case. If it's ever regenerated, delete tests/testthat/npm_mock/
+# and re-run this test (no token needed, npm's registry is unauthenticated)
+# to re-record it - it must never be hand-typed back in.
+
 test_that ("npm_repo_urls_many resolves via repository/homepage, NA on 404", {
+    Sys.setenv ("LONGTAIL_TESTS" = "true")
     out <- httptest2::with_mock_dir ("npm_mock", {
         npm_repo_urls_many (
             c ("is-number", "left-pad", "this-package-does-not-exist-xyz123")

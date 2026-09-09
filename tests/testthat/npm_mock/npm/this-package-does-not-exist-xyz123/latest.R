@@ -1,9 +1,9 @@
 structure(list(method = "GET", url = "npm/this-package-does-not-exist-xyz123/latest", 
-    status_code = 404L, headers = structure(list(date = "Wed, 09 Sep 2026 12:49:48 GMT", 
+    status_code = 404L, headers = structure(list(date = "Wed, 09 Sep 2026 15:43:47 GMT", 
         `content-type` = "application/json", `content-length` = "11", 
-        `set-cookie` = "__cf_bm=rhCkxVqjktWgrz9MQ_S0IANQ79Je.Uc9vY70K2Trlkw-1788958188.267039-1.0.1.1-VuZTf7bZ_xTEuB5k1mkVWx4dm7IPrYRJ0xxHNejWHqXFHfLUG81uggokCBRyE44AXzb1HIiRy7f5X0L.NGMq2XzwyRwynFcrDG62RlJUXfpbVLJeVYoalPswNBfmQQNR; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org; Expires=Wed, 09 Sep 2026 13:19:48 GMT", 
-        `set-cookie` = "_cfuvid=O7BNzsuRKbZVeMokK5ZXb72jt2GgfuQmzIczNLupqa8-1788958188.267039-1.0.1.1-mv1ckgHgee_z1mqjamf8.Gmpy4UeN7JATWo.qs3ke5Q; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org", 
-        `cf-ray` = "a38650a4aa92dc9c-FRA", `access-control-allow-origin` = "*", 
+        `set-cookie` = "__cf_bm=wcEfRZhCxfU.mlYZ.ziGkM9n5NIf469W4Nu781YsJ.o-1788968626.8456476-1.0.1.1-12NPnkSGxqYDvN9OGZwcVX7.K7otK4Wpy6mKWDoLjD7TjX0i5E10YI_10rSDkuMurtI7469pO4S2AqoV.bgAT2ft8EueiVPTYanXKj9RL9N0gX6JYazQnK3Ng8Hsf7bz; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org; Expires=Wed, 09 Sep 2026 16:13:47 GMT", 
+        `set-cookie` = "_cfuvid=n9K6eEAMbrdqJL.T8fxmoOdDfE_ueA4w_l6dAADKMA4-1788968626.8456476-1.0.1.1-GuSpPubd0DUgReTp6m5iyiDI3xmCcavL520YNpJXfgs; HttpOnly; SameSite=None; Secure; Path=/; Domain=npmjs.org", 
+        `cf-ray` = "a3874f7dcaf8bbad-FRA", `access-control-allow-origin` = "*", 
         server = "cloudflare"), class = "httr2_headers"), body = charToRaw("\"Not Found\""), 
     timing = c(redirect = 0, namelookup = 0, connect = 0, pretransfer = 0.000076, 
-    starttransfer = 0.256877, total = 0.256941), cache = new.env(parent = emptyenv())), class = "httr2_response")
+    starttransfer = 0.276271, total = 0.276346), cache = new.env(parent = emptyenv())), class = "httr2_response")

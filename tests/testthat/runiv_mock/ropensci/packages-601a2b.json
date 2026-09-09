@@ -1,0 +1,3995 @@
+[
+    {
+        "Package": "repometrics",
+        "Title": "Metrics for Your Code Repository",
+        "Version": "0.2.1.089",
+        "Authors@R": "person(\"Mark\", \"Padgham\", , \"mark.padgham@email.com\", role = c(\"aut\", \"cre\"),\ncomment = c(ORCID = \"0000-0003-2172-5265\"))",
+        "Description": "Metrics for your code repository. Call one function to\ngenerate an interactive dashboard displaying the state of your\ncode.",
+        "License": "GPL-3",
+        "URL": "https://docs.ropensci.org/repometrics/,\nhttps://github.com/ropensci-review-tools/repometrics",
+        "BugReports": "https://github.com/ropensci-review-tools/repometrics/issues",
+        "Remotes": [
+            "ropensci-review-tools/pkgcheck",
+            "ropensci-review-tools/pkgmatch",
+            "ropensci-review-tools/pkgstats"
+        ],
+        "Config/testthat/edition": "3",
+        "Config/ropensci/maintainer": "staff",
+        "Encoding": "UTF-8",
+        "Language": "en-GB",
+        "Roxygen": "list(markdown = TRUE)",
+        "RoxygenNote": "7.3.3",
+        "VignetteBuilder": "knitr",
+        "Config/pak/sysreqs": "cmake git libglpk-dev make libgit2-dev libuv1-dev\nlibxml2-dev libssl-dev libx11-dev",
+        "Repository": "https://ropensci",
+        "Date/Publication": "2026-09-09 07:20:37 UTC",
+        "RemoteUrl": "https://github.com/ropensci-review-tools/repometrics",
+        "RemoteRef": "main",
+        "RemoteSha": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+        "NeedsCompilation": "no",
+        "Packaged": {
+            "Date": "2026-09-09 14:50:15 UTC",
+            "User": "root"
+        },
+        "Author": "Mark Padgham [aut, cre] (ORCID:\n<https://orcid.org/0000-0003-2172-5265>)",
+        "Maintainer": "Mark Padgham <mark.padgham@email.com>",
+        "_user": "ropensci",
+        "_type": "src",
+        "_file": "repometrics_0.2.1.089.tar.gz",
+        "_fileid": "https://r2.ropensci.org/0ea615b9ccf8cbab4376c0fd2724b2015db098ec4476712ffcc9496e635a584d",
+        "_filesize": 329947,
+        "_sha256": "0ea615b9ccf8cbab4376c0fd2724b2015db098ec4476712ffcc9496e635a584d",
+        "_expires": "2026-12-18T14:57:31.000Z",
+        "_created": "2026-09-09T14:50:15.000Z",
+        "_published": "2026-09-09T14:57:33.620Z",
+        "_jobs": [
+            {
+                "job": 102515697256,
+                "time": 226,
+                "config": "linux-devel-x86_64",
+                "r": "4.7.0",
+                "check": "NOTE",
+                "artifact": "10110181867"
+            },
+            {
+                "job": 102515697303,
+                "time": 186,
+                "config": "linux-release-x86_64",
+                "r": "4.6.1",
+                "check": "NOTE",
+                "artifact": "10110158342"
+            },
+            {
+                "job": 102515697381,
+                "time": 144,
+                "config": "macos-oldrel-arm64",
+                "r": "4.5.3",
+                "check": "WARNING",
+                "artifact": "10110218222"
+            },
+            {
+                "job": 102515698180,
+                "time": 168,
+                "config": "macos-release-arm64",
+                "r": "4.6.1",
+                "check": "NOTE",
+                "artifact": "10110235228"
+            },
+            {
+                "job": 102514040698,
+                "time": 236,
+                "config": "pkgdown",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10109938388"
+            },
+            {
+                "job": 102514040442,
+                "time": 262,
+                "config": "source",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10109960124"
+            },
+            {
+                "job": 102515697172,
+                "time": 158,
+                "config": "wasm-release",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10110111825"
+            },
+            {
+                "job": 102515697590,
+                "time": 184,
+                "config": "windows-devel-x86_64",
+                "r": "4.7.0",
+                "check": "NOTE",
+                "artifact": "10110151109"
+            },
+            {
+                "job": 102515697371,
+                "time": 133,
+                "config": "windows-oldrel-x86_64",
+                "r": "4.5.3",
+                "check": "NOTE",
+                "artifact": "10110112723"
+            },
+            {
+                "job": 102515697263,
+                "time": 136,
+                "config": "windows-release-x86_64",
+                "r": "4.6.1",
+                "check": "NOTE",
+                "artifact": "10110114193"
+            }
+        ],
+        "_host": "GitHub-Actions",
+        "_buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485",
+        "_status": "success",
+        "_upstream": "https://github.com/ropensci-review-tools/repometrics",
+        "_commit": {
+            "id": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+            "author": "mark padgham <mark.padgham@email.com>",
+            "committer": "GitHub <noreply@github.com>",
+            "message": "Merge pull request #227 from etiennebacher/main\n\nFix typo in `requireNamespace()`",
+            "time": 1788938437
+        },
+        "_maintainer": {
+            "name": "Mark Padgham",
+            "email": "mark.padgham@email.com",
+            "login": "mpadge",
+            "mastodon": "@mpadge@nerdculture.de",
+            "description": "rOpenSci software review lead",
+            "uuid": 6697851,
+            "orcid": "0000-0003-2172-5265"
+        },
+        "_distro": "resolute",
+        "_registered": true,
+        "_dependencies": [
+            {
+                "package": "R",
+                "version": ">= 4.1",
+                "role": "Depends"
+            },
+            {
+                "package": "checkmate",
+                "role": "Imports"
+            },
+            {
+                "package": "cli",
+                "role": "Imports"
+            },
+            {
+                "package": "dplyr",
+                "role": "Imports"
+            },
+            {
+                "package": "foghorn",
+                "role": "Imports"
+            },
+            {
+                "package": "fs",
+                "role": "Imports"
+            },
+            {
+                "package": "gert",
+                "role": "Imports"
+            },
+            {
+                "package": "gh",
+                "role": "Imports"
+            },
+            {
+                "package": "git2r",
+                "role": "Imports"
+            },
+            {
+                "package": "httr2",
+                "role": "Imports"
+            },
+            {
+                "package": "memoise",
+                "role": "Imports"
+            },
+            {
+                "package": "pbapply",
+                "role": "Imports"
+            },
+            {
+                "package": "pkgcheck",
+                "role": "Imports"
+            },
+            {
+                "package": "pkgstats",
+                "role": "Imports"
+            },
+            {
+                "package": "zoo",
+                "role": "Imports"
+            },
+            {
+                "package": "brio",
+                "role": "Suggests"
+            },
+            {
+                "package": "desc",
+                "role": "Suggests"
+            },
+            {
+                "package": "DT",
+                "role": "Suggests"
+            },
+            {
+                "package": "httptest2",
+                "role": "Suggests"
+            },
+            {
+                "package": "jsonlite",
+                "role": "Suggests"
+            },
+            {
+                "package": "knitr",
+                "role": "Suggests"
+            },
+            {
+                "package": "pkgmatch",
+                "role": "Suggests"
+            },
+            {
+                "package": "quarto",
+                "role": "Suggests"
+            },
+            {
+                "package": "readr",
+                "role": "Suggests"
+            },
+            {
+                "package": "rmarkdown",
+                "role": "Suggests"
+            },
+            {
+                "package": "testthat",
+                "version": ">= 3.0.0",
+                "role": "Suggests"
+            },
+            {
+                "package": "tidyr",
+                "role": "Suggests"
+            },
+            {
+                "package": "visNetwork",
+                "role": "Suggests"
+            },
+            {
+                "package": "withr",
+                "role": "Suggests"
+            }
+        ],
+        "_owner": "ropensci-review-tools",
+        "_selfowned": true,
+        "_usedby": 1,
+        "_updates": [
+            {
+                "week": "2025-37",
+                "n": 2
+            },
+            {
+                "week": "2025-39",
+                "n": 17
+            },
+            {
+                "week": "2025-40",
+                "n": 4
+            },
+            {
+                "week": "2025-41",
+                "n": 2
+            },
+            {
+                "week": "2025-51",
+                "n": 1
+            },
+            {
+                "week": "2025-52",
+                "n": 1
+            },
+            {
+                "week": "2026-01",
+                "n": 4
+            },
+            {
+                "week": "2026-03",
+                "n": 1
+            },
+            {
+                "week": "2026-04",
+                "n": 7
+            },
+            {
+                "week": "2026-05",
+                "n": 1
+            },
+            {
+                "week": "2026-07",
+                "n": 1
+            },
+            {
+                "week": "2026-08",
+                "n": 1
+            },
+            {
+                "week": "2026-09",
+                "n": 1
+            },
+            {
+                "week": "2026-26",
+                "n": 1
+            },
+            {
+                "week": "2026-37",
+                "n": 1
+            }
+        ],
+        "_tags": [
+
+        ],
+        "_topics": [
+            "dashboard",
+            "software-metrics"
+        ],
+        "_stars": 3,
+        "_contributors": [
+            {
+                "user": "mpadge",
+                "count": 975,
+                "uuid": 6697851
+            },
+            {
+                "user": "maelle",
+                "count": 2,
+                "uuid": 8360597
+            },
+            {
+                "user": "etiennebacher",
+                "count": 1,
+                "uuid": 52219252
+            }
+        ],
+        "_userbio": {
+            "uuid": 1200269,
+            "type": "organization",
+            "name": "rOpenSci",
+            "followers": 1149,
+            "description": "Tools and R Packages for Open Science"
+        },
+        "_downloads": {
+            "count": 0,
+            "source": "cranlogs/repometrics"
+        },
+        "_devurl": "https://github.com/ropensci-review-tools/repometrics",
+        "_pkgdown": "https://docs.ropensci.org/repometrics/",
+        "_searchresults": 0,
+        "_metadata": {
+            "ropensci_category": "scalereprod"
+        },
+        "_rbuild": "4.6.1",
+        "_assets": [
+            "extra/citation.cff",
+            "extra/citation.html",
+            "extra/citation.json",
+            "extra/citation.txt",
+            "extra/contents.json",
+            "extra/manual.pdf",
+            "extra/readme.html",
+            "extra/readme.md",
+            "extra/repometrics.html",
+            "manual.pdf"
+        ],
+        "_realowner": "ropensci",
+        "_cranurl": false,
+        "_exports": [
+            "repo_pkgstats_history",
+            "repometrics_dashboard",
+            "repometrics_data",
+            "repometrics_data_repo",
+            "repometrics_data_user",
+            "rm_metrics_list"
+        ],
+        "_help": [
+            {
+                "page": "repo_pkgstats_history",
+                "title": "Apply 'pkgstats' across the git history of a package",
+                "concept": [
+                    "data"
+                ],
+                "topics": [
+                    "repo_pkgstats_history"
+                ]
+            },
+            {
+                "page": "repometrics_dashboard",
+                "title": "Start quarto dashboard with results of main repometrics_data_repo function.",
+                "concept": [
+                    "dashboard"
+                ],
+                "topics": [
+                    "repometrics_dashboard"
+                ]
+            },
+            {
+                "page": "repometrics_data",
+                "title": "Collate 'repometrics' data for a local R package.",
+                "concept": [
+                    "data"
+                ],
+                "topics": [
+                    "repometrics_data"
+                ]
+            },
+            {
+                "page": "repometrics_data_repo",
+                "title": "Collate code and repository data for a local R package.",
+                "concept": [
+                    "data"
+                ],
+                "topics": [
+                    "repometrics_data_repo"
+                ]
+            },
+            {
+                "page": "repometrics_data_user",
+                "title": "Extract and combine data on all contributors to a repository.",
+                "concept": [
+                    "data"
+                ],
+                "topics": [
+                    "repometrics_data_user"
+                ]
+            },
+            {
+                "page": "rm_metrics_list",
+                "title": "List all implemented CHAOSS metrics",
+                "concept": [
+                    "auxiliary"
+                ],
+                "topics": [
+                    "rm_metrics_list"
+                ]
+            }
+        ],
+        "_readme": "https://github.com/ropensci-review-tools/repometrics/raw/main/README.md",
+        "_rundeps": [
+            "askpass",
+            "backports",
+            "base64enc",
+            "bit",
+            "bit64",
+            "brew",
+            "brio",
+            "bslib",
+            "cachem",
+            "callr",
+            "checkmate",
+            "cli",
+            "clipr",
+            "codetools",
+            "commonmark",
+            "covr",
+            "cpp11",
+            "crayon",
+            "credentials",
+            "curl",
+            "cyclocomp",
+            "desc",
+            "digest",
+            "dplyr",
+            "evaluate",
+            "fastmap",
+            "foghorn",
+            "fontawesome",
+            "fs",
+            "generics",
+            "gert",
+            "git2r",
+            "gitcreds",
+            "glue",
+            "goodpractice",
+            "here",
+            "highr",
+            "hms",
+            "htmltools",
+            "httr",
+            "httr2",
+            "hunspell",
+            "igraph",
+            "ini",
+            "jquerylib",
+            "jsonlite",
+            "knitr",
+            "lattice",
+            "lifecycle",
+            "lintr",
+            "magrittr",
+            "Matrix",
+            "memoise",
+            "mime",
+            "openssl",
+            "otel",
+            "pbapply",
+            "pillar",
+            "pkgbuild",
+            "pkgcheck",
+            "pkgconfig",
+            "pkgload",
+            "pkgstats",
+            "praise",
+            "prettyunits",
+            "processx",
+            "progress",
+            "ps",
+            "R6",
+            "rappdirs",
+            "rcmdcheck",
+            "Rcpp",
+            "rdtools",
+            "readr",
+            "remotes",
+            "rex",
+            "rlang",
+            "rmarkdown",
+            "roxygen2",
+            "rprojroot",
+            "rstudioapi",
+            "rvest",
+            "sass",
+            "selectr",
+            "sessioninfo",
+            "spelling",
+            "srr",
+            "sys",
+            "tibble",
+            "tidyselect",
+            "tinytex",
+            "treesitter",
+            "treesitter.r",
+            "tzdb",
+            "urlchecker",
+            "utf8",
+            "vctrs",
+            "vroom",
+            "whoami",
+            "withr",
+            "xfun",
+            "xml2",
+            "xmlparsedata",
+            "xopen",
+            "yaml",
+            "zip",
+            "zoo"
+        ],
+        "_vignettes": [
+            {
+                "source": "chaoss-metrics.Rmd",
+                "filename": "chaoss-metrics.html",
+                "title": "CHAOSS metrics",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+
+                ],
+                "created": "2025-03-12 13:10:46",
+                "modified": "2025-10-07 09:59:53",
+                "commits": 2
+            },
+            {
+                "source": "metrics-models.Rmd",
+                "filename": "metrics-models.html",
+                "title": "Metrics models",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "The models used here",
+                    "Combining metrics within models"
+                ],
+                "created": "2025-05-12 08:54:03",
+                "modified": "2025-10-07 09:59:53",
+                "commits": 2
+            }
+        ],
+        "_score": 5.431363764158988,
+        "_indexed": true,
+        "_nocasepkg": "repometrics",
+        "_universes": [
+            "ropensci",
+            "mpadge",
+            "ropensci-review-tools"
+        ],
+        "_binaries": [
+            {
+                "r": "4.7.0",
+                "os": "linux",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:54:18.000Z",
+                "distro": "resolute",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/60092f3db2b5a555c2a28f8867e1b4a14c22a9c17bcda0e35ba521c04e87265c",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.6.1",
+                "os": "linux",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:53:50.000Z",
+                "distro": "resolute",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/32833733e736dfff743071e05ec045748d063974428054d462374b97fa608218",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.5.3",
+                "os": "mac",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:55:26.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/4819d75776742cb3178b8290123f889655176fed6f273709bc059064923fe3f6",
+                "status": "success",
+                "check": "WARNING",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.6.1",
+                "os": "mac",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:55:23.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/cf3aae75178e6d70fe5dd7ab2d029b1344d9def1ef00b9c8395abef07e7469fa",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.6.0",
+                "os": "wasm",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:53:48.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/7470bfc9687e8269f0265f14c01d79cdeb96142a17c5122c0fb4f6c5ac8afcd9",
+                "status": "success",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.7.0",
+                "os": "win",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:52:47.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/9320c43eb72e2ffc9940757be390bcdc89965ff82dce5bc1340e69b46d10ecc6",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.5.3",
+                "os": "win",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:52:32.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/781512b0d7a76c75dd1fa8914e395085692342039de4df55617935df4eb42975",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            },
+            {
+                "r": "4.6.1",
+                "os": "win",
+                "version": "0.2.1.089",
+                "date": "2026-09-09T14:52:29.000Z",
+                "commit": "6e955c059795ee12160a6551b15ffad377f0ffd3",
+                "fileid": "https://r2.ropensci.org/7a608bac8a8053b41a010384ee0b10b4e78851093d4746bfdfb4070b073eeb2c",
+                "status": "success",
+                "check": "NOTE",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365759485"
+            }
+        ]
+    },
+    {
+        "Package": "pkgcheck",
+        "Title": "Package Checks for 'rOpenSci'",
+        "Version": "0.2.0.022",
+        "Authors@R": "c(\nperson(\"Mark\", \"Padgham\", , \"mark.padgham@email.com\", role = c(\"aut\", \"cre\"),\ncomment = c(ORCID = \"0000-0003-2172-5265\")),\nperson(\"Maëlle\", \"Salmon\", role = \"aut\"),\nperson(\"Jacob\", \"Wujciak-Jens\", , \"jacob@wujciak.de\", role = \"aut\",\ncomment = c(ORCID = \"0000-0002-7281-3989\")),\nperson(c(\"Kelli\", \"F.\"), \"Johnson\", , \"kelli.johnson@noaa.gov\", role = \"ctb\",\ncomment = c(ORCID = \"0000-0002-5149-451X\")),\nperson(\"Eunseop\", \"Kim\", , \"markean@pm.me\", role = \"aut\",\ncomment = c(ORCID = \"0009-0000-2138-788X\")),\nperson(\"Katrina\", \"Brock\", , \"katrinabrock266@gmail.com\", role = \"ctb\",\ncomment = c(ORCID = \"0009-0003-4678-9545\")),\nperson(\"Andy\", \"Teucher\", , \"andy.teucher@gmail.com\", role = \"aut\",\ncomment = c(ORCID = \"0000-0002-7840-692X\")),\nperson(\"Eric R.\", \"Scott\", role = \"aut\",\ncomment = c(ORCID = \"0000-0002-7430-7879\"))\n)",
+        "Description": "Check whether a package is ready for submission to the\n'rOpenSci' peer review system ('rOpenSci' authors, 2021;\n<doi:10.5281/zenodo.5556756>). Incorporates the 'goodpractice'\npackage and many additional checks, including aspects related\nto maintenance of online public code repositories.",
+        "License": "GPL-3",
+        "URL": "https://docs.ropensci.org/pkgcheck/,\nhttps://github.com/ropensci-review-tools/pkgcheck",
+        "BugReports": "https://github.com/ropensci-review-tools/pkgcheck/issues",
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "Config/ropensci/maintainer": "staff",
+        "Encoding": "UTF-8",
+        "Language": "en-GB",
+        "NeedsCompilation": "yes",
+        "Roxygen": "list(markdown = TRUE)",
+        "Config/roxygen2/version": "8.1.0",
+        "Config/pak/sysreqs": "cmake git libglpk-dev make libgit2-dev libuv1-dev\nlibxml2-dev libssl-dev libx11-dev",
+        "Repository": "https://ropensci",
+        "Date/Publication": "2026-09-09 06:58:12 UTC",
+        "RemoteUrl": "https://github.com/ropensci-review-tools/pkgcheck",
+        "RemoteRef": "main",
+        "RemoteSha": "19897d0fd132fa0251f563c089b9809e854606de",
+        "Packaged": {
+            "Date": "2026-09-09 14:49:31 UTC",
+            "User": "root"
+        },
+        "Author": "Mark Padgham [aut, cre] (ORCID:\n<https://orcid.org/0000-0003-2172-5265>),\nMaëlle Salmon [aut],\nJacob Wujciak-Jens [aut] (ORCID:\n<https://orcid.org/0000-0002-7281-3989>),\nKelli F. Johnson [ctb] (ORCID: <https://orcid.org/0000-0002-5149-451X>),\nEunseop Kim [aut] (ORCID: <https://orcid.org/0009-0000-2138-788X>),\nKatrina Brock [ctb] (ORCID: <https://orcid.org/0009-0003-4678-9545>),\nAndy Teucher [aut] (ORCID: <https://orcid.org/0000-0002-7840-692X>),\nEric R. Scott [aut] (ORCID: <https://orcid.org/0000-0002-7430-7879>)",
+        "Maintainer": "Mark Padgham <mark.padgham@email.com>",
+        "_user": "ropensci",
+        "_type": "src",
+        "_file": "pkgcheck_0.2.0.022.tar.gz",
+        "_fileid": "https://r2.ropensci.org/7c53c75a134bec6a63bbc8b0a01fafbffd0e5041a3ea106b5bc99d96efc86b20",
+        "_filesize": 406510,
+        "_sha256": "7c53c75a134bec6a63bbc8b0a01fafbffd0e5041a3ea106b5bc99d96efc86b20",
+        "_expires": "2026-12-18T14:58:07.000Z",
+        "_created": "2026-09-09T14:49:31.000Z",
+        "_published": "2026-09-09T14:58:10.337Z",
+        "_jobs": [
+            {
+                "job": 102515448840,
+                "time": 397,
+                "config": "linux-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10110239045"
+            },
+            {
+                "job": 102515448928,
+                "time": 337,
+                "config": "linux-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10110194317"
+            },
+            {
+                "job": 102515448748,
+                "time": 124,
+                "config": "macos-oldrel-arm64",
+                "r": "4.5.3",
+                "check": "ERROR",
+                "artifact": "10110180712"
+            },
+            {
+                "job": 102515448841,
+                "time": 256,
+                "config": "macos-release-arm64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10110277669"
+            },
+            {
+                "job": 102514023029,
+                "time": 218,
+                "config": "pkgdown",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10109922798"
+            },
+            {
+                "job": 102514022853,
+                "time": 225,
+                "config": "source",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10109927704"
+            },
+            {
+                "job": 102515448799,
+                "time": 146,
+                "config": "wasm-release",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10110053846"
+            },
+            {
+                "job": 102515448839,
+                "time": 99,
+                "config": "windows-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10110013472"
+            },
+            {
+                "job": 102515448863,
+                "time": 92,
+                "config": "windows-oldrel-x86_64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10110012412"
+            },
+            {
+                "job": 102515448939,
+                "time": 89,
+                "config": "windows-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10110012226"
+            }
+        ],
+        "_host": "GitHub-Actions",
+        "_buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233",
+        "_status": "success",
+        "_upstream": "https://github.com/ropensci-review-tools/pkgcheck",
+        "_commit": {
+            "id": "19897d0fd132fa0251f563c089b9809e854606de",
+            "author": "mark padgham <mark.padgham@email.com>",
+            "committer": "GitHub <noreply@github.com>",
+            "message": "Merge pull request #412 from Aariq/add-eric\n\nAdd Eric Scott as author",
+            "time": 1788937092
+        },
+        "_maintainer": {
+            "name": "Mark Padgham",
+            "email": "mark.padgham@email.com",
+            "login": "mpadge",
+            "mastodon": "@mpadge@nerdculture.de",
+            "description": "rOpenSci software review lead",
+            "uuid": 6697851,
+            "orcid": "0000-0003-2172-5265"
+        },
+        "_distro": "resolute",
+        "_registered": true,
+        "_dependencies": [
+            {
+                "package": "R",
+                "version": ">= 3.5.0",
+                "role": "Depends"
+            },
+            {
+                "package": "cli",
+                "role": "Imports"
+            },
+            {
+                "package": "covr",
+                "role": "Imports"
+            },
+            {
+                "package": "curl",
+                "role": "Imports"
+            },
+            {
+                "package": "fs",
+                "role": "Imports"
+            },
+            {
+                "package": "gert",
+                "role": "Imports"
+            },
+            {
+                "package": "gh",
+                "role": "Imports"
+            },
+            {
+                "package": "goodpractice",
+                "role": "Imports"
+            },
+            {
+                "package": "httr2",
+                "role": "Imports"
+            },
+            {
+                "package": "methods",
+                "role": "Imports"
+            },
+            {
+                "package": "pkgstats",
+                "role": "Imports"
+            },
+            {
+                "package": "praise",
+                "role": "Imports"
+            },
+            {
+                "package": "rappdirs",
+                "role": "Imports"
+            },
+            {
+                "package": "rmarkdown",
+                "role": "Imports"
+            },
+            {
+                "package": "rprojroot",
+                "role": "Imports"
+            },
+            {
+                "package": "rvest",
+                "role": "Imports"
+            },
+            {
+                "package": "srr",
+                "role": "Imports"
+            },
+            {
+                "package": "withr",
+                "role": "Imports"
+            },
+            {
+                "package": "callr",
+                "role": "Suggests"
+            },
+            {
+                "package": "httptest2",
+                "role": "Suggests"
+            },
+            {
+                "package": "jsonlite",
+                "role": "Suggests"
+            },
+            {
+                "package": "knitr",
+                "role": "Suggests"
+            },
+            {
+                "package": "memoise",
+                "role": "Suggests"
+            },
+            {
+                "package": "pkgbuild",
+                "role": "Suggests"
+            },
+            {
+                "package": "roxygen2",
+                "role": "Suggests"
+            },
+            {
+                "package": "testthat",
+                "version": ">= 3.0.0",
+                "role": "Suggests"
+            },
+            {
+                "package": "xfun",
+                "role": "Suggests"
+            }
+        ],
+        "_owner": "ropensci-review-tools",
+        "_selfowned": true,
+        "_usedby": 3,
+        "_updates": [
+            {
+                "week": "2025-37",
+                "n": 2
+            },
+            {
+                "week": "2025-38",
+                "n": 1
+            },
+            {
+                "week": "2025-39",
+                "n": 3
+            },
+            {
+                "week": "2025-40",
+                "n": 1
+            },
+            {
+                "week": "2025-41",
+                "n": 4
+            },
+            {
+                "week": "2025-44",
+                "n": 1
+            },
+            {
+                "week": "2025-45",
+                "n": 1
+            },
+            {
+                "week": "2025-49",
+                "n": 2
+            },
+            {
+                "week": "2025-50",
+                "n": 3
+            },
+            {
+                "week": "2025-51",
+                "n": 1
+            },
+            {
+                "week": "2026-02",
+                "n": 1
+            },
+            {
+                "week": "2026-03",
+                "n": 2
+            },
+            {
+                "week": "2026-05",
+                "n": 2
+            },
+            {
+                "week": "2026-06",
+                "n": 3
+            },
+            {
+                "week": "2026-07",
+                "n": 2
+            },
+            {
+                "week": "2026-08",
+                "n": 4
+            },
+            {
+                "week": "2026-09",
+                "n": 1
+            },
+            {
+                "week": "2026-10",
+                "n": 2
+            },
+            {
+                "week": "2026-11",
+                "n": 2
+            },
+            {
+                "week": "2026-12",
+                "n": 1
+            },
+            {
+                "week": "2026-14",
+                "n": 5
+            },
+            {
+                "week": "2026-16",
+                "n": 4
+            },
+            {
+                "week": "2026-18",
+                "n": 1
+            },
+            {
+                "week": "2026-19",
+                "n": 1
+            },
+            {
+                "week": "2026-21",
+                "n": 1
+            },
+            {
+                "week": "2026-23",
+                "n": 4
+            },
+            {
+                "week": "2026-25",
+                "n": 6
+            },
+            {
+                "week": "2026-26",
+                "n": 2
+            },
+            {
+                "week": "2026-27",
+                "n": 3
+            },
+            {
+                "week": "2026-29",
+                "n": 3
+            },
+            {
+                "week": "2026-30",
+                "n": 1
+            },
+            {
+                "week": "2026-32",
+                "n": 2
+            },
+            {
+                "week": "2026-35",
+                "n": 2
+            },
+            {
+                "week": "2026-36",
+                "n": 8
+            },
+            {
+                "week": "2026-37",
+                "n": 1
+            }
+        ],
+        "_tags": [
+
+        ],
+        "_topics": [
+            "compliance-automation",
+            "software-analysis",
+            "software-checking"
+        ],
+        "_stars": 28,
+        "_contributors": [
+            {
+                "user": "mpadge",
+                "count": 1775,
+                "uuid": 6697851
+            },
+            {
+                "user": "maelle",
+                "count": 40,
+                "uuid": 8360597
+            },
+            {
+                "user": "aariq",
+                "count": 38,
+                "uuid": 25404783
+            },
+            {
+                "user": "assignuser",
+                "count": 30,
+                "uuid": 16141871
+            },
+            {
+                "user": "ateucher",
+                "count": 23,
+                "uuid": 2816635
+            },
+            {
+                "user": "markean",
+                "count": 9,
+                "uuid": 46692399
+            },
+            {
+                "user": "katrinabrock",
+                "count": 7,
+                "uuid": 16126168
+            },
+            {
+                "user": "antoinesoetewey",
+                "count": 4,
+                "uuid": 17910063
+            },
+            {
+                "user": "n-kall",
+                "count": 4,
+                "uuid": 33577035
+            },
+            {
+                "user": "jessealderliesten",
+                "count": 3,
+                "uuid": 59017087
+            },
+            {
+                "user": "kellijohnson-noaa",
+                "count": 2,
+                "uuid": 4108564
+            },
+            {
+                "user": "e-kotov",
+                "count": 2,
+                "uuid": 8681379
+            },
+            {
+                "user": "annakrystalli",
+                "count": 1,
+                "uuid": 5583057
+            },
+            {
+                "user": "etiennebacher",
+                "count": 1,
+                "uuid": 52219252
+            }
+        ],
+        "_userbio": {
+            "uuid": 1200269,
+            "type": "organization",
+            "name": "rOpenSci",
+            "followers": 1149,
+            "description": "Tools and R Packages for Open Science"
+        },
+        "_downloads": {
+            "count": 0,
+            "source": "cranlogs/pkgcheck"
+        },
+        "_devurl": "https://github.com/ropensci-review-tools/pkgcheck",
+        "_pkgdown": "https://docs.ropensci.org/pkgcheck/",
+        "_searchresults": 57,
+        "_metadata": {
+            "ropensci_category": "scalereprod"
+        },
+        "_rbuild": "4.6.1",
+        "_assets": [
+            "extra/citation.cff",
+            "extra/citation.html",
+            "extra/citation.json",
+            "extra/citation.txt",
+            "extra/contents.json",
+            "extra/manual.pdf",
+            "extra/NEWS.html",
+            "extra/NEWS.txt",
+            "extra/pkgcheck.html",
+            "extra/readme.html",
+            "extra/readme.md",
+            "manual.pdf"
+        ],
+        "_realowner": "ropensci",
+        "_cranurl": false,
+        "_exports": [
+            "checks_to_markdown",
+            "fn_names_on_cran",
+            "get_default_github_branch",
+            "get_gh_token",
+            "get_latest_commit",
+            "list_pkgchecks",
+            "logfile_names",
+            "pkgcheck",
+            "pkgcheck_bg",
+            "read_pkg_guide",
+            "render_md2html",
+            "use_github_action_pkgcheck"
+        ],
+        "_help": [
+            {
+                "page": "checks_to_markdown",
+                "title": "Convert checks to markdown-formatted report",
+                "concept": [
+                    "extra"
+                ],
+                "topics": [
+                    "checks_to_markdown"
+                ]
+            },
+            {
+                "page": "fn_names_on_cran",
+                "title": "Check whether a function name exists in any CRAN packages",
+                "concept": [
+                    "extra"
+                ],
+                "topics": [
+                    "fn_names_on_cran"
+                ]
+            },
+            {
+                "page": "get_default_github_branch",
+                "title": "get_default_github_branch",
+                "concept": [
+                    "github"
+                ],
+                "topics": [
+                    "get_default_github_branch"
+                ]
+            },
+            {
+                "page": "get_gh_token",
+                "title": "Get GitHub token",
+                "concept": [
+                    "github"
+                ],
+                "topics": [
+                    "get_gh_token"
+                ]
+            },
+            {
+                "page": "get_latest_commit",
+                "title": "get_latest_commit",
+                "concept": [
+                    "github"
+                ],
+                "topics": [
+                    "get_latest_commit"
+                ]
+            },
+            {
+                "page": "list_pkgchecks",
+                "title": "List all checks currently implemented",
+                "concept": [
+                    "extra"
+                ],
+                "topics": [
+                    "list_pkgchecks"
+                ]
+            },
+            {
+                "page": "logfile_names",
+                "title": "Set up stdout & stderr cache files for 'r_bg' process",
+                "concept": [
+                    "extra"
+                ],
+                "topics": [
+                    "logfile_names"
+                ]
+            },
+            {
+                "page": "pkgcheck",
+                "title": "Generate report on package compliance with rOpenSci Statistical Software requirements",
+                "concept": [
+                    "pkgcheck_fns"
+                ],
+                "topics": [
+                    "pkgcheck"
+                ]
+            },
+            {
+                "page": "pkgcheck_bg",
+                "title": "Generate report on package compliance with rOpenSci Statistical Software requirements as background process",
+                "concept": [
+                    "pkgcheck_fns"
+                ],
+                "topics": [
+                    "pkgcheck_bg"
+                ]
+            },
+            {
+                "page": "print.pkgcheck",
+                "title": "Generic print method for 'pkgcheck' objects.",
+                "concept": [
+                    "pkgcheck_fns"
+                ],
+                "topics": [
+                    "print.pkgcheck"
+                ]
+            },
+            {
+                "page": "read_pkg_guide",
+                "title": "Browse packaging guidelines",
+                "topics": [
+                    "read_pkg_guide"
+                ]
+            },
+            {
+                "page": "render_md2html",
+                "title": "render markdown-formatted input into 'html'",
+                "concept": [
+                    "extra"
+                ],
+                "topics": [
+                    "render_md2html"
+                ]
+            },
+            {
+                "page": "use_github_action_pkgcheck",
+                "title": "Use pkgcheck Github Action",
+                "concept": [
+                    "github"
+                ],
+                "topics": [
+                    "use_github_action_pkgcheck"
+                ]
+            }
+        ],
+        "_readme": "https://github.com/ropensci-review-tools/pkgcheck/raw/main/README.md",
+        "_rundeps": [
+            "askpass",
+            "backports",
+            "base64enc",
+            "bit",
+            "bit64",
+            "brew",
+            "brio",
+            "bslib",
+            "cachem",
+            "callr",
+            "checkmate",
+            "cli",
+            "clipr",
+            "codetools",
+            "commonmark",
+            "covr",
+            "cpp11",
+            "crayon",
+            "credentials",
+            "curl",
+            "cyclocomp",
+            "desc",
+            "digest",
+            "dplyr",
+            "evaluate",
+            "fastmap",
+            "fontawesome",
+            "fs",
+            "generics",
+            "gert",
+            "gitcreds",
+            "glue",
+            "goodpractice",
+            "here",
+            "highr",
+            "hms",
+            "htmltools",
+            "httr",
+            "httr2",
+            "hunspell",
+            "igraph",
+            "ini",
+            "jquerylib",
+            "jsonlite",
+            "knitr",
+            "lattice",
+            "lifecycle",
+            "lintr",
+            "magrittr",
+            "Matrix",
+            "memoise",
+            "mime",
+            "openssl",
+            "otel",
+            "pillar",
+            "pkgbuild",
+            "pkgconfig",
+            "pkgload",
+            "pkgstats",
+            "praise",
+            "prettyunits",
+            "processx",
+            "progress",
+            "ps",
+            "R6",
+            "rappdirs",
+            "rcmdcheck",
+            "Rcpp",
+            "rdtools",
+            "readr",
+            "remotes",
+            "rex",
+            "rlang",
+            "rmarkdown",
+            "roxygen2",
+            "rprojroot",
+            "rstudioapi",
+            "rvest",
+            "sass",
+            "selectr",
+            "sessioninfo",
+            "spelling",
+            "srr",
+            "sys",
+            "tibble",
+            "tidyselect",
+            "tinytex",
+            "treesitter",
+            "treesitter.r",
+            "tzdb",
+            "urlchecker",
+            "utf8",
+            "vctrs",
+            "vroom",
+            "whoami",
+            "withr",
+            "xfun",
+            "xml2",
+            "xmlparsedata",
+            "xopen",
+            "yaml",
+            "zip"
+        ],
+        "_vignettes": [
+            {
+                "source": "autotest-pkgcheck-gp.Rmd",
+                "filename": "autotest-pkgcheck-gp.html",
+                "title": "autotest, pkgcheck, goodpractice - which tool does what?",
+                "author": "Mark Padgham",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "autotest",
+                    "Changes in response to autotest",
+                    "goodpractice",
+                    "Changes in response to goodpractice",
+                    "pkgcheck",
+                    "Changes in response to pkgcheck"
+                ],
+                "created": "2026-09-01 11:25:22",
+                "modified": "2026-09-01 11:56:43",
+                "commits": 2
+            },
+            {
+                "source": "list-checks.Rmd",
+                "filename": "list-checks.html",
+                "title": "Current pkgcheck checks",
+                "author": "Mark Padgham",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+
+                ],
+                "created": "2022-08-23 09:52:23",
+                "modified": "2022-08-23 11:19:24",
+                "commits": 3
+            },
+            {
+                "source": "extending-checks.Rmd",
+                "filename": "extending-checks.html",
+                "title": "Adding or modifying checks",
+                "author": "Mark Padgham",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "1. The check function",
+                    "2. The output function",
+                    "3. Creating new checks",
+                    "3.1 New Local Checks (for package users)",
+                    "3.2 New pkgcheck Checks (for pkgcheck developers)",
+                    "3.2a Check types",
+                    "3.2b Testing new checks"
+                ],
+                "created": "2021-09-03 13:05:29",
+                "modified": "2026-09-03 11:21:04",
+                "commits": 35
+            },
+            {
+                "source": "environment.Rmd",
+                "filename": "environment.html",
+                "title": "The 'pkgcheck' computational environment",
+                "author": "Mark Padgham",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "The pkgcheck Docker container",
+                    "How to get your package to pass rOpenSci's 'pkgcheck' system"
+                ],
+                "created": "2025-03-11 16:51:51",
+                "modified": "2026-09-01 11:56:43",
+                "commits": 3
+            }
+        ],
+        "_score": 9.11631678877513,
+        "_indexed": true,
+        "_nocasepkg": "pkgcheck",
+        "_universes": [
+            "ropensci",
+            "mpadge",
+            "ropensci-review-tools"
+        ],
+        "_binaries": [
+            {
+                "r": "4.7.0",
+                "os": "linux",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:53:08.000Z",
+                "distro": "resolute",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/eb09f2688023af8e7708d82fa762d5910e0d116f5b42844f07c7b6245217f959",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.6.1",
+                "os": "linux",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:52:52.000Z",
+                "distro": "resolute",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/f02f703c7d8ed4434f9a01d8680c5944ebccff3af8b6d17ab766662ddbc3e16c",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.5.3",
+                "os": "mac",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:54:55.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/f149c47d60fb24d481cf8649659c9e9afdc4311d43608e2b16bda822d47f039f",
+                "status": "failure",
+                "check": "ERROR",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.6.1",
+                "os": "mac",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:54:23.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/c93e8da2ff64aeb486e9e10cdd1da0f6187ea0e60dd3aef5b7a8bdfd9aa32d9f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.6.0",
+                "os": "wasm",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:52:32.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/1f7139ef05d0fbcbd76b622a9c0d9e0e65e8e78928c1a04f47b51eccbb61ec20",
+                "status": "success",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.7.0",
+                "os": "win",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:51:02.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/c26584df3e91d3e56de6d34634bafa827f0183d19501cd8aa712071d8af312c7",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.5.3",
+                "os": "win",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:51:04.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/cf88dc1e8767f288a2b39a19ebda9ae9c91901871e3ffb657945cefd767f74ab",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            },
+            {
+                "r": "4.6.1",
+                "os": "win",
+                "version": "0.2.0.022",
+                "date": "2026-09-09T14:51:08.000Z",
+                "commit": "19897d0fd132fa0251f563c089b9809e854606de",
+                "fileid": "https://r2.ropensci.org/9b543fc4b55fb0e95290cda4fe6f1571df4f62b50d4ecc6bef0d16650c8665b4",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34365754233"
+            }
+        ]
+    },
+    {
+        "Package": "promoutils",
+        "Title": "Utilities for Promoting rOpenSci",
+        "Version": "0.6.2",
+        "Authors@R": "c(\nperson(\"Steffi\", \"LaZerte\", role = c(\"aut\", \"cre\"), email = \"sel@steffilazerte.ca\",\ncomment = c(ORCID = \"0000-0002-7690-8360\")),\nperson(\"Yanina\", \"Bellini Saibene\", role = \"ctb\", email = \"yabellini@ropensci.org\",\ncomment = c(ORCID = \"0000-0002-4522-7466\")))",
+        "Description": "Utility functions and workflows for promoting community\nevents and community members on rOpenSci website and social\nmedia.",
+        "License": "GPL (>= 3)",
+        "Encoding": "UTF-8",
+        "LazyData": "true",
+        "Roxygen": "list(markdown = TRUE)",
+        "RoxygenNote": "7.3.3",
+        "Config/testthat/edition": "3",
+        "Config/ropensci/maintainer": "staff",
+        "URL": "https://docs.ropensci.org/promoutils,\nhttps://github.com/ropensci-org/promoutils",
+        "BugReports": "https://github.com/ropensci-org/promoutils/issues",
+        "Remotes": [
+            "ebbertd/matomoR",
+            "ropensci-org/monarch"
+        ],
+        "Config/Needs/website": "rmarkdown",
+        "VignetteBuilder": "knitr",
+        "Config/pak/sysreqs": "cmake git make libgit2-dev libicu-dev libuv1-dev\nlibssl-dev libx11-dev",
+        "Repository": "https://ropensci",
+        "Date/Publication": "2026-09-08 19:27:36 UTC",
+        "RemoteUrl": "https://github.com/ropensci-org/promoutils",
+        "RemoteRef": "main",
+        "RemoteSha": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+        "NeedsCompilation": "no",
+        "Packaged": {
+            "Date": "2026-09-08 22:06:16 UTC",
+            "User": "root"
+        },
+        "Author": "Steffi LaZerte [aut, cre] (ORCID:\n<https://orcid.org/0000-0002-7690-8360>),\nYanina Bellini Saibene [ctb] (ORCID:\n<https://orcid.org/0000-0002-4522-7466>)",
+        "Maintainer": "Steffi LaZerte <sel@steffilazerte.ca>",
+        "_user": "ropensci",
+        "_type": "src",
+        "_file": "promoutils_0.6.2.tar.gz",
+        "_fileid": "https://r2.ropensci.org/fdb2694f8c06e31821d52622db11aca9c58c9e46049912857c63f276b18782ab",
+        "_filesize": 1814698,
+        "_sha256": "fdb2694f8c06e31821d52622db11aca9c58c9e46049912857c63f276b18782ab",
+        "_expires": "2026-12-17T22:13:11.000Z",
+        "_created": "2026-09-08T22:06:16.000Z",
+        "_published": "2026-09-08T22:13:15.711Z",
+        "_jobs": [
+            {
+                "job": 102255961450,
+                "time": 165,
+                "config": "linux-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10078895086"
+            },
+            {
+                "job": 102255961333,
+                "time": 176,
+                "config": "linux-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10078901344"
+            },
+            {
+                "job": 102255961386,
+                "time": 130,
+                "config": "macos-oldrel-arm64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10078975923"
+            },
+            {
+                "job": 102255961334,
+                "time": 177,
+                "config": "macos-release-arm64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10078983623"
+            },
+            {
+                "job": 102254789415,
+                "time": 193,
+                "config": "pkgdown",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10078773008"
+            },
+            {
+                "job": 102254789188,
+                "time": 246,
+                "config": "source",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10078801981"
+            },
+            {
+                "job": 102255961452,
+                "time": 127,
+                "config": "wasm-release",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10078874060"
+            },
+            {
+                "job": 102255961374,
+                "time": 146,
+                "config": "windows-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10078884313"
+            },
+            {
+                "job": 102255961570,
+                "time": 135,
+                "config": "windows-oldrel-x86_64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10078878378"
+            },
+            {
+                "job": 102255961378,
+                "time": 121,
+                "config": "windows-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10078870830"
+            }
+        ],
+        "_host": "GitHub-Actions",
+        "_buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750",
+        "_status": "success",
+        "_upstream": "https://github.com/ropensci-org/promoutils",
+        "_commit": {
+            "id": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+            "author": "Steffi LaZerte <steffi@steffi.ca>",
+            "committer": "GitHub <noreply@github.com>",
+            "message": "Merge pull request #11 from ropensci-org/vignette-slack\n\nVignette with example for Slack",
+            "time": 1788895656
+        },
+        "_maintainer": {
+            "name": "Steffi LaZerte",
+            "email": "sel@steffilazerte.ca",
+            "login": "steffilazerte",
+            "mastodon": "@steffilazerte@fosstodon.org",
+            "orcid": "0000-0002-7690-8360",
+            "description": "Independent Consultant and R Programmer/Teacher; Behavioural Ecologist; Citizen Science Enthusiast; rOpenSci Community Assistant. She/Her",
+            "uuid": 14676081
+        },
+        "_distro": "resolute",
+        "_registered": true,
+        "_dependencies": [
+            {
+                "package": "R",
+                "version": ">= 4.2.0",
+                "role": "Depends"
+            },
+            {
+                "package": "cli",
+                "role": "Imports"
+            },
+            {
+                "package": "clipr",
+                "role": "Imports"
+            },
+            {
+                "package": "dplyr",
+                "role": "Imports"
+            },
+            {
+                "package": "gert",
+                "version": ">= 2.1.5",
+                "role": "Imports"
+            },
+            {
+                "package": "gh",
+                "version": ">= 1.6.0",
+                "role": "Imports"
+            },
+            {
+                "package": "glue",
+                "role": "Imports"
+            },
+            {
+                "package": "googledrive",
+                "version": ">= 2.1.1",
+                "role": "Imports"
+            },
+            {
+                "package": "httr2",
+                "version": ">= 1.0.0",
+                "role": "Imports"
+            },
+            {
+                "package": "jsonlite",
+                "role": "Imports"
+            },
+            {
+                "package": "lubridate",
+                "role": "Imports"
+            },
+            {
+                "package": "memoise",
+                "version": ">= 2.0.1",
+                "role": "Imports"
+            },
+            {
+                "package": "monarch",
+                "version": ">= 0.1.0",
+                "role": "Imports"
+            },
+            {
+                "package": "purrr",
+                "role": "Imports"
+            },
+            {
+                "package": "readr",
+                "role": "Imports"
+            },
+            {
+                "package": "rlang",
+                "role": "Imports"
+            },
+            {
+                "package": "stringr",
+                "role": "Imports"
+            },
+            {
+                "package": "tidyr",
+                "role": "Imports"
+            },
+            {
+                "package": "yaml",
+                "role": "Imports"
+            },
+            {
+                "package": "gitcreds",
+                "role": "Suggests"
+            },
+            {
+                "package": "httptest2",
+                "role": "Suggests"
+            },
+            {
+                "package": "httpuv",
+                "role": "Suggests"
+            },
+            {
+                "package": "keyring",
+                "version": ">= 1.4.1",
+                "role": "Suggests"
+            },
+            {
+                "package": "knitr",
+                "role": "Suggests"
+            },
+            {
+                "package": "matomoR",
+                "version": ">= 0.0.1",
+                "role": "Suggests"
+            },
+            {
+                "package": "pandoc",
+                "role": "Suggests"
+            },
+            {
+                "package": "rmarkdown",
+                "role": "Suggests"
+            },
+            {
+                "package": "testthat",
+                "version": ">= 3.0.0",
+                "role": "Suggests"
+            },
+            {
+                "package": "usethis",
+                "version": ">= 3.1.0",
+                "role": "Suggests"
+            },
+            {
+                "package": "withr",
+                "role": "Suggests"
+            }
+        ],
+        "_owner": "ropensci-org",
+        "_selfowned": true,
+        "_usedby": 0,
+        "_updates": [
+            {
+                "week": "2026-04",
+                "n": 1
+            },
+            {
+                "week": "2026-05",
+                "n": 1
+            },
+            {
+                "week": "2026-09",
+                "n": 1
+            },
+            {
+                "week": "2026-14",
+                "n": 3
+            },
+            {
+                "week": "2026-19",
+                "n": 6
+            },
+            {
+                "week": "2026-20",
+                "n": 18
+            },
+            {
+                "week": "2026-22",
+                "n": 6
+            },
+            {
+                "week": "2026-23",
+                "n": 4
+            },
+            {
+                "week": "2026-24",
+                "n": 5
+            },
+            {
+                "week": "2026-25",
+                "n": 1
+            },
+            {
+                "week": "2026-26",
+                "n": 12
+            },
+            {
+                "week": "2026-27",
+                "n": 5
+            },
+            {
+                "week": "2026-30",
+                "n": 2
+            },
+            {
+                "week": "2026-31",
+                "n": 1
+            },
+            {
+                "week": "2026-37",
+                "n": 1
+            }
+        ],
+        "_tags": [
+            {
+                "name": "v0.5.0",
+                "date": "2026-04-02"
+            }
+        ],
+        "_stars": 4,
+        "_contributors": [
+            {
+                "user": "steffilazerte",
+                "count": 274,
+                "uuid": 14676081
+            },
+            {
+                "user": "maelle",
+                "count": 3,
+                "uuid": 8360597
+            },
+            {
+                "user": "yabellini",
+                "count": 3,
+                "uuid": 2473676
+            }
+        ],
+        "_userbio": {
+            "uuid": 1200269,
+            "type": "organization",
+            "name": "rOpenSci",
+            "followers": 1149,
+            "description": "Tools and R Packages for Open Science"
+        },
+        "_downloads": {
+            "count": 0,
+            "source": "cranlogs/promoutils"
+        },
+        "_devurl": "https://github.com/ropensci-org/promoutils",
+        "_pkgdown": "https://docs.ropensci.org/promoutils",
+        "_searchresults": 19,
+        "_metadata": {
+            "ropensci_category": "scalereprod"
+        },
+        "_rbuild": "4.6.1",
+        "_assets": [
+            "extra/citation.cff",
+            "extra/citation.html",
+            "extra/citation.json",
+            "extra/citation.txt",
+            "extra/contents.json",
+            "extra/manual.pdf",
+            "extra/NEWS.html",
+            "extra/NEWS.txt",
+            "extra/promoutils.html",
+            "extra/readme.html",
+            "extra/readme.md",
+            "manual.pdf"
+        ],
+        "_realowner": "ropensci",
+        "_cranurl": false,
+        "_exports": [
+            ".gh_cache",
+            "by_platform",
+            "cw_checkin",
+            "cw_checkin_event",
+            "cw_details",
+            "cw_docs_link",
+            "cw_event",
+            "cw_issue",
+            "cw_slack_hour",
+            "cw_slides_link",
+            "cw_socials",
+            "dict_helpwanted",
+            "dict_usecases",
+            "gh_issue_close",
+            "gh_issue_fetch",
+            "gh_issue_fmt",
+            "gh_issue_post",
+            "help_fetch",
+            "help_handles",
+            "help_post",
+            "hw_issues",
+            "keys_check",
+            "keys_set",
+            "li_auth",
+            "li_posts_read",
+            "li_posts_write",
+            "li_urn_me",
+            "matomo_all",
+            "matomo_blogposts",
+            "matomo_dir",
+            "matomo_read",
+            "matomo_update",
+            "next_date",
+            "pkg_authors",
+            "pkgs_ru",
+            "post_time",
+            "prs_list",
+            "replace_emoji",
+            "slack_channels",
+            "slack_cleanup",
+            "slack_message_rm",
+            "slack_message_rm_bulk",
+            "slack_messages",
+            "slack_posts_write",
+            "slack_scheduled_list",
+            "slack_scheduled_rm",
+            "slack_user",
+            "slack_users",
+            "socials_post_issue",
+            "tt_post",
+            "tt_review",
+            "uc_fetch",
+            "uc_fmt",
+            "uc_handles",
+            "uc_post",
+            "url_from_api",
+            "url_from_path",
+            "wordlist_create",
+            "wordlist_update",
+            "yaml_extract"
+        ],
+        "_datasets": [
+            {
+                "name": "ro_urn",
+                "title": "rOpenSci linkedin organization URN",
+                "object": "ro_urn",
+                "class": [
+                    "character"
+                ],
+                "fields": [
+
+                ],
+                "table": false,
+                "tojson": true
+            }
+        ],
+        "_help": [
+            {
+                "page": "dot-gh_cache",
+                "title": "Create a cached version of the GH api calls",
+                "topics": [
+                    ".gh_cache"
+                ]
+            },
+            {
+                "page": "by_platform",
+                "title": "Arrange by platform",
+                "topics": [
+                    "by_platform"
+                ]
+            },
+            {
+                "page": "cw_checkin",
+                "title": "Create draft message for checking in with Cohosts",
+                "topics": [
+                    "cw_checkin"
+                ]
+            },
+            {
+                "page": "cw_checkin_event",
+                "title": "Create draft message for checking in with Cohosts about the Event review",
+                "topics": [
+                    "cw_checkin_event"
+                ]
+            },
+            {
+                "page": "cw_details",
+                "title": "Fetch details about coworking sessions",
+                "topics": [
+                    "cw_details"
+                ]
+            },
+            {
+                "page": "cw_docs_link",
+                "title": "Get link to Coworking docs",
+                "topics": [
+                    "cw_docs_link"
+                ]
+            },
+            {
+                "page": "cw_event",
+                "title": "Create a draft event for coworking",
+                "topics": [
+                    "cw_event"
+                ]
+            },
+            {
+                "page": "cw_issue",
+                "title": "Create Coworking To-Dos",
+                "topics": [
+                    "cw_issue"
+                ]
+            },
+            {
+                "page": "cw_slack_hour",
+                "title": "Schedule 1-hour before messages on rOpenSci Slack",
+                "topics": [
+                    "cw_slack_hour"
+                ]
+            },
+            {
+                "page": "cw_slides_link",
+                "title": "Open and fetch link to coworking slides",
+                "topics": [
+                    "cw_slides_link"
+                ]
+            },
+            {
+                "page": "cw_socials",
+                "title": "Create a draft post for coworking",
+                "topics": [
+                    "cw_socials"
+                ]
+            },
+            {
+                "page": "dict_helpwanted",
+                "title": "Dictionary for help-wanted",
+                "topics": [
+                    "dict_helpwanted"
+                ]
+            },
+            {
+                "page": "dict_usecases",
+                "title": "Dictionary for usecases",
+                "topics": [
+                    "dict_usecases"
+                ]
+            },
+            {
+                "page": "gh_issue_close",
+                "title": "Close a GH issue",
+                "topics": [
+                    "gh_issue_close"
+                ]
+            },
+            {
+                "page": "gh_issue_fetch",
+                "title": "Fetch issues from a GH repository",
+                "topics": [
+                    "gh_issue_fetch"
+                ]
+            },
+            {
+                "page": "gh_issue_fmt",
+                "title": "Format issues list from GH",
+                "topics": [
+                    "gh_issue_fmt"
+                ]
+            },
+            {
+                "page": "gh_issue_post",
+                "title": "Create a GH issues post",
+                "topics": [
+                    "gh_issue_post"
+                ]
+            },
+            {
+                "page": "help_fetch",
+                "title": "Fetch help wanted issues",
+                "topics": [
+                    "help_fetch"
+                ]
+            },
+            {
+                "page": "help_handles",
+                "title": "Get social media handles for helpwanted issues",
+                "topics": [
+                    "help_handles"
+                ]
+            },
+            {
+                "page": "help_post",
+                "title": "Create help-wanted 'socials_post_issue()' command",
+                "topics": [
+                    "help_post"
+                ]
+            },
+            {
+                "page": "hw_issues",
+                "title": "Create help wanted JSON file",
+                "topics": [
+                    "hw_issues"
+                ]
+            },
+            {
+                "page": "keys_check",
+                "title": "Key status of credentials",
+                "topics": [
+                    "keys_check"
+                ]
+            },
+            {
+                "page": "keys_set",
+                "title": "Set keys required for promoutils API access",
+                "topics": [
+                    "keys_set"
+                ]
+            },
+            {
+                "page": "li_auth",
+                "title": "Authorize rOpenSci client with LinkedIn",
+                "topics": [
+                    "li_auth"
+                ]
+            },
+            {
+                "page": "li_posts_read",
+                "title": "Get a list of recent posts by rOpenSci",
+                "topics": [
+                    "li_posts_read"
+                ]
+            },
+            {
+                "page": "li_posts_write",
+                "title": "Post to LinkedIn",
+                "topics": [
+                    "li_posts_write"
+                ]
+            },
+            {
+                "page": "li_urn_me",
+                "title": "Fetch your personal URN number",
+                "topics": [
+                    "li_urn_me"
+                ]
+            },
+            {
+                "page": "matomo_all",
+                "title": "Download all Matomo historic views",
+                "topics": [
+                    "matomo_all"
+                ]
+            },
+            {
+                "page": "matomo_blogposts",
+                "title": "Formats and filter Matomo views to blogposts",
+                "topics": [
+                    "matomo_blogposts"
+                ]
+            },
+            {
+                "page": "matomo_dir",
+                "title": "Cache folder to store matomo views",
+                "topics": [
+                    "matomo_dir"
+                ]
+            },
+            {
+                "page": "matomo_read",
+                "title": "Read Matomo views saved to disk",
+                "topics": [
+                    "matomo_read"
+                ]
+            },
+            {
+                "page": "matomo_update",
+                "title": "Update Matomo views",
+                "topics": [
+                    "matomo_update"
+                ]
+            },
+            {
+                "page": "next_date",
+                "title": "Find the next date",
+                "topics": [
+                    "next_date"
+                ]
+            },
+            {
+                "page": "pkg_authors",
+                "title": "Get package author names",
+                "topics": [
+                    "pkg_authors"
+                ]
+            },
+            {
+                "page": "pkgs_ru",
+                "title": "List of packages and details from R-Universe API",
+                "topics": [
+                    "pkgs_ru"
+                ]
+            },
+            {
+                "page": "post_time",
+                "title": "Get the next post date/time",
+                "topics": [
+                    "post_time"
+                ]
+            },
+            {
+                "page": "prs_list",
+                "title": "List PRs",
+                "topics": [
+                    "prs_list"
+                ]
+            },
+            {
+                "page": "replace_emoji",
+                "title": "Replace emoji codes with unicode",
+                "topics": [
+                    "replace_emoji"
+                ]
+            },
+            {
+                "page": "ro_urn",
+                "title": "rOpenSci linkedin organization URN",
+                "topics": [
+                    "ro_urn"
+                ]
+            },
+            {
+                "page": "slack_channels",
+                "title": "List channels and their ids",
+                "topics": [
+                    "slack_channels"
+                ]
+            },
+            {
+                "page": "slack_cleanup",
+                "title": "Clean up old scheduled messages",
+                "topics": [
+                    "slack_cleanup"
+                ]
+            },
+            {
+                "page": "slack_message_rm",
+                "title": "Remove a Slack message",
+                "topics": [
+                    "slack_message_rm"
+                ]
+            },
+            {
+                "page": "slack_message_rm_bulk",
+                "title": "Bulk remove Slack messages",
+                "topics": [
+                    "slack_message_rm_bulk"
+                ]
+            },
+            {
+                "page": "slack_messages",
+                "title": "Get the last 100 messages from a channel",
+                "topics": [
+                    "slack_messages"
+                ]
+            },
+            {
+                "page": "slack_posts_write",
+                "title": "Write Slack message",
+                "topics": [
+                    "slack_posts_write"
+                ]
+            },
+            {
+                "page": "slack_scheduled_list",
+                "title": "List currently scheduled messages",
+                "topics": [
+                    "slack_scheduled_list"
+                ]
+            },
+            {
+                "page": "slack_scheduled_rm",
+                "title": "Delete a scheduled message",
+                "topics": [
+                    "slack_scheduled_rm"
+                ]
+            },
+            {
+                "page": "slack_user",
+                "title": "Fetch details on a specific user",
+                "topics": [
+                    "slack_user"
+                ]
+            },
+            {
+                "page": "slack_users",
+                "title": "Fetch a list of Slack users",
+                "topics": [
+                    "slack_users"
+                ]
+            },
+            {
+                "page": "socials_post_issue",
+                "title": "Create a draft issue to post to Mastodon and LinkedIn",
+                "topics": [
+                    "socials_post_issue"
+                ]
+            },
+            {
+                "page": "tt_post",
+                "title": "Create Throwback Thursday 'socials_post_issue()' command",
+                "topics": [
+                    "tt_post"
+                ]
+            },
+            {
+                "page": "tt_review",
+                "title": "Review blogposts views for Throwback Thursday highlights",
+                "topics": [
+                    "tt_review"
+                ]
+            },
+            {
+                "page": "uc_fetch",
+                "title": "Fetch and format use cases from a GitHub Discussion board",
+                "topics": [
+                    "uc_fetch"
+                ]
+            },
+            {
+                "page": "uc_fmt",
+                "title": "Extract out resource information",
+                "topics": [
+                    "uc_fmt"
+                ]
+            },
+            {
+                "page": "uc_handles",
+                "title": "Add social media handles",
+                "topics": [
+                    "uc_handles"
+                ]
+            },
+            {
+                "page": "uc_post",
+                "title": "Create use case 'socials_post_issue()' command",
+                "topics": [
+                    "uc_post"
+                ]
+            },
+            {
+                "page": "url_from_api",
+                "title": "Convert an api url to a user-facing url",
+                "topics": [
+                    "url_from_api"
+                ]
+            },
+            {
+                "page": "url_from_path",
+                "title": "Create url from content date and slug",
+                "topics": [
+                    "url_from_path"
+                ]
+            },
+            {
+                "page": "wordlist_create",
+                "title": "Create Word lists for spelling dictionaries",
+                "topics": [
+                    "wordlist_create"
+                ]
+            },
+            {
+                "page": "wordlist_update",
+                "title": "Add specific words to the wordlist",
+                "topics": [
+                    "wordlist_update"
+                ]
+            },
+            {
+                "page": "yaml_extract",
+                "title": "Extract YAML keys from block",
+                "topics": [
+                    "yaml_extract"
+                ]
+            }
+        ],
+        "_readme": "https://github.com/ropensci-org/promoutils/raw/main/README.md",
+        "_rundeps": [
+            "askpass",
+            "bit",
+            "bit64",
+            "cachem",
+            "cli",
+            "clipr",
+            "cpp11",
+            "crayon",
+            "credentials",
+            "curl",
+            "desc",
+            "dplyr",
+            "fastmap",
+            "fs",
+            "gargle",
+            "generics",
+            "gert",
+            "gitcreds",
+            "glue",
+            "googledrive",
+            "hms",
+            "httr",
+            "httr2",
+            "ini",
+            "jsonlite",
+            "lifecycle",
+            "lubridate",
+            "magrittr",
+            "memoise",
+            "mime",
+            "monarch",
+            "openssl",
+            "pillar",
+            "pkgconfig",
+            "prettyunits",
+            "progress",
+            "purrr",
+            "R6",
+            "rappdirs",
+            "readr",
+            "rlang",
+            "rprojroot",
+            "rstudioapi",
+            "rtoot",
+            "stringi",
+            "stringr",
+            "sys",
+            "tibble",
+            "tidyr",
+            "tidyselect",
+            "timechange",
+            "tzdb",
+            "usethis",
+            "utf8",
+            "uuid",
+            "vctrs",
+            "vroom",
+            "whisker",
+            "withr",
+            "yaml",
+            "zip"
+        ],
+        "_score": 4.056904851336473,
+        "_indexed": true,
+        "_nocasepkg": "promoutils",
+        "_universes": [
+            "ropensci",
+            "steffilazerte",
+            "ropensci-org"
+        ],
+        "_previous": "0.6.1",
+        "_binaries": [
+            {
+                "r": "4.7.0",
+                "os": "linux",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:09:18.000Z",
+                "distro": "resolute",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/10c00d0dc49abc9f06fdf6e014c8d0feb4986ba182e1fe3588f42f58354b78f3",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.6.1",
+                "os": "linux",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:09:26.000Z",
+                "distro": "resolute",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/bd2089b3c17c2ca480d11703dcef647684cd9c744f4830253273427ee34d46ea",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.5.3",
+                "os": "mac",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:11:49.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/3715cbfbffa4475c5c01c73deee8a428458feecf11bb43af14d3595fc885a301",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.6.1",
+                "os": "mac",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:11:46.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/b32cc6a33234d9a0446159c1ce2c74676b1c8990cb141660b0c9901a7916059f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.6.0",
+                "os": "wasm",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:09:20.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/b54331fff46d18b549acaf734e6eb6514b47ccbc267f2187ec72f8868dda88cb",
+                "status": "success",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.7.0",
+                "os": "win",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:08:25.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/8ccb628658f1645c9302c8573e7b37dedca4f9019a296a97154b27efaee0ecba",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.5.3",
+                "os": "win",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:08:24.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/f132fdff574bb30b44e77a8e85a3d4d501f1a1bca33d50f95e589f16494b3b2d",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            },
+            {
+                "r": "4.6.1",
+                "os": "win",
+                "version": "0.6.2",
+                "date": "2026-09-08T22:08:13.000Z",
+                "commit": "62e38eaee511fab9e9b83971f6262ade1804b7c5",
+                "fileid": "https://r2.ropensci.org/164bb841def5065bbeef4513ce98b4582e80827883ca339be9889cdac1c25e93",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34283845750"
+            }
+        ]
+    },
+    {
+        "Package": "sasquatch",
+        "Title": "Use 'SAS', R, and 'quarto' Together",
+        "Version": "0.1.3.9000",
+        "Authors@R": "person(\"Ryan\", \"Zomorrodi\", , \"rzomor2@uic.edu\", role = c(\"aut\", \"cre\", \"cph\"),\ncomment = c(ORCID = \"0009-0003-6417-5985\"))",
+        "Description": "Use R and 'SAS' within reproducible multilingual 'quarto'\ndocuments. Run 'SAS' code blocks interactively, send data back\nand forth between 'SAS' and R, and render 'SAS' output within\n'quarto' documents. 'SAS' connections are established through a\ncombination of 'SASPy' and 'reticulate'.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://docs.ropensci.org/sasquatch/,\nhttps://github.com/ropensci/sasquatch",
+        "BugReports": "https://github.com/ropensci/sasquatch/issues",
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "Roxygen": "list(markdown = TRUE)",
+        "RoxygenNote": "7.3.3",
+        "SystemRequirements": "python (>= 3.4.0), SASPy, java (>= 7) required for\nIOM access method",
+        "Config/pak/sysreqs": "cmake make default-jdk libpng-dev libuv1-dev\npython3",
+        "Repository": "https://ropensci",
+        "Date/Publication": "2026-09-07 16:57:34 UTC",
+        "RemoteUrl": "https://github.com/ropensci/sasquatch",
+        "RemoteRef": "main",
+        "RemoteSha": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+        "NeedsCompilation": "no",
+        "Packaged": {
+            "Date": "2026-09-08 05:00:24 UTC",
+            "User": "root"
+        },
+        "Author": "Ryan Zomorrodi [aut, cre, cph] (ORCID:\n<https://orcid.org/0009-0003-6417-5985>)",
+        "Maintainer": "Ryan Zomorrodi <rzomor2@uic.edu>",
+        "_user": "ropensci",
+        "_type": "src",
+        "_file": "sasquatch_0.1.3.9000.tar.gz",
+        "_fileid": "https://r2.ropensci.org/7c7d0c94214a70243ff0702edbd5b6699af9cc6838a391dfd082b1acc38c11c4",
+        "_filesize": 2697538,
+        "_sha256": "7c7d0c94214a70243ff0702edbd5b6699af9cc6838a391dfd082b1acc38c11c4",
+        "_expires": "2026-12-17T05:04:09.000Z",
+        "_created": "2026-09-08T05:00:24.000Z",
+        "_published": "2026-09-08T05:04:11.239Z",
+        "_jobs": [
+            {
+                "job": 101943053670,
+                "time": 179,
+                "config": "linux-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10041580362"
+            },
+            {
+                "job": 101943053731,
+                "time": 153,
+                "config": "linux-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10041571490"
+            },
+            {
+                "job": 101943053659,
+                "time": 123,
+                "config": "macos-oldrel-arm64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10041562737"
+            },
+            {
+                "job": 101943053646,
+                "time": 112,
+                "config": "macos-release-arm64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10041558187"
+            },
+            {
+                "job": 101942504350,
+                "time": 176,
+                "config": "pkgdown",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10041510512"
+            },
+            {
+                "job": 101942504306,
+                "time": 192,
+                "config": "source",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10041516755"
+            },
+            {
+                "job": 101943053619,
+                "time": 128,
+                "config": "wasm-release",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10041575019"
+            },
+            {
+                "job": 101943053715,
+                "time": 95,
+                "config": "windows-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10041551306"
+            },
+            {
+                "job": 101943053638,
+                "time": 96,
+                "config": "windows-oldrel-x86_64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10041552123"
+            },
+            {
+                "job": 101943053794,
+                "time": 94,
+                "config": "windows-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10041551133"
+            }
+        ],
+        "_host": "GitHub-Actions",
+        "_buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716",
+        "_status": "success",
+        "_upstream": "https://github.com/ropensci/sasquatch",
+        "_commit": {
+            "id": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+            "author": "Ryan Zomorrodi <ryanzomorrodi@gmail.com>",
+            "committer": "Ryan Zomorrodi <ryanzomorrodi@gmail.com>",
+            "message": "Change logo\n",
+            "time": 1788800254
+        },
+        "_maintainer": {
+            "name": "Ryan Zomorrodi",
+            "email": "rzomor2@uic.edu",
+            "login": "ryanzomorrodi",
+            "linkedin": "in/ryanzomorrodi",
+            "orcid": "0009-0003-6417-5985",
+            "description": "",
+            "uuid": 20236705
+        },
+        "_distro": "resolute",
+        "_registered": true,
+        "_dependencies": [
+            {
+                "package": "R",
+                "version": ">= 4.1.0",
+                "role": "Depends"
+            },
+            {
+                "package": "cli",
+                "role": "Imports"
+            },
+            {
+                "package": "evaluate",
+                "role": "Imports"
+            },
+            {
+                "package": "htmlwidgets",
+                "role": "Imports"
+            },
+            {
+                "package": "knitr",
+                "role": "Imports"
+            },
+            {
+                "package": "reticulate",
+                "version": ">= 1.41.0",
+                "role": "Imports"
+            },
+            {
+                "package": "rlang",
+                "version": ">= 1.1.0",
+                "role": "Imports"
+            },
+            {
+                "package": "rstudioapi",
+                "role": "Imports"
+            },
+            {
+                "package": "curl",
+                "role": "Suggests"
+            },
+            {
+                "package": "rmarkdown",
+                "role": "Suggests"
+            },
+            {
+                "package": "testthat",
+                "version": ">= 3.0.0",
+                "role": "Suggests"
+            },
+            {
+                "package": "withr",
+                "role": "Suggests"
+            }
+        ],
+        "_owner": "ropensci",
+        "_selfowned": true,
+        "_usedby": 0,
+        "_updates": [
+            {
+                "week": "2025-38",
+                "n": 1
+            },
+            {
+                "week": "2025-47",
+                "n": 4
+            },
+            {
+                "week": "2026-03",
+                "n": 7
+            },
+            {
+                "week": "2026-08",
+                "n": 13
+            },
+            {
+                "week": "2026-09",
+                "n": 1
+            },
+            {
+                "week": "2026-10",
+                "n": 1
+            },
+            {
+                "week": "2026-37",
+                "n": 1
+            }
+        ],
+        "_tags": [
+            {
+                "name": "v0.1.3",
+                "date": "2026-02-22"
+            }
+        ],
+        "_stars": 17,
+        "_contributors": [
+            {
+                "user": "ryanzomorrodi",
+                "count": 262,
+                "uuid": 20236705
+            },
+            {
+                "user": "loganjohnson0",
+                "count": 2,
+                "uuid": 117685491
+            }
+        ],
+        "_userbio": {
+            "uuid": 1200269,
+            "type": "organization",
+            "name": "rOpenSci",
+            "followers": 1148,
+            "description": "Tools and R Packages for Open Science"
+        },
+        "_downloads": {
+            "count": 225,
+            "source": "cranlogs/sasquatch"
+        },
+        "_devurl": "https://github.com/ropensci/sasquatch",
+        "_pkgdown": "https://docs.ropensci.org/sasquatch/",
+        "_searchresults": 15,
+        "_metadata": {
+            "review": {
+                "id": 673,
+                "status": "reviewed",
+                "version": "0.0.0.9004",
+                "organization": "rOpenSci Software Review",
+                "url": "https://github.com/ropensci/software-review/issues/673"
+            },
+            "ropensci_category": "scalereprod"
+        },
+        "_rbuild": "4.6.1",
+        "_assets": [
+            "extra/citation.cff",
+            "extra/citation.html",
+            "extra/citation.json",
+            "extra/citation.txt",
+            "extra/contents.json",
+            "extra/manual.pdf",
+            "extra/NEWS.html",
+            "extra/NEWS.txt",
+            "extra/readme.html",
+            "extra/readme.md",
+            "extra/sasquatch.html",
+            "LICENSE",
+            "manual.pdf"
+        ],
+        "_homeurl": "https://github.com/ropensci/sasquatch",
+        "_realowner": "ropensci",
+        "_cranurl": true,
+        "_releases": [
+            {
+                "version": "0.1.3",
+                "date": "2026-02-27"
+            }
+        ],
+        "_exports": [
+            "configure_saspy",
+            "install_saspy",
+            "sas_connect",
+            "sas_disconnect",
+            "sas_engine",
+            "sas_file_copy",
+            "sas_file_download",
+            "sas_file_exists",
+            "sas_file_remove",
+            "sas_file_upload",
+            "sas_from_r",
+            "sas_get_session",
+            "sas_list",
+            "sas_run_file",
+            "sas_run_selected",
+            "sas_run_string",
+            "sas_to_r"
+        ],
+        "_help": [
+            {
+                "page": "configure_saspy",
+                "title": "Configure SASPy package",
+                "topics": [
+                    "configure_saspy"
+                ]
+            },
+            {
+                "page": "install_saspy",
+                "title": "Install SASPy package",
+                "topics": [
+                    "install_saspy"
+                ]
+            },
+            {
+                "page": "sas_connect",
+                "title": "Establish SAS session",
+                "concept": [
+                    "session management functions"
+                ],
+                "topics": [
+                    "sas_connect"
+                ]
+            },
+            {
+                "page": "sas_disconnect",
+                "title": "Disconnect SAS session",
+                "concept": [
+                    "session management functions"
+                ],
+                "topics": [
+                    "sas_disconnect"
+                ]
+            },
+            {
+                "page": "sas_engine",
+                "title": "A SAS engine for 'knitr'",
+                "topics": [
+                    "sas_engine"
+                ]
+            },
+            {
+                "page": "sas_file_copy",
+                "title": "Copy a file on SAS",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_file_copy"
+                ]
+            },
+            {
+                "page": "sas_file_download",
+                "title": "Download a file from SAS",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_file_download"
+                ]
+            },
+            {
+                "page": "sas_file_exists",
+                "title": "Check if file on SAS exists",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_file_exists"
+                ]
+            },
+            {
+                "page": "sas_file_remove",
+                "title": "Delete a file or directory from SAS",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_file_remove"
+                ]
+            },
+            {
+                "page": "sas_file_upload",
+                "title": "Upload a file to SAS",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_file_upload"
+                ]
+            },
+            {
+                "page": "sas_from_r",
+                "title": "Convert R table to SAS",
+                "topics": [
+                    "sas_from_r"
+                ]
+            },
+            {
+                "page": "sas_get_session",
+                "title": "Get current SAS session",
+                "concept": [
+                    "session management functions"
+                ],
+                "topics": [
+                    "sas_get_session"
+                ]
+            },
+            {
+                "page": "sas_list",
+                "title": "List contents of a SAS directory",
+                "concept": [
+                    "file management functions"
+                ],
+                "topics": [
+                    "sas_list"
+                ]
+            },
+            {
+                "page": "sas_run_file",
+                "title": "Execute SAS file",
+                "concept": [
+                    "code execution functions"
+                ],
+                "topics": [
+                    "sas_run_file"
+                ]
+            },
+            {
+                "page": "sas_run_selected",
+                "title": "Execute selected SAS code",
+                "concept": [
+                    "code execution functions"
+                ],
+                "topics": [
+                    "sas_run_selected"
+                ]
+            },
+            {
+                "page": "sas_run_string",
+                "title": "Execute SAS code string",
+                "concept": [
+                    "code execution functions"
+                ],
+                "topics": [
+                    "sas_run_string"
+                ]
+            },
+            {
+                "page": "sas_to_r",
+                "title": "Convert SAS table to R",
+                "topics": [
+                    "sas_to_r"
+                ]
+            }
+        ],
+        "_pkglogo": "https://github.com/ropensci/sasquatch/raw/main/man/figures/logo.png",
+        "_readme": "https://github.com/ropensci/sasquatch/raw/main/README.md",
+        "_rundeps": [
+            "base64enc",
+            "bslib",
+            "cachem",
+            "cli",
+            "digest",
+            "evaluate",
+            "fastmap",
+            "fontawesome",
+            "fs",
+            "here",
+            "highr",
+            "htmltools",
+            "htmlwidgets",
+            "jquerylib",
+            "jsonlite",
+            "knitr",
+            "lattice",
+            "lifecycle",
+            "Matrix",
+            "memoise",
+            "mime",
+            "png",
+            "R6",
+            "rappdirs",
+            "Rcpp",
+            "RcppTOML",
+            "reticulate",
+            "rlang",
+            "rmarkdown",
+            "rprojroot",
+            "rstudioapi",
+            "sass",
+            "tinytex",
+            "withr",
+            "xfun",
+            "yaml"
+        ],
+        "_vignettes": [
+            {
+                "source": "configuration.rmd",
+                "filename": "configuration.html",
+                "title": "Configuration",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "General configuration",
+                    "Setting up",
+                    "Access methods",
+                    "Additional configuration",
+                    "More information",
+                    "SAS On Demand for Academics configuration",
+                    "Registration",
+                    "Java installation",
+                    "Configuration",
+                    "Local Windows installation configuration"
+                ],
+                "created": "2024-12-26 00:37:27",
+                "modified": "2026-01-18 15:56:52",
+                "commits": 10
+            },
+            {
+                "source": "overview.rmd",
+                "filename": "overview.html",
+                "title": "Overview",
+                "engine": "knitr::rmarkdown",
+                "headings": [
+                    "Session management",
+                    "Executing SAS code",
+                    "Within quarto",
+                    "RStudio",
+                    "Positron",
+                    "Data conversion",
+                    "File management"
+                ],
+                "created": "2025-04-15 07:39:45",
+                "modified": "2025-04-15 07:39:45",
+                "commits": 1
+            }
+        ],
+        "_score": 6.251638220448212,
+        "_indexed": true,
+        "_nocasepkg": "sasquatch",
+        "_universes": [
+            "ropensci",
+            "ryanzomorrodi"
+        ],
+        "_binaries": [
+            {
+                "r": "4.7.0",
+                "os": "linux",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:03:02.000Z",
+                "distro": "resolute",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/17ba38a263f72c8403032d2aebc381dffab7cbf06ab131c117621afdcf818f06",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.6.1",
+                "os": "linux",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:02:42.000Z",
+                "distro": "resolute",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/ccf7021d4f369fbd19721f26b73a4fa067334c3a5cfb8c3edb6447fc86892678",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.5.3",
+                "os": "mac",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:02:20.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/891bc3cf8ab579a50321384b036e95e3b368b5fd5e490e90ee71e8786247f1d4",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.6.1",
+                "os": "mac",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:02:03.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/26d4269e12543854dc9febb82d5345a5af92dd51f0e89a825350e3087d547f2f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.6.0",
+                "os": "wasm",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:03:25.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/5a8fe077cadb4d5794f12c64bbdcc064a2ef01adacea1e26c1fa0f15ffa9b6cf",
+                "status": "success",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.7.0",
+                "os": "win",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:01:28.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/3af1831838b87f5f07fcea6801b3c5628992fa087b2e1d854bd099157ec5614d",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.5.3",
+                "os": "win",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:01:30.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/76bf356ba1777fafe0c9e2c71d4cd42ebd3f20c80aa7fb159a0a74d481c66fe6",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            },
+            {
+                "r": "4.6.1",
+                "os": "win",
+                "version": "0.1.3.9000",
+                "date": "2026-09-08T05:01:28.000Z",
+                "commit": "dabcd5ddbb7d082d346b275cc7d45980763f4d85",
+                "fileid": "https://r2.ropensci.org/46065d6c0a0c3d65feb24513ba835ae82646df9efb518444b2c94c14aa5fc8e3",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34188806716"
+            }
+        ]
+    },
+    {
+        "Package": "babeldown",
+        "Title": "Helpers for Automatic Translation of Markdown-based Content",
+        "Version": "0.0.0.9000",
+        "Authors@R": "c(\nperson(\"Maëlle\", \"Salmon\", , \"msmaellesalmon@gmail.com\", role = c(\"cre\", \"aut\"),\ncomment = c(ORCID = \"0000-0002-2815-0399\")),\nperson(\"Xavier\", \"Timbeau\", role = \"ctb\"),\nperson(\"rOpenSci\", role = \"fnd\",\ncomment = c(ROR = \"019jywm96\"))\n)",
+        "Description": "Provide workflows and guidance for automatic translation\nof Markdown-based R content using DeepL API.",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "Roxygen": "list(markdown = TRUE)",
+        "URL": "https://docs.ropensci.org/babeldown,\nhttps://github.com/ropensci-review-tools/babeldown",
+        "BugReports": "https://github.com/ropensci-review-tools/babeldown/issues",
+        "Remotes": [
+            "ropensci-review-tools/babelquarto",
+            "ropensci/tinkr"
+        ],
+        "Config/testthat/edition": "3",
+        "Config/ropensci/maintainer": "staff",
+        "Config/roxygen2/version": "8.1.0.9000",
+        "Config/pak/sysreqs": "cmake make libicu-dev libuv1-dev libxml2-dev\nlibxslt-dev libssl-dev libx11-dev",
+        "Repository": "https://ropensci",
+        "Date/Publication": "2026-09-07 11:51:09 UTC",
+        "RemoteUrl": "https://github.com/ropensci-review-tools/babeldown",
+        "RemoteRef": "main",
+        "RemoteSha": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+        "NeedsCompilation": "no",
+        "Packaged": {
+            "Date": "2026-09-07 16:41:35 UTC",
+            "User": "root"
+        },
+        "Author": "Maëlle Salmon [cre, aut] (ORCID:\n<https://orcid.org/0000-0002-2815-0399>),\nXavier Timbeau [ctb],\nrOpenSci [fnd] (ROR: <https://ror.org/019jywm96>)",
+        "Maintainer": "Maëlle Salmon <msmaellesalmon@gmail.com>",
+        "_user": "ropensci",
+        "_type": "src",
+        "_file": "babeldown_0.0.0.9000.tar.gz",
+        "_fileid": "https://r2.ropensci.org/be176e8eb7f1abb581e167e494275a1cd58f63e735f0d503e7b8357c17eb4b2a",
+        "_filesize": 267895,
+        "_sha256": "be176e8eb7f1abb581e167e494275a1cd58f63e735f0d503e7b8357c17eb4b2a",
+        "_expires": "2026-12-16T16:44:50.000Z",
+        "_created": "2026-09-07T16:41:35.000Z",
+        "_published": "2026-09-07T16:44:52.800Z",
+        "_jobs": [
+            {
+                "job": 101813297254,
+                "time": 142,
+                "config": "linux-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10027169754"
+            },
+            {
+                "job": 101813297278,
+                "time": 165,
+                "config": "linux-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10027179371"
+            },
+            {
+                "job": 101813297275,
+                "time": 155,
+                "config": "macos-oldrel-arm64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10027176934"
+            },
+            {
+                "job": 101813297333,
+                "time": 120,
+                "config": "macos-release-arm64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10027162809"
+            },
+            {
+                "job": 101812600311,
+                "time": 172,
+                "config": "pkgdown",
+                "r": "4.6.0",
+                "check": "ERROR",
+                "artifact": ""
+            },
+            {
+                "job": 101812600228,
+                "time": 185,
+                "config": "source",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10027108080"
+            },
+            {
+                "job": 101813297277,
+                "time": 151,
+                "config": "wasm-release",
+                "r": "4.6.0",
+                "check": "OK",
+                "artifact": "10027172939"
+            },
+            {
+                "job": 101813297203,
+                "time": 110,
+                "config": "windows-devel-x86_64",
+                "r": "4.7.0",
+                "check": "OK",
+                "artifact": "10027157044"
+            },
+            {
+                "job": 101813297293,
+                "time": 106,
+                "config": "windows-oldrel-x86_64",
+                "r": "4.5.3",
+                "check": "OK",
+                "artifact": "10027156521"
+            },
+            {
+                "job": 101813297217,
+                "time": 103,
+                "config": "windows-release-x86_64",
+                "r": "4.6.1",
+                "check": "OK",
+                "artifact": "10027153571"
+            }
+        ],
+        "_host": "GitHub-Actions",
+        "_buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661",
+        "_status": "success",
+        "_upstream": "https://github.com/ropensci-review-tools/babeldown",
+        "_commit": {
+            "id": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+            "author": "Maëlle Salmon <msmaellesalmon@gmail.com>",
+            "committer": "GitHub <noreply@github.com>",
+            "message": "feat: `check_xml_structure()` (#114)",
+            "time": 1788781869
+        },
+        "_maintainer": {
+            "name": "Maëlle Salmon",
+            "email": "msmaellesalmon@gmail.com",
+            "login": "maelle",
+            "mastodon": "@maelle@mastodon.social",
+            "bluesky": "@masalmon.eu",
+            "orcid": "0000-0002-2815-0399",
+            "description": "R(esearch) Software Engineer, Blogger",
+            "uuid": 8360597
+        },
+        "_distro": "resolute",
+        "_registered": true,
+        "_dependencies": [
+            {
+                "package": "R",
+                "version": ">= 4.1",
+                "role": "Depends"
+            },
+            {
+                "package": "babelquarto",
+                "version": ">= 0.0.0.9000",
+                "role": "Imports"
+            },
+            {
+                "package": "brio",
+                "role": "Imports"
+            },
+            {
+                "package": "cli",
+                "role": "Imports"
+            },
+            {
+                "package": "digest",
+                "role": "Imports"
+            },
+            {
+                "package": "glue",
+                "role": "Imports"
+            },
+            {
+                "package": "httr2",
+                "role": "Imports"
+            },
+            {
+                "package": "lifecycle",
+                "role": "Imports"
+            },
+            {
+                "package": "memoise",
+                "role": "Imports"
+            },
+            {
+                "package": "purrr",
+                "role": "Imports"
+            },
+            {
+                "package": "readr",
+                "role": "Imports"
+            },
+            {
+                "package": "rlang",
+                "role": "Imports"
+            },
+            {
+                "package": "rstudioapi",
+                "role": "Imports"
+            },
+            {
+                "package": "snakecase",
+                "role": "Imports"
+            },
+            {
+                "package": "tibble",
+                "role": "Imports"
+            },
+            {
+                "package": "tinkr",
+                "version": ">= 0.2.0.9001",
+                "role": "Imports"
+            },
+            {
+                "package": "withr",
+                "role": "Imports"
+            },
+            {
+                "package": "xml2",
+                "role": "Imports"
+            },
+            {
+                "package": "yaml",
+                "version": ">= 2.3.8",
+                "role": "Imports"
+            },
+            {
+                "package": "blogdown",
+                "role": "Suggests"
+            },
+            {
+                "package": "cld3",
+                "role": "Suggests"
+            },
+            {
+                "package": "clipr",
+                "role": "Suggests"
+            },
+            {
+                "package": "fs",
+                "role": "Suggests"
+            },
+            {
+                "package": "gert",
+                "role": "Suggests"
+            },
+            {
+                "package": "vcr",
+                "role": "Suggests"
+            },
+            {
+                "package": "knitr",
+                "role": "Suggests"
+            },
+            {
+                "package": "quarto",
+                "role": "Suggests"
+            },
+            {
+                "package": "rmarkdown",
+                "role": "Suggests"
+            },
+            {
+                "package": "rprojroot",
+                "role": "Suggests"
+            },
+            {
+                "package": "sys",
+                "role": "Suggests"
+            },
+            {
+                "package": "testthat",
+                "version": ">= 3.0.0",
+                "role": "Suggests"
+            }
+        ],
+        "_owner": "ropensci-review-tools",
+        "_selfowned": true,
+        "_usedby": 0,
+        "_updates": [
+            {
+                "week": "2025-51",
+                "n": 1
+            },
+            {
+                "week": "2026-05",
+                "n": 4
+            },
+            {
+                "week": "2026-08",
+                "n": 3
+            },
+            {
+                "week": "2026-11",
+                "n": 1
+            },
+            {
+                "week": "2026-17",
+                "n": 1
+            },
+            {
+                "week": "2026-26",
+                "n": 1
+            },
+            {
+                "week": "2026-29",
+                "n": 8
+            },
+            {
+                "week": "2026-37",
+                "n": 1
+            }
+        ],
+        "_tags": [
+
+        ],
+        "_stars": 30,
+        "_contributors": [
+            {
+                "user": "maelle",
+                "count": 115,
+                "uuid": 8360597
+            },
+            {
+                "user": "avallecam",
+                "count": 1,
+                "uuid": 21230390
+            },
+            {
+                "user": "bisaloo",
+                "count": 1,
+                "uuid": 10783929
+            },
+            {
+                "user": "mpadge",
+                "count": 1,
+                "uuid": 6697851
+            }
+        ],
+        "_userbio": {
+            "uuid": 1200269,
+            "type": "organization",
+            "name": "rOpenSci",
+            "followers": 1147,
+            "description": "Tools and R Packages for Open Science"
+        },
+        "_downloads": {
+            "count": 0,
+            "source": "cranlogs/babeldown"
+        },
+        "_devurl": "https://github.com/ropensci-review-tools/babeldown",
+        "_pkgdown": "https://docs.ropensci.org/babeldown",
+        "_searchresults": 11,
+        "_quarto": true,
+        "_topics": [
+            "quarto"
+        ],
+        "_metadata": {
+            "ropensci_category": "scalereprod"
+        },
+        "_rbuild": "4.6.1",
+        "_assets": [
+            "extra/babeldown.html",
+            "extra/citation.cff",
+            "extra/citation.html",
+            "extra/citation.json",
+            "extra/citation.txt",
+            "extra/contents.json",
+            "extra/manual.pdf",
+            "extra/NEWS.html",
+            "extra/NEWS.txt",
+            "extra/readme.html",
+            "extra/readme.md",
+            "LICENSE",
+            "manual.pdf"
+        ],
+        "_realowner": "ropensci",
+        "_cranurl": false,
+        "_exports": [
+            "check_xml_structure",
+            "deepl_branch_update",
+            "deepl_languages",
+            "deepl_translate",
+            "deepl_translate_clipboard",
+            "deepl_translate_hugo",
+            "deepl_translate_markdown_string",
+            "deepl_translate_quarto",
+            "deepl_translate_vtt",
+            "deepl_update",
+            "deepl_upsert_glossary",
+            "deepl_usage"
+        ],
+        "_help": [
+            {
+                "page": "check_xml_structure",
+                "title": "Check that two files have the same XML structure",
+                "topics": [
+                    "check_xml_structure"
+                ]
+            },
+            {
+                "page": "deepl_languages",
+                "title": "Languages supported by DeepL API",
+                "topics": [
+                    "deepl_languages"
+                ]
+            },
+            {
+                "page": "deepl_translate",
+                "title": "Translate a Markdown file",
+                "topics": [
+                    "deepl_translate"
+                ]
+            },
+            {
+                "page": "deepl_translate_clipboard",
+                "title": "Translate Markdown string from clipboard",
+                "topics": [
+                    "deepl_translate_clipboard"
+                ]
+            },
+            {
+                "page": "deepl_translate_hugo",
+                "title": "Translate a Hugo post",
+                "topics": [
+                    "deepl_translate_hugo"
+                ]
+            },
+            {
+                "page": "deepl_translate_markdown_string",
+                "title": "Translate Markdown string",
+                "topics": [
+                    "deepl_translate_markdown_string"
+                ]
+            },
+            {
+                "page": "deepl_translate_quarto",
+                "title": "Translate a Quarto book chapter",
+                "topics": [
+                    "deepl_translate_quarto"
+                ]
+            },
+            {
+                "page": "deepl_translate_vtt",
+                "title": "Translate a VTT subtitles file",
+                "topics": [
+                    "deepl_translate_vtt"
+                ]
+            },
+            {
+                "page": "deepl_update",
+                "title": "Update a translation of a file in a Git repo",
+                "topics": [
+                    "deepl_branch_update",
+                    "deepl_update"
+                ]
+            },
+            {
+                "page": "deepl_upsert_glossary",
+                "title": "Create or update glossary",
+                "topics": [
+                    "deepl_upsert_glossary"
+                ]
+            },
+            {
+                "page": "deepl_usage",
+                "title": "Get DeepL API usage data",
+                "topics": [
+                    "deepl_usage"
+                ]
+            }
+        ],
+        "_readme": "https://github.com/ropensci-review-tools/babeldown/raw/main/README.md",
+        "_rundeps": [
+            "askpass",
+            "babelquarto",
+            "base64enc",
+            "bit",
+            "bit64",
+            "brio",
+            "bslib",
+            "cachem",
+            "cli",
+            "clipr",
+            "commonmark",
+            "cpp11",
+            "crayon",
+            "curl",
+            "digest",
+            "evaluate",
+            "fastmap",
+            "fontawesome",
+            "fs",
+            "glue",
+            "highr",
+            "hms",
+            "htmltools",
+            "httr",
+            "httr2",
+            "jquerylib",
+            "jsonlite",
+            "knitr",
+            "later",
+            "lifecycle",
+            "magrittr",
+            "memoise",
+            "mime",
+            "openssl",
+            "pillar",
+            "pkgconfig",
+            "prettyunits",
+            "processx",
+            "progress",
+            "ps",
+            "purrr",
+            "quarto",
+            "R6",
+            "rappdirs",
+            "Rcpp",
+            "readr",
+            "rlang",
+            "rmarkdown",
+            "rstudioapi",
+            "sass",
+            "snakecase",
+            "stringi",
+            "stringr",
+            "sys",
+            "tibble",
+            "tidyselect",
+            "tinkr",
+            "tinytex",
+            "tzdb",
+            "utf8",
+            "vctrs",
+            "vroom",
+            "whoami",
+            "withr",
+            "xfun",
+            "xml2",
+            "xslt",
+            "yaml"
+        ],
+        "_score": 4.597695185925512,
+        "_indexed": true,
+        "_nocasepkg": "babeldown",
+        "_universes": [
+            "ropensci",
+            "maelle",
+            "ropensci-review-tools"
+        ],
+        "_binaries": [
+            {
+                "r": "4.7.0",
+                "os": "linux",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:43:54.000Z",
+                "distro": "resolute",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/f494e0387e61b83a9f0bab8701275a1a98b34633e69fd6fee10c70b73ef8155f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.6.1",
+                "os": "linux",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:44:15.000Z",
+                "distro": "resolute",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/37b6af4392e3868ebc8a1d95f1bd681aaeef54436055d8019eacabb39058c72d",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.5.3",
+                "os": "mac",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:44:08.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/442ec55ecbc07f63a69c17f676547abcced0617fe93256f424db9d7387380936",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.6.1",
+                "os": "mac",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:43:39.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/b9a2a9e799eaa19c9b7b7af18b0a4f0a833470053af2c3daef4cf08b02557c3c",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.6.0",
+                "os": "wasm",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:44:18.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/dbd1ea5dfda443923b1054cdf0375068ca1bc70f6b13186050c34c5b995eb639",
+                "status": "success",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.7.0",
+                "os": "win",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:43:15.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/3c81f5203243149f382502d5b0cbd42146ec5a100d34737ab1e25f5f108de6b2",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.5.3",
+                "os": "win",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:43:14.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/5096a5a73264013814059abf79b9820528c39087551f5efc6cbdb8342dc18d9f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            },
+            {
+                "r": "4.6.1",
+                "os": "win",
+                "version": "0.0.0.9000",
+                "date": "2026-09-07T16:43:03.000Z",
+                "commit": "15f5b42d0d12e78b4cb27d8f61c27ff8016a61c6",
+                "fileid": "https://r2.ropensci.org/4e7c032840c95d8150787feb86f9a2fc6e377f597ec7a78523cd54293c75c76f",
+                "status": "success",
+                "check": "OK",
+                "buildurl": "https://github.com/r-universe/ropensci/actions/runs/34144199661"
+            }
+        ]
+    }
+]

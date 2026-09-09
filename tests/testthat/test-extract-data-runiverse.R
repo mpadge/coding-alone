@@ -58,10 +58,20 @@ test_that ("cran_data_pkgstats filters with resolvable gh URL", {
 })
 
 # ---- cran_data_downloads (HTTP, req_perform_parallel()) ---------------------
-
+#
+# cran_data_downloads() uses req_perform_parallel() directly, which
+# httptest2 can't trace/record - so LONGTAIL_TESTS = "true" switches it to
+# sequential req_perform() calls instead (see perform_json_parallel() in
+# R/utils-httr2.R for the same pattern/rationale). This fixture is NOT
+# hand-crafted: it holds a real, live-recorded download count for a real
+# CRAN package (fs) plus a nonexistent one (always 0 downloads). The real
+# count drifts over time, so this only checks it's a plausible live value,
+# not an exact frozen number. If it's ever regenerated, delete
+# tests/testthat/cranlogs_mock/ and re-run this test (no token needed) to
+# re-record it - it must never be hand-typed back in.
 
 test_that ("cran_data_downloads left-joins counts onto input", {
-
+    Sys.setenv ("LONGTAIL_TESTS" = "true")
     dat <- tibble::tibble (
         package = c ("fs", "doesnotexist12345"),
         version = c ("1.0.0", "1.0.0"),
@@ -75,7 +85,8 @@ test_that ("cran_data_downloads left-joins counts onto input", {
         names (out),
         c ("package", "version", "repo_url", "downloads")
     )
-    expect_equal (out$downloads, c (1759231L, 0L))
+    expect_true (out$downloads [out$package == "fs"] > 0L) # real download count, drifts over time
+    expect_equal (out$downloads [out$package == "doesnotexist12345"], 0L)
 })
 
 test_that ("build_cran_table composes pkgstats + downloads", {
