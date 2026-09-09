@@ -1,0 +1,23 @@
+{
+    "data": {
+        "r1": {
+            "stargazerCount": 13
+        },
+        "r2": null
+    },
+    "errors": [
+        {
+            "type": "NOT_FOUND",
+            "path": [
+                "r2"
+            ],
+            "locations": [
+                {
+                    "line": 1,
+                    "column": 79
+                }
+            ],
+            "message": "Could not resolve to a Repository with the name 'o/this-repo-does-not-exist-xyz-987654'."
+        }
+    ]
+}
