@@ -481,13 +481,14 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     }
 
     if (ros_joss_mult != 1) {
+        mult_these <- c ("ropensci", "joss", "cran")
         rate_tbl <- dplyr::mutate (
             rate_tbl,
             rate = dplyr::if_else (
-                source_name %in% c ("ropensci", "joss"), rate * ros_joss_mult, rate
+                source_name %in% mult_these, rate * ros_joss_mult, rate
             )
         )
-        y_lab <- paste (y_lab, stringr::str_glue ("- ropensci/joss shown at {ros_joss_mult}x"))
+        y_lab <- paste (y_lab, stringr::str_glue ("- ropensci/joss/cran shown at {ros_joss_mult}x"))
     }
 
     ggplot2::ggplot (
