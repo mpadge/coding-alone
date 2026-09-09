@@ -20,7 +20,8 @@ plot_activity_by_source(
   metric = c("issues", "comments"),
   window = 12L,
   relative = TRUE,
-  start_year = NULL
+  start_year = NULL,
+  ros_joss_mult = 20
 )
 }
 \arguments{
@@ -50,6 +51,13 @@ from - passed straight through as each \code{issue_rate_tbl()} call's
 themselves, not just the plotted range. \code{NULL} (default) starts from
 2015-01-01. There is no equivalent end-date control - analyses always
 run up to the current month.}
+
+\item{ros_joss_mult}{Multiplier applied to the final (post-\code{relative})
+\code{rate} values for the \code{"ropensci"} and \code{"joss"} sources only, after
+every other calculation. Default 10. This is a display-only scaling of
+those two sources relative to \code{"pypi"}/\code{"npm"} - the plot's y-axis label
+is annotated whenever it's not 1, so the scaling isn't silently hidden
+from anyone reading the plot.}
 }
 \value{
 A ggplot object.

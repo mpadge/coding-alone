@@ -367,6 +367,12 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' themselves, not just the plotted range. `NULL` (default) starts from
 #' 2015-01-01. There is no equivalent end-date control - analyses always
 #' run up to the current month.
+#' @param ros_joss_mult Multiplier applied to the final (post-`relative`)
+#' `rate` values for the `"ropensci"` and `"joss"` sources only, after
+#' every other calculation. Default 10. This is a display-only scaling of
+#' those two sources relative to `"pypi"`/`"npm"` - the plot's y-axis label
+#' is annotated whenever it's not 1, so the scaling isn't silently hidden
+#' from anyone reading the plot.
 #' @return A ggplot object.
 #' @export
 plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
@@ -375,7 +381,8 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      metric = c ("issues", "comments"),
                                      window = 12L,
                                      relative = TRUE,
-                                     start_year = NULL) {
+                                     start_year = NULL,
+                                     ros_joss_mult = 20) {
     month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
     metric <- match.arg (metric)
 
@@ -408,6 +415,16 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
             dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
             dplyr::ungroup ()
         y_lab <- paste (y_lab, "- relative to each source's own mean")
+    }
+
+    if (ros_joss_mult != 1) {
+        rate_tbl <- dplyr::mutate (
+            rate_tbl,
+            rate = dplyr::if_else (
+                source_name %in% c ("ropensci", "joss"), rate * ros_joss_mult, rate
+            )
+        )
+        y_lab <- paste (y_lab, stringr::str_glue ("- ropensci/joss shown at {ros_joss_mult}x"))
     }
 
     ggplot2::ggplot (
