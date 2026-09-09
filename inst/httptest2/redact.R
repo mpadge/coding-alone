@@ -73,5 +73,25 @@ function (resp) {
         fixed = FALSE
     )
 
+    # r-universe package records carry a build-log "_jobs" array (always
+    # immediately followed by "_host") and a per-platform "_binaries" array
+    # (always the record's last field, so bounded by the "}" that closes
+    # the whole package object rather than another key) - together often
+    # a third or more of one package's JSON, and unused by build_runiv_table().
+    resp <- httptest2::gsub_response (
+        resp,
+        '(?s)"_jobs":.*?"_host":',
+        '"_jobs": [], "_host":',
+        perl = TRUE,
+        fixed = FALSE
+    )
+    resp <- httptest2::gsub_response (
+        resp,
+        '(?s)"_binaries":\\s*\\[.*?\\]\\s*\\}',
+        '"_binaries": []}',
+        perl = TRUE,
+        fixed = FALSE
+    )
+
     return (resp)
 }
