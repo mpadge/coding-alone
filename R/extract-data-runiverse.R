@@ -116,7 +116,7 @@ cran_data_pkgstats <- function () {
     x <- x [index, ]
     gh_urls <- gh_urls [index]
 
-    tibble::tibble (package = x$package, version = x$version, url = gh_urls)
+    tibble::tibble (package = x$package, version = x$version, repo_url = gh_urls)
 }
 
 #' Get download data for all CRAN packages

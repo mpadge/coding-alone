@@ -15,7 +15,13 @@
 #' `source`.
 #' @export
 build_repo_tbl <- function (out_dir) {
-    source_patterns <- c (pypi = "pypi.csv", npm = "npm.csv", joss = "joss.csv", ropensci = "ropensci.csv")
+    source_patterns <- c (
+        ropensci = "ropensci.csv",
+        joss = "joss.csv",
+        cran = "cran.csv",
+        pypi = "pypi.csv",
+        npm = "npm.csv"
+    )
 
     source_for_file <- function (path) {
         fname <- fs::path_file (path)
