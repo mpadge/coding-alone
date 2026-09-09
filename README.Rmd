@@ -88,15 +88,19 @@ readr::write_csv (joss_tbl, file.path (OUT_DIR, "joss.csv"))
 cli::cli_alert_success ("JOSS: wrote {nrow(joss_tbl)} rows to {file.path(OUT_DIR, 'joss.csv')}")
 ```
 
-## rOpenSci
+## rOpenSci and CRAN
 
-Packages in the rOpenSci r-universe, their repo URLs, and rOpenSci software
+Packages in the any r-universe, their repo URLs, and for rOpenSci, the software
 review status.
 
 ```{r ropensci, eval = FALSE}
-ropensci_tbl <- build_ropensci_table ()
+ropensci_tbl <- build_runiv_table (universe = "ropensci")
 readr::write_csv (ropensci_tbl, file.path (OUT_DIR, "ropensci.csv"))
 cli::cli_alert_success ("rOpenSci: wrote {nrow(ropensci_tbl)} rows to {file.path(OUT_DIR, 'ropensci.csv')}")
+
+cran_tbl <- build_cran_table ()
+readr::write_csv (cran_tbl, file.path (OUT_DIR, "cran.csv"))
+cli::cli_alert_success ("CRAN: wrote {nrow(cran_tbl)} rows to {file.path(OUT_DIR, 'cran.csv')}")
 ```
 
 ---
