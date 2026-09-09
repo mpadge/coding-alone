@@ -16,6 +16,9 @@ plot_activity_by_source(
   repo_tbl,
   stratum,
   n_strata = 4L,
+  contrib_threshold = 0.01,
+  metric = c("issues", "comments"),
+  window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL,
   relative = TRUE,
@@ -31,9 +34,8 @@ plot_activity_by_source(
 popularity, \code{n_strata} = highest), matching one of \code{issue_rate_tbl()}'s
 \code{popularity_stratum} levels (\code{"Q<stratum>"}).}
 
-\item{n_strata, date_start, date_end}{Passed to each source's
-\code{issue_rate_tbl()} call; must be the same \code{n_strata} \code{stratum} is a
-level of.}
+\item{n_strata, contrib_threshold, metric, window, date_start, date_end}{Passed to each source's \code{issue_rate_tbl()} call; \code{n_strata} must be the
+same one \code{stratum} is a level of.}
 
 \item{relative}{If \code{TRUE} (default), rescale each source by its own
 mean before plotting - sources sit on very different absolute rate

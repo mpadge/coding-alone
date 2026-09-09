@@ -2,13 +2,24 @@
 % Please edit documentation in R/analyse-activity.R
 \name{plot_activity}
 \alias{plot_activity}
-\title{Plot monthly issue rate (non-contributor issues per repo-month) over
-time, one line per popularity stratum.}
+\title{Plot the trailing-window rate (\code{issue_rate_tbl()}'s \code{rate} column - see
+its \code{metric} param for whether that's issues or comments per repo-month)
+over time, one line per popularity stratum.}
 \usage{
-plot_activity(rate_tbl, start_year = NULL)
+plot_activity(
+  rate_tbl,
+  metric = c("issues", "comments"),
+  window = 12L,
+  start_year = NULL
+)
 }
 \arguments{
 \item{rate_tbl}{As returned by \code{issue_rate_tbl()}.}
+
+\item{metric, window}{Which \code{issue_rate_tbl()} \code{metric}/\code{window}
+\code{rate_tbl} was built with - only used to label the y-axis correctly,
+since \code{rate_tbl} itself doesn't record either. Defaults \code{"issues"}/\code{12}
+match \code{issue_rate_tbl()}'s own defaults.}
 
 \item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
 window from; \code{NULL} (default) plots \code{rate_tbl}'s full window. Only
@@ -19,6 +30,7 @@ the window beyond what \code{issue_rate_tbl()} was already called with.}
 A ggplot object.
 }
 \description{
-Plot monthly issue rate (non-contributor issues per repo-month) over
-time, one line per popularity stratum.
+Plot the trailing-window rate (\code{issue_rate_tbl()}'s \code{rate} column - see
+its \code{metric} param for whether that's issues or comments per repo-month)
+over time, one line per popularity stratum.
 }

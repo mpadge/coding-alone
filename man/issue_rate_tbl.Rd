@@ -3,24 +3,27 @@
 \name{issue_rate_tbl}
 \alias{issue_rate_tbl}
 \title{Build the (popularity stratum-x-month) issue-rate table for one source:
-non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date. "Non-contributor" here means
-\code{contribution <= contribution_threshold} (see \code{github_issue_authors()}
-for how \code{contribution} - each author's fractional share of all commits
-ever landed on the repo - is computed). \code{repo_created_at} lives on
-\code{issue_authors_tbl} (fetched alongside each repo's issues by
-\code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
-repo only contributes exposure once it's been fetched at least once -
-repos with zero issues fetched (either not yet fetched at all, or
-fetched and genuinely having none) don't have a \code{repo_created_at} on
-file and are excluded here rather than analyzed.}
+a chosen \code{metric} from non-contributor issues, aggregated over a
+trailing rolling \code{window} of months and normalized by repo-months of
+exposure, where a repo's exposure begins at its GitHub creation date.
+"Non-contributor" here means \code{contribution <= contrib_threshold} (see
+\code{github_issue_authors()} for how \code{contribution} - each author's
+fractional share of all commits ever landed on the repo - is computed).
+\code{repo_created_at} lives on \code{issue_authors_tbl} (fetched alongside each
+repo's issues by \code{github_issue_authors()}/\code{fetch_issue_authors()}), not
+\code{repo_tbl}, so a repo only contributes exposure once it's been fetched
+at least once - repos with zero issues fetched (either not yet fetched
+at all, or fetched and genuinely having none) don't have a
+\code{repo_created_at} on file and are excluded here rather than analyzed.}
 \usage{
 issue_rate_tbl(
   issue_authors_tbl,
   repo_tbl,
   source_name,
   n_strata = 4L,
-  contribution_threshold = 0,
+  contrib_threshold = 0.01,
+  metric = c("issues", "comments"),
+  window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL
 )
@@ -35,31 +38,31 @@ issue_rate_tbl(
 
 \item{n_strata}{Number of popularity strata.}
 
-\item{contribution_threshold}{Issues whose author's \code{contribution} is at
-or below this value count as "non-contributor" issues. Default 0 (only
-authors with no recorded commits at all), matching the previous exact
-\code{is_contributor} flag; raise it to also exclude issues from authors with
-a small-but-nonzero commit share.}
+\item{contrib_threshold}{Issues whose author's \code{contribution} is at or
+below this value count as "non-contributor" issues. Default 0.01 (allow
+a small nonzero commit share and still call it "non-contributor").}
+
+\item{metric}{Which per-issue quantity to aggregate: \code{"issues"} (default)
+counts qualifying issues; \code{"comments"} sums qualifying issues'
+\code{n_comments} instead.}
+
+\item{window}{Trailing aggregation window, in months. Default 12: each
+reported month's \code{n_metric}/\code{n_repo_months} sum that month and the
+preceding 11.}
 
 \item{date_start, date_end}{Date bounds on the analysis window;
 \code{date_end} defaults to the start of the current month.}
 }
 \value{
 A tibble with one row per (popularity stratum, month):
-\code{popularity_stratum}, \code{month} (Date, first-of-month), \code{n_issues},
-\code{n_repo_months}, \code{rate}.
+\code{popularity_stratum}, \code{month} (Date, first-of-month), \code{n_metric},
+\code{n_repo_months}, \code{rate} - the latter two already \code{window}-month trailing
+sums, not single-month counts.
 }
 \description{
-Build the (popularity stratum-x-month) issue-rate table for one source:
-non-contributor issues opened per repo-month of exposure, where a repo's
-exposure begins at its GitHub creation date. "Non-contributor" here means
-\code{contribution <= contribution_threshold} (see \code{github_issue_authors()}
-for how \code{contribution} - each author's fractional share of all commits
-ever landed on the repo - is computed). \code{repo_created_at} lives on
-\code{issue_authors_tbl} (fetched alongside each repo's issues by
-\code{github_issue_authors()}/\code{fetch_issue_authors()}), not \code{repo_tbl}, so a
-repo only contributes exposure once it's been fetched at least once -
-repos with zero issues fetched (either not yet fetched at all, or
-fetched and genuinely having none) don't have a \code{repo_created_at} on
-file and are excluded here rather than analyzed.
+Each reported month is a trailing aggregate over \code{window} months (that
+month and the \code{window - 1} preceding it), not a single month's own
+count - smoothing month-to-month noise at the cost of some lag, and of
+treating the \code{window - 1} months at the very start of the series as a
+shorter, partial window rather than dropping them.
 }

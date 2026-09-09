@@ -36,47 +36,74 @@ popularity_strata <- function (x, n_strata = 4L) {
     cut (log10 (x + 1), breaks = breaks, labels = labels, ordered_result = TRUE)
 }
 
+#' Trailing rolling sum: `out[i]` is the sum of `x[(i - window + 1):i]`, or
+#' of just `x[1:i]` (a shorter, partial window) while `i < window` - so the
+#' first `window - 1` entries are under-weighted rather than dropped or NA.
+#' `x` is assumed already ordered along the dimension (e.g. month) the
+#' window rolls over.
+#' @noRd
+trailing_roll_sum <- function (x, window) {
+    cx <- cumsum (x)
+    cx - dplyr::lag (cx, n = window, default = 0)
+}
+
 #' Build the (popularity stratum-x-month) issue-rate table for one source:
-#' non-contributor issues opened per repo-month of exposure, where a repo's
-#' exposure begins at its GitHub creation date. "Non-contributor" here means
-#' `contribution <= contribution_threshold` (see `github_issue_authors()`
-#' for how `contribution` - each author's fractional share of all commits
-#' ever landed on the repo - is computed). `repo_created_at` lives on
-#' `issue_authors_tbl` (fetched alongside each repo's issues by
-#' `github_issue_authors()`/`fetch_issue_authors()`), not `repo_tbl`, so a
-#' repo only contributes exposure once it's been fetched at least once -
-#' repos with zero issues fetched (either not yet fetched at all, or
-#' fetched and genuinely having none) don't have a `repo_created_at` on
-#' file and are excluded here rather than analyzed.
+#' a chosen `metric` from non-contributor issues, aggregated over a
+#' trailing rolling `window` of months and normalized by repo-months of
+#' exposure, where a repo's exposure begins at its GitHub creation date.
+#' "Non-contributor" here means `contribution <= contrib_threshold` (see
+#' `github_issue_authors()` for how `contribution` - each author's
+#' fractional share of all commits ever landed on the repo - is computed).
+#' `repo_created_at` lives on `issue_authors_tbl` (fetched alongside each
+#' repo's issues by `github_issue_authors()`/`fetch_issue_authors()`), not
+#' `repo_tbl`, so a repo only contributes exposure once it's been fetched
+#' at least once - repos with zero issues fetched (either not yet fetched
+#' at all, or fetched and genuinely having none) don't have a
+#' `repo_created_at` on file and are excluded here rather than analyzed.
+#'
+#' Each reported month is a trailing aggregate over `window` months (that
+#' month and the `window - 1` preceding it), not a single month's own
+#' count - smoothing month-to-month noise at the cost of some lag, and of
+#' treating the `window - 1` months at the very start of the series as a
+#' shorter, partial window rather than dropping them.
 #'
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
 #' @param source_name One of `repo_tbl$source` (`"pypi"`, `"npm"`, `"joss"`,
 #' `"ropensci"`).
 #' @param n_strata Number of popularity strata.
-#' @param contribution_threshold Issues whose author's `contribution` is at
-#' or below this value count as "non-contributor" issues. Default 0 (only
-#' authors with no recorded commits at all), matching the previous exact
-#' `is_contributor` flag; raise it to also exclude issues from authors with
-#' a small-but-nonzero commit share.
+#' @param contrib_threshold Issues whose author's `contribution` is at or
+#' below this value count as "non-contributor" issues. Default 0.01 (allow
+#' a small nonzero commit share and still call it "non-contributor").
+#' @param metric Which per-issue quantity to aggregate: `"issues"` (default)
+#' counts qualifying issues; `"comments"` sums qualifying issues'
+#' `n_comments` instead.
+#' @param window Trailing aggregation window, in months. Default 12: each
+#' reported month's `n_metric`/`n_repo_months` sum that month and the
+#' preceding 11.
 #' @param date_start,date_end Date bounds on the analysis window;
 #' `date_end` defaults to the start of the current month.
 #' @return A tibble with one row per (popularity stratum, month):
-#' `popularity_stratum`, `month` (Date, first-of-month), `n_issues`,
-#' `n_repo_months`, `rate`.
+#' `popularity_stratum`, `month` (Date, first-of-month), `n_metric`,
+#' `n_repo_months`, `rate` - the latter two already `window`-month trailing
+#' sums, not single-month counts.
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
                             source_name,
                             n_strata = 4L,
-                            contribution_threshold = 0,
+                            contrib_threshold = 0.01,
+                            metric = c ("issues", "comments"),
+                            window = 12L,
                             date_start = as.Date ("2015-01-01"),
                             date_end = NULL) {
 
+    metric <- match.arg (metric)
+
     # rm no visible binding notes
-    source <- repo_url <- .data <- month <- metric <-
-        popularity_stratum <- n_issues <- n_repo_months <- contribution <-
-        created_at <- repo_created_at <- NULL
+    source <- repo_url <- .data <- month <- metric_val <-
+        popularity_stratum <- n_metric <- n_repo_months <- contribution <-
+        created_at <- repo_created_at <- n_comments <- NULL
 
     metric_col <- unname (POPULARITY_METRIC [source_name])
     if (is.na (metric_col)) {
@@ -97,21 +124,22 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
         dplyr::mutate (
             repo_created_at = floor_month (repo_created_at),
-            metric = .data [[metric_col]]
+            metric_val = .data [[metric_col]]
         ) |>
-        dplyr::filter (!is.na (metric), !is.na (repo_created_at))
+        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
 
     if (nrow (repos) == 0) {
         return (tibble::tibble (
-            popularity_stratum = factor (),
+            popularity_stratum = factor (ordered = TRUE),
             month = as.Date (character ()),
-            n_issues = integer (),
+            n_metric = double (),
             n_repo_months = integer (),
             rate = double ()
         ))
     }
 
-    repos$popularity_stratum <- popularity_strata (repos$metric, n_strata)
+    repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
+    stratum_levels <- levels (repos$popularity_stratum)
 
     months <- seq (date_start, date_end, by = "month")
 
@@ -128,29 +156,49 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
         dplyr::count (popularity_stratum, month, name = "n_repo_months")
 
-    issues <- issue_authors_tbl |>
-        dplyr::filter (repo_url %in% repos$repo_url, contribution <= contribution_threshold) |>
+    filtered_issues <- issue_authors_tbl |>
+        dplyr::filter (repo_url %in% repos$repo_url, contribution <= contrib_threshold) |>
         dplyr::mutate (month = floor_month (created_at)) |>
         dplyr::filter (month >= date_start, month <= date_end) |>
         dplyr::inner_join (
             dplyr::select (repos, repo_url, popularity_stratum),
             by = "repo_url"
-        ) |>
-        dplyr::count (popularity_stratum, month, name = "n_issues")
+        )
 
-    dplyr::full_join (
-        exposure,
-        issues,
-        by = c ("popularity_stratum", "month")
-    ) |>
+    issues <- if (metric == "issues") {
+        dplyr::count (filtered_issues, popularity_stratum, month, name = "n_metric")
+    } else {
+        filtered_issues |>
+            dplyr::group_by (popularity_stratum, month) |>
+            dplyr::summarise (n_metric = sum (n_comments), .groups = "drop")
+    }
+
+    # Full (stratum x month) grid, so the trailing rolling sum below has no
+    # gaps in either dimension to silently skip over.
+    grid <- dplyr::cross_join (
+        tibble::tibble (
+            popularity_stratum = factor (stratum_levels, levels = stratum_levels, ordered = TRUE)
+        ),
+        tibble::tibble (month = months)
+    )
+
+    grid |>
+        dplyr::left_join (exposure, by = c ("popularity_stratum", "month")) |>
+        dplyr::left_join (issues, by = c ("popularity_stratum", "month")) |>
         dplyr::mutate (
-            n_issues = dplyr::coalesce (n_issues, 0L),
-            n_repo_months = dplyr::coalesce (n_repo_months, 0L),
-            rate = dplyr::if_else (
-                n_repo_months > 0, n_issues / n_repo_months, NA_real_
-            )
+            n_metric = dplyr::coalesce (n_metric, 0),
+            n_repo_months = dplyr::coalesce (n_repo_months, 0L)
         ) |>
-        dplyr::arrange (popularity_stratum, month)
+        dplyr::arrange (popularity_stratum, month) |>
+        dplyr::group_by (popularity_stratum) |>
+        dplyr::mutate (
+            n_metric = trailing_roll_sum (n_metric, window),
+            n_repo_months = trailing_roll_sum (n_repo_months, window)
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::mutate (
+            rate = dplyr::if_else (n_repo_months > 0, n_metric / n_repo_months, NA_real_)
+        )
 }
 
 #' Fit the quasi-Poisson GLM described in analysis-plan.md: does the
@@ -170,7 +218,7 @@ fit_activity_model <- function (rate_tbl) {
         as.numeric (rate_tbl$month - min (rate_tbl$month)) / 365.25
 
     stats::glm (
-        n_issues ~ month_num * popularity_stratum +
+        n_metric ~ month_num * popularity_stratum +
             offset (log (n_repo_months)),
         data = rate_tbl,
         family = stats::quasipoisson ()
@@ -208,6 +256,22 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
     c (min (fitted, na.rm = TRUE), max (fitted, na.rm = TRUE))
 }
 
+#' Default y-axis label for a given `issue_rate_tbl()` `metric`/`window`.
+#' Both the numerator and the repo-months denominator are `window`-month
+#' trailing sums (see `issue_rate_tbl()`), so the value stays a per-
+#' repo-month rate rather than becoming a `window`-month total - just a
+#' trailing average of that rate rather than one raw month's value. The
+#' label says so explicitly, since a plain "per repo-month" label reads as
+#' single-month data.
+#' @noRd
+activity_metric_label <- function (metric = c ("issues", "comments"), window = 12L) {
+    metric <- match.arg (metric)
+    verb <- if (metric == "issues") "Issues opened" else "Comments received"
+    stringr::str_glue (
+        "{verb} per repo-month (non-contributor authors, {window}-month trailing avg)"
+    )
+}
+
 #' Common y-axis + theme layers shared by `plot_activity()` and
 #' `plot_activity_by_source()`: zoomed (not filtered - `coord_cartesian()`,
 #' not `ylim()`/`scale_y_continuous()`, so the loess fits themselves aren't
@@ -218,7 +282,7 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
 #' can do this even though the raw rate never goes negative) - otherwise
 #' left at ggplot2's own default lower limit.
 #' @noRd
-activity_plot_layers <- function (rate_tbl, group_col) {
+activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
     rng <- loess_range (rate_tbl, group_col)
     lower <- if (rng [1] < 0) 0 else NA
     upper <- 1.25 * rng [2]
@@ -227,23 +291,29 @@ activity_plot_layers <- function (rate_tbl, group_col) {
         ggplot2::geom_line (alpha = 0.3),
         ggplot2::geom_smooth (se = FALSE, method = "loess", formula = y ~ x),
         ggplot2::coord_cartesian (ylim = c (lower, upper)),
-        ggplot2::labs (x = NULL, y = "Issues opened per repo-month (non-contributor authors)"),
+        ggplot2::labs (x = NULL, y = y_lab),
         ggplot2::theme_minimal ()
     )
 }
 
-#' Plot monthly issue rate (non-contributor issues per repo-month) over
-#' time, one line per popularity stratum.
+#' Plot the trailing-window rate (`issue_rate_tbl()`'s `rate` column - see
+#' its `metric` param for whether that's issues or comments per repo-month)
+#' over time, one line per popularity stratum.
 #'
 #' @param rate_tbl As returned by `issue_rate_tbl()`.
+#' @param metric,window Which `issue_rate_tbl()` `metric`/`window`
+#' `rate_tbl` was built with - only used to label the y-axis correctly,
+#' since `rate_tbl` itself doesn't record either. Defaults `"issues"`/`12`
+#' match `issue_rate_tbl()`'s own defaults.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend
 #' the window beyond what `issue_rate_tbl()` was already called with.
 #' @return A ggplot object.
 #' @export
-plot_activity <- function (rate_tbl, start_year = NULL) {
+plot_activity <- function (rate_tbl, metric = c ("issues", "comments"), window = 12L, start_year = NULL) {
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
+    metric <- match.arg (metric)
 
     if (!is.null (start_year)) {
         rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
@@ -253,7 +323,7 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
-        activity_plot_layers (rate_tbl, "popularity_stratum") +
+        activity_plot_layers (rate_tbl, "popularity_stratum", activity_metric_label (metric, window)) +
         ggplot2::labs (colour = "Popularity\nstratum")
 }
 
@@ -271,9 +341,9 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' @param stratum Integer popularity stratum to compare (`1` = lowest
 #' popularity, `n_strata` = highest), matching one of `issue_rate_tbl()`'s
 #' `popularity_stratum` levels (`"Q<stratum>"`).
-#' @param n_strata,date_start,date_end Passed to each source's
-#' `issue_rate_tbl()` call; must be the same `n_strata` `stratum` is a
-#' level of.
+#' @param n_strata,contrib_threshold,metric,window,date_start,date_end
+#' Passed to each source's `issue_rate_tbl()` call; `n_strata` must be the
+#' same one `stratum` is a level of.
 #' @param relative If `TRUE` (default), rescale each source by its own
 #' mean before plotting - sources sit on very different absolute rate
 #' scales (e.g. pypi's raw issue traffic dwarfs ropensci's), which would
@@ -288,11 +358,15 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' @export
 plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      n_strata = 4L,
+                                     contrib_threshold = 0.01,
+                                     metric = c ("issues", "comments"),
+                                     window = 12L,
                                      date_start = as.Date ("2015-01-01"),
                                      date_end = NULL,
                                      relative = TRUE,
                                      start_year = NULL) {
     month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
+    metric <- match.arg (metric)
 
     if (is.null (date_end)) {
         date_end <- floor_month (Sys.Date ())
@@ -303,7 +377,9 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     rate_tbl <- purrr::map_dfr (sources, \ (src) {
         issue_rate_tbl (
             issue_authors_tbl, repo_tbl, src,
-            n_strata = n_strata, date_start = date_start, date_end = date_end
+            n_strata = n_strata, contrib_threshold = contrib_threshold,
+            metric = metric, window = window,
+            date_start = date_start, date_end = date_end
         ) |>
             dplyr::filter (popularity_stratum == stratum_label) |>
             dplyr::mutate (source_name = src)
@@ -313,7 +389,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     # Rescaling (when requested) happens before the start_year crop below,
     # so the scale factor doesn't shift depending on what window is
     # displayed.
-    y_lab <- "Issues opened per repo-month (non-contributor authors)"
+    y_lab <- activity_metric_label (metric, window)
     if (relative) {
         rate_tbl <- rate_tbl |>
             dplyr::group_by (source_name) |>
@@ -330,9 +406,8 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
         rate_tbl,
         ggplot2::aes (month, rate, colour = source_name)
     ) +
-        activity_plot_layers (rate_tbl, "source_name") +
+        activity_plot_layers (rate_tbl, "source_name", y_lab) +
         ggplot2::labs (
-            y = y_lab,
             colour = "Source",
             title = stringr::str_glue ("Popularity stratum {stratum} of {n_strata}")
         )
