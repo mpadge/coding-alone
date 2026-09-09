@@ -1,6 +1,6 @@
 test_that ("clickhouse_query returns a JSONCompact result as a character matrix", {
     out <- httptest2::with_mock_dir ("clickhouse_mock", {
-        longtail:::clickhouse_query ("SELECT 1 AS one, 2 AS two FORMAT JSONCompact")
+        clickhouse_query ("SELECT 1 AS one, 2 AS two FORMAT JSONCompact")
     })
     expect_true (is.matrix (out))
     expect_equal (dim (out), c (1L, 2L))
@@ -47,7 +47,7 @@ test_that ("pypi_downloads_full pages until a short page, reshaping to name/down
 
 test_that ("pypi_repo_urls_many resolves via project_urls, NA on 404", {
     out <- httptest2::with_mock_dir ("pypi_mock", {
-        longtail:::pypi_repo_urls_many (c ("requests", "flask", "this-package-does-not-exist-xyz123"))
+        pypi_repo_urls_many (c ("requests", "flask", "this-package-does-not-exist-xyz123"))
     })
     expect_equal (
         out,

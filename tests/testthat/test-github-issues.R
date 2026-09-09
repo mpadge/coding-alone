@@ -9,7 +9,7 @@
 test_that ("github_repo_contributors returns login + fractional contribution share", {
     withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
     ctbs <- httptest2::with_mock_dir ("ghrepos_contributors", {
-        suppressMessages (longtail:::github_repo_contributors ("hypertidy", "ncmeta"))
+        suppressMessages (github_repo_contributors ("hypertidy", "ncmeta"))
     })
 
     expect_s3_class (ctbs, "tbl_df")
@@ -28,7 +28,7 @@ test_that ("github_repo_contributors returns a zero-row tibble for a repo with n
         github_api_get_all = function (...) list (),
         .package = "longtail"
     )
-    out <- longtail:::github_repo_contributors ("o", "empty-repo")
+    out <- github_repo_contributors ("o", "empty-repo")
     expect_equal (nrow (out), 0L)
     expect_equal (names (out), c ("login", "contribution"))
 })
@@ -52,7 +52,7 @@ test_that ("github_repo_contributors returns a zero-row tibble for a repo with n
 
 test_that ("github_repo_issues_graphql pages via cursor and returns repo_created_at", {
     result <- httptest2::with_mock_dir ("gh_issue_authors_ncmeta", {
-        longtail:::github_repo_issues_graphql ("hypertidy", "ncmeta")
+        github_repo_issues_graphql ("hypertidy", "ncmeta")
     })
 
     expect_equal (result$repo_created_at, "2017-06-10T03:38:22Z")

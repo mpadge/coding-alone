@@ -4,17 +4,17 @@ test_that ("extract_language finds language label(s), excluding workflow tags", 
         list (name = "R"),
         list (name = "review")
     )
-    expect_equal (longtail:::extract_language (labels), "R")
+    expect_equal (extract_language (labels), "R")
 })
 
 test_that ("extract_language joins multiple language labels", {
     labels <- list (list (name = "R"), list (name = "Python"), list (name = "accepted"))
-    expect_equal (longtail:::extract_language (labels), "R, Python")
+    expect_equal (extract_language (labels), "R, Python")
 })
 
 test_that ("extract_language returns NA when no language label present", {
     labels <- list (list (name = "accepted"), list (name = "bug"))
-    expect_true (is.na (longtail:::extract_language (labels)))
+    expect_true (is.na (extract_language (labels)))
 })
 
 test_that ("extract_repo_url parses the HTML-comment-delimited form", {
@@ -23,7 +23,7 @@ test_that ("extract_repo_url parses the HTML-comment-delimited form", {
         "https://github.com/owner/repo<!--end-target-repository-->\n",
         "**Version:** v1.0.0"
     )
-    expect_equal (longtail:::extract_repo_url (body), "https://github.com/owner/repo")
+    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url parses the anchor-tag form", {
@@ -31,18 +31,18 @@ test_that ("extract_repo_url parses the anchor-tag form", {
         "**Repository:** <a href=\"https://github.com/owner/repo\" target=\"_blank\">",
         "https://github.com/owner/repo</a>"
     )
-    expect_equal (longtail:::extract_repo_url (body), "https://github.com/owner/repo")
+    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url falls back to a bare URL", {
     body <- "**Repository:** https://github.com/owner/repo\n**Version:** v1.0.0"
-    expect_equal (longtail:::extract_repo_url (body), "https://github.com/owner/repo")
+    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url returns NA for NULL/NA/no-match input", {
-    expect_true (is.na (longtail:::extract_repo_url (NULL)))
-    expect_true (is.na (longtail:::extract_repo_url (NA_character_)))
-    expect_true (is.na (longtail:::extract_repo_url ("no repository line here")))
+    expect_true (is.na (extract_repo_url (NULL)))
+    expect_true (is.na (extract_repo_url (NA_character_)))
+    expect_true (is.na (extract_repo_url ("no repository line here")))
 })
 
 test_that ("join_registry_downloads left-joins by repo_url, PyPI winning ties", {
@@ -53,7 +53,7 @@ test_that ("join_registry_downloads left-joins by repo_url, PyPI winning ties", 
         downloads = c (999, 200)
     )
 
-    out <- longtail:::join_registry_downloads (tbl, pypi_tbl, npm_tbl)
+    out <- join_registry_downloads (tbl, pypi_tbl, npm_tbl)
     expect_equal (out$downloads [out$repo_url == "https://github.com/a/a"], 100)
     expect_equal (out$downloads [out$repo_url == "https://github.com/b/b"], 200)
 })
@@ -62,20 +62,20 @@ test_that ("join_registry_downloads handles a single source", {
     tbl <- tibble::tibble (repo_url = c ("https://github.com/a/a", "https://github.com/b/b"))
     pypi_tbl <- tibble::tibble (repo_url = "https://github.com/a/a", downloads = 100)
 
-    out <- longtail:::join_registry_downloads (tbl, pypi_tbl, NULL)
+    out <- join_registry_downloads (tbl, pypi_tbl, NULL)
     expect_equal (out$downloads [out$repo_url == "https://github.com/a/a"], 100)
     expect_true (is.na (out$downloads [out$repo_url == "https://github.com/b/b"]))
 })
 
 test_that ("join_registry_downloads gives all-NA downloads when both sources are NULL", {
     tbl <- tibble::tibble (repo_url = c ("https://github.com/a/a", "https://github.com/b/b"))
-    out <- longtail:::join_registry_downloads (tbl, NULL, NULL)
+    out <- join_registry_downloads (tbl, NULL, NULL)
     expect_true (all (is.na (out$downloads)))
     expect_equal (nrow (out), nrow (tbl))
 })
 
 test_that ("build_stars_query builds one aliased field per repo", {
-    q <- longtail:::build_stars_query (c ("o1", "o2"), c ("r1", "r2"), c (1L, 2L))
+    q <- build_stars_query (c ("o1", "o2"), c ("r1", "r2"), c (1L, 2L))
     expect_type (q, "character")
     expect_match (q, "r1: repository\\(owner: \"o1\", name: \"r1\"\\)")
     expect_match (q, "r2: repository\\(owner: \"o2\", name: \"r2\"\\)")
@@ -91,7 +91,7 @@ test_that ("build_stars_query builds one aliased field per repo", {
 
 test_that ("github_stars_many resolves real repos and NAs out unresolvable ones", {
     out <- httptest2::with_mock_dir ("graphql_stars", {
-        suppressMessages (longtail:::github_stars_many (c (
+        suppressMessages (github_stars_many (c (
             "https://github.com/hypertidy/ncmeta", # real -> 42 stars in fixture
             "https://github.com/o/deleted-repo", # syntactically valid, GraphQL node is null
             "not-a-github-url" # fails parse_github_repo_url() before any request
@@ -101,7 +101,7 @@ test_that ("github_stars_many resolves real repos and NAs out unresolvable ones"
 })
 
 test_that ("github_stars_many returns all-NA without any request when nothing is resolvable", {
-    out <- longtail:::github_stars_many (c ("not-a-url", NA_character_))
+    out <- github_stars_many (c ("not-a-url", NA_character_))
     expect_equal (out, c (NA_integer_, NA_integer_))
 })
 

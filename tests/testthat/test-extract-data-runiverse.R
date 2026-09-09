@@ -65,7 +65,7 @@ test_that ("cran_data_pkgstats filters to the latest version with a resolvable g
         .package = "utils"
     )
 
-    out <- longtail:::cran_data_pkgstats ()
+    out <- cran_data_pkgstats ()
 
     expect_equal (names (out), c ("package", "version", "repo_url"))
     expect_equal (out$package, c ("toolA", "toolD"))
@@ -94,7 +94,7 @@ test_that ("cran_data_downloads left-joins download counts onto the input data",
         repo_url = NA_character_
     )
     out <- httptest2::with_mock_dir ("cranlogs_mock", {
-        longtail:::cran_data_downloads (dat)
+        cran_data_downloads (dat)
     })
 
     expect_equal (names (out), c ("package", "version", "repo_url", "downloads"))

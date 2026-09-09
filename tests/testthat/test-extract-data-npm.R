@@ -27,7 +27,7 @@
 
 test_that ("npm_download_counts_fetch returns the version and raw tarball bytes", {
     fetched <- httptest2::with_mock_dir ("npm_downloads_mock", {
-        longtail:::npm_download_counts_fetch ()
+        npm_download_counts_fetch ()
     })
     expect_equal (fetched$version, "2026.09.08")
     expect_true (is.raw (fetched$tarball))
@@ -49,7 +49,7 @@ test_that ("npm_downloads_full untars and reshapes the counts.json download", {
 
 test_that ("npm_repo_urls_many resolves via repository/homepage, NA on 404", {
     out <- httptest2::with_mock_dir ("npm_mock", {
-        longtail:::npm_repo_urls_many (c ("is-number", "left-pad", "this-package-does-not-exist-xyz123"))
+        npm_repo_urls_many (c ("is-number", "left-pad", "this-package-does-not-exist-xyz123"))
     })
     expect_equal (
         out,

@@ -1,14 +1,14 @@
 test_that ("floor_month rounds down to first-of-month", {
-    expect_equal (longtail:::floor_month ("2022-03-17"), as.Date ("2022-03-01"))
+    expect_equal (floor_month ("2022-03-17"), as.Date ("2022-03-01"))
     expect_equal (
-        longtail:::floor_month (c ("2022-03-17", "2022-01-01")),
+        floor_month (c ("2022-03-17", "2022-01-01")),
         as.Date (c ("2022-03-01", "2022-01-01"))
     )
 })
 
 test_that ("popularity_strata splits into n_strata ordered quantile bins", {
     x <- c (1, 10, 100, 1000, 10000, 100000, 1000000, 10000000)
-    out <- longtail:::popularity_strata (x, n_strata = 4L)
+    out <- popularity_strata (x, n_strata = 4L)
 
     expect_s3_class (out, "factor")
     expect_true (is.ordered (out))
@@ -21,7 +21,7 @@ test_that ("popularity_strata falls back to fewer strata when ties partially col
     # 10 tied low values + 1 high value: only the top quantile break differs,
     # so 4 requested strata collapse to the 1 the data can actually support.
     x <- c (rep (1, 10), 1000)
-    out <- longtail:::popularity_strata (x, n_strata = 4L)
+    out <- popularity_strata (x, n_strata = 4L)
     expect_equal (nlevels (out), 1L)
     expect_equal (levels (out), "Q1")
 })
@@ -35,36 +35,36 @@ test_that ("popularity_strata errors when ALL values are identical", {
     # intervals" rather than boundaries, and errors on `Inf` intervals.
     x <- rep (0, 20)
     expect_error (
-        suppressWarnings (longtail:::popularity_strata (x, n_strata = 4L)),
+        suppressWarnings (popularity_strata (x, n_strata = 4L)),
         "length.out"
     )
 })
 
 test_that ("label_stratum_extremes labels only the first/last levels", {
     x <- factor (c ("Q1", "Q2", "Q3"), levels = c ("Q1", "Q2", "Q3"), ordered = TRUE)
-    out <- longtail:::label_stratum_extremes (x)
+    out <- label_stratum_extremes (x)
     expect_equal (levels (out), c ("Q1 (low)", "Q2", "Q3 (high)"))
 })
 
 test_that ("label_stratum_extremes leaves a single-level factor untouched", {
     x <- factor ("Q1", levels = "Q1", ordered = TRUE)
-    out <- longtail:::label_stratum_extremes (x)
+    out <- label_stratum_extremes (x)
     expect_equal (levels (out), "Q1")
 })
 
 test_that ("trailing_roll_sum sums a trailing window, partial at the start", {
     x <- c (1, 1, 1, 1, 1)
-    out <- longtail:::trailing_roll_sum (x, window = 3L)
+    out <- trailing_roll_sum (x, window = 3L)
     expect_equal (out, c (1, 2, 3, 3, 3))
 })
 
 test_that ("activity_metric_label reports metric verb, window, and threshold", {
-    lab <- longtail:::activity_metric_label ("issues", window = 6L, contrib_threshold = 0.05)
+    lab <- activity_metric_label ("issues", window = 6L, contrib_threshold = 0.05)
     expect_match (lab, "Issues opened")
     expect_match (lab, "6-month trailing avg")
     expect_match (lab, "contrib-threshold=0.05")
 
-    lab2 <- longtail:::activity_metric_label ("comments")
+    lab2 <- activity_metric_label ("comments")
     expect_match (lab2, "Comments received")
 })
 
@@ -203,7 +203,8 @@ test_that ("issue_rate_tbl supports metric = 'comments'", {
 test_that ("fit_activity_model fits a quasipoisson GLM with the interaction term", {
     rate_tbl <- tibble::tibble (
         popularity_stratum = factor (
-            rep (c ("Q1", "Q2"), each = 6), levels = c ("Q1", "Q2"), ordered = TRUE
+            rep (c ("Q1", "Q2"), each = 6),
+            levels = c ("Q1", "Q2"), ordered = TRUE
         ),
         month = rep (seq (as.Date ("2020-01-01"), by = "month", length.out = 6), 2),
         n_metric = c (1:6, 6:1),
@@ -218,7 +219,8 @@ test_that ("fit_activity_model fits a quasipoisson GLM with the interaction term
 test_that ("fit_activity_model drops rows with zero repo-months exposure", {
     rate_tbl <- tibble::tibble (
         popularity_stratum = factor (
-            rep (c ("Q1", "Q2"), each = 4), levels = c ("Q1", "Q2"), ordered = TRUE
+            rep (c ("Q1", "Q2"), each = 4),
+            levels = c ("Q1", "Q2"), ordered = TRUE
         ),
         month = rep (seq (as.Date ("2020-01-01"), by = "month", length.out = 4), 2),
         n_metric = c (0, 1, 2, 3, 1, 2, 3, 4),
@@ -295,7 +297,8 @@ test_that ("plot_activity_by_source builds one line per source for one stratum",
     )
 
     p <- longtail::plot_activity_by_source (
-        issue_authors_tbl, repo_tbl, stratum = 1,
+        issue_authors_tbl, repo_tbl,
+        stratum = 1,
         n_strata = 1L, start_year = 2020
     )
     expect_s3_class (p, "ggplot")
@@ -323,7 +326,8 @@ test_that ("plot_activity_by_source errors when a source has no matching repos a
 
     expect_error (
         longtail::plot_activity_by_source (
-            issue_authors_tbl, repo_tbl, stratum = 1,
+            issue_authors_tbl, repo_tbl,
+            stratum = 1,
             n_strata = 1L, start_year = 2020
         ),
         "Can't combine"
