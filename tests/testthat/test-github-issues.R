@@ -1,12 +1,8 @@
 # ---- github_repo_contributors (HTTP, mocked via httptest2) -----------------
-#
-# Fixture recorded live against hypertidy/ncmeta (7 contributors), with
-# `simplify = FALSE` for the same reason as the github_api_get_all() fixtures
-# in test-utils-github.R: this goes through github_api_get_all() internally,
-# which needs real x-ratelimit-* headers on replay to avoid the missing-
-# headers edge case in github_respect_rate_limit().
 
-test_that ("github_repo_contributors returns login + fractional contribution share", {
+
+test_that ("github_repo_contribs returns login + ctb proportion", {
+
     withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
     ctbs <- httptest2::with_mock_dir ("ghrepos_contributors", {
         suppressMessages (github_repo_contributors ("hypertidy", "ncmeta"))
@@ -16,10 +12,13 @@ test_that ("github_repo_contributors returns login + fractional contribution sha
     expect_equal (names (ctbs), c ("login", "contribution"))
     expect_equal (nrow (ctbs), 7L)
     expect_equal (sum (ctbs$contribution), 1, tolerance = 1e-6)
-    expect_true (ctbs$contribution [ctbs$login == "mdsumner"] > 0.5) # dominant contributor
+    expect_true (
+        ctbs$contribution [ctbs$login == "mdsumner"] > 0.5
+    ) # dominant contributor
 })
 
-test_that ("github_repo_contributors returns a zero-row tibble for a repo with no contributors", {
+test_that ("github_repo_contribs returns empty when no ctbs", {
+
     # Reuses the paginated-issues mock dir's structure but points at an
     # endpoint with no matching fixture file... instead, directly unit-test
     # the zero-row shape by stubbing github_api_get_all() - avoids needing a

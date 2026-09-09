@@ -42,36 +42,24 @@ test_that ("build_runiv_table extracts URLs and review metadata", {
 })
 
 # ---- cran_data_pkgstats -----------------------------------------------------
-#
-# Mocked via `local_mocked_bindings(download.file = ..., .package = "utils")`,
-# per testthat's own docs on mocking namespaced calls to another package (not
-# generally recommended, since it affects every `download.file()` call for the
-# duration of the test, but there is no source-level binding for
-# `download.file` inside `longtail` itself for `local_mocked_bindings()` to
-# target with the usual `.package = "longtail"` form). The fixture
-# (fixtures/pkgstats-mini.Rds) is a hand-built 5-row stand-in for the real
-# `pkgstats-CRAN-current.Rds`, covering: two versions of the same package (only
-# the latest should survive `slice_max(date)`), a resolvable comma-separated
-# `urls` github.com entry, a github.com URL with a non-repo path (`/issues` - 5
-# path segments, not the resolvable 4), a `urls` value with no github.com entry
-# at all, and a comma+newline-separated `urls` value (exercising the alternate
-# separator in the `strsplit()` regex).
+
+local_pkgstats_fixture <- function (env = parent.frame ()) {
+    f <- fs::path (fs::path_temp (), "pkgstats-CRAN-current.Rds")
+    dat <- readr::read_csv (test_path ("fixtures", "pkgstats-mini.csv"), show_col_types = FALSE)
+    saveRDS (dat, f)
+    withr::defer (fs::file_delete (f), envir = env)
+    invisible (f)
+}
 
 test_that ("cran_data_pkgstats filters with resolvable gh URL", {
 
-    fixture <- test_path ("fixtures", "pkgstats-mini.Rds")
-    testthat::local_mocked_bindings (
-        download.file = function (url, destfile, ...) {
-            file.copy (fixture, destfile, overwrite = TRUE)
-        },
-        .package = "utils"
-    )
+    local_pkgstats_fixture ()
 
     out <- cran_data_pkgstats ()
 
     expect_equal (names (out), c ("package", "version", "repo_url"))
     expect_equal (out$package, c ("toolA", "toolD"))
-    expect_equal (out$version, c ("1.0.0", "3.0.0")) # latest of toolA's two versions
+    expect_equal (out$version, c ("1.0.0", "3.0.0"))
     expect_equal (
         out$repo_url,
         c (
@@ -82,17 +70,10 @@ test_that ("cran_data_pkgstats filters with resolvable gh URL", {
 })
 
 # ---- cran_data_downloads (HTTP, req_perform_parallel()) ---------------------
-#
-# cran_data_downloads() uses httr2::req_perform_parallel(), which - unlike
-# req_perform() - httptest2 cannot auto-record (capture_requests() only
-# traces req_perform(); confirmed empirically, see tests-plan.md), even
-# though replay works fine (httr2_mock is honoured by both). This fixture
-# was instead recorded by manually performing (via plain req_perform()) the
-# exact single combined-package-list request cran_data_downloads() would
-# otherwise dispatch through the parallel queue - real data for a real (`fs`)
-# and a nonexistent (`doesnotexist12345`) CRAN package, frozen at record time.
 
-test_that ("cran_data_downloads left-joins download counts onto the input data", {
+
+test_that ("cran_data_downloads left-joins counts onto input", {
+
     dat <- tibble::tibble (
         package = c ("fs", "doesnotexist12345"),
         version = c ("1.0.0", "1.0.0"),
@@ -102,18 +83,20 @@ test_that ("cran_data_downloads left-joins download counts onto the input data",
         cran_data_downloads (dat)
     })
 
-    expect_equal (names (out), c ("package", "version", "repo_url", "downloads"))
+    expect_equal (
+        names (out),
+        c ("package", "version", "repo_url", "downloads")
+    )
     expect_equal (out$downloads, c (1759231L, 0L))
 })
 
-test_that ("build_cran_table composes cran_data_pkgstats + cran_data_downloads", {
-    fixture <- test_path ("fixtures", "pkgstats-mini.Rds")
+test_that ("build_cran_table composes pkgstats + downloads", {
+
+    local_pkgstats_fixture ()
     testthat::local_mocked_bindings (
-        download.file = function (url, destfile, ...) file.copy (fixture, destfile, overwrite = TRUE),
-        .package = "utils"
-    )
-    testthat::local_mocked_bindings (
-        cran_data_downloads = function (dat) dplyr::mutate (dat, downloads = c (100L, 200L)),
+        cran_data_downloads = function (dat) {
+            dplyr::mutate (dat, downloads = c (100L, 200L))
+        },
         .package = "longtail"
     )
 
