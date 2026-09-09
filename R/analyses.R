@@ -87,7 +87,7 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
 #' @export
 fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
-    is_test_env <- !identical (Sys.getenv ("LONGTAIL_TESTS", "true"), "false")
+    is_test_env <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
 
     if (!is_test_env) {
         requireNamespace ("progressify", quietly = TRUE)
@@ -134,7 +134,7 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         if (is_test_env) {
             batch_tbl <- lapply (batch, get_issue_authors_safe)
         } else {
-            batch_tbl <- batch_tbl |>
+            batch_tbl <- lapply (batch, get_issue_authors_safe) |>
                 progressify::progressify () |>
                 futurize::futurize ()
         }

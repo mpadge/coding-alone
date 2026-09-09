@@ -101,6 +101,18 @@ test_that ("github_stars_many returns all-NA when not resolvable", {
     expect_equal (out, c (NA_integer_, NA_integer_))
 })
 
+test_that ("build_joss_issues_query filters by label/state and pages via cursor", {
+    q <- build_joss_issues_query ("openjournals", "joss-reviews")
+    expect_type (q, "character")
+    expect_match (q, 'repository\\(owner: "openjournals", name: "joss-reviews"\\)')
+    expect_match (q, 'labels: \\["accepted"\\]')
+    expect_match (q, "states: \\[OPEN, CLOSED\\]")
+    expect_no_match (q, "after:")
+
+    q_cursor <- build_joss_issues_query ("openjournals", "joss-reviews", cursor = "CURSOR1")
+    expect_match (q_cursor, 'after: "CURSOR1"')
+})
+
 # github_stars_many()'s real-repo/GraphQL-fixture case, and build_joss_table()
-# (which uses github_stars_many() internally) are in test-live-graphql.R,
-# gated behind test_all - see that file's header comment.
+# (which uses github_stars_many() and fetch_joss_issues() internally) are in
+# test-live-graphql.R, gated behind test_all.

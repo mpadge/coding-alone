@@ -37,7 +37,6 @@ test_that ("github_repo_issues_graphql works", {
 })
 
 test_that ("github_issue_authors composes real contributors + issues", {
-    withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
     out <- suppressMessages (
         httptest2::with_mock_dir ("gh_issue_authors_ncmeta", {
             longtail::github_issue_authors (
@@ -60,35 +59,32 @@ test_that ("github_issue_authors composes real contributors + issues", {
     expect_true (any (out$author == "mdsumner" & out$contribution > 0.5))
 })
 
-# ---- build_joss_table -------------------------------------------------------
-#
-# The REST side (accepted-issue listing from openjournals/joss-reviews)
-# stays a hand-crafted, deliberately short fixture - the real list runs to
-# thousands of issues, which would still be too large/slow to record even
-# with a token and test_all gating. Its 4 synthetic issues (a
-# comment-delimited, an anchor-tag, and a bare-URL Repository line, plus one
-# with none at all) reference 3 *real* small repos so the follow-on
-# stargazer-count GraphQL lookup below is a genuine recorded response, not
-# hand-typed.
-
-test_that ("build_joss_table extracts repo/language/stars, dropping PRs", {
-    withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
+test_that ("build_joss_table extracts repo/language/stars from real issues", {
+    Sys.setenv ("LONGTAIL_TESTS" = "true")
     out <- suppressMessages (httptest2::with_mock_dir ("joss_mock", {
         longtail::build_joss_table ()
     }))
 
-    expect_equal (nrow (out), 4L) # the pull_request-tagged 5th entry is dropped
-    expect_equal (out$issue_number, c (1000L, 1001L, 1002L, 1003L))
+    expect_true (nrow (out) > 0L)
+    expect_true (nrow (out) <= 2L) # LONGTAIL_TESTS caps the query at 2 issues
     expect_equal (
-        out$repo_url,
+        names (out),
         c (
-            "https://github.com/hypertidy/ncmeta",
-            "https://github.com/r-lib/rprojroot",
-            "https://github.com/jeroen/curl",
-            NA_character_
+            "issue_number", "title", "issue_url",
+            "repo_url", "language", "stars", "downloads"
         )
     )
-    expect_equal (out$language, c ("R", "Python", NA_character_, "C++"))
-    expect_equal (out$stars, c (13L, 149L, 233L, NA_integer_))
+    expect_type (out$issue_number, "integer")
+    expect_true (all (
+        grepl (
+            "^https://github\\.com/openjournals/joss-reviews/issues/",
+            out$issue_url
+        )
+    ))
+
+    # Every extracted repo_url should at least be a real, resolvable repo,
+    # reflected in a non-NA stargazer count:
+    resolved <- !is.na (out$repo_url)
+    expect_true (all (!is.na (out$stars [resolved])))
     expect_true (all (is.na (out$downloads))) # no pypi_tbl/npm_tbl supplied
 })

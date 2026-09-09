@@ -15,8 +15,8 @@
 #
 # Both are handled, with a bare-URL fallback for anything else.
 
-REPO <- "openjournals/joss-reviews"
-LABEL <- "accepted"
+JOSSREPO <- "openjournals/joss-reviews"
+JOSSLABEL <- "accepted"
 
 # ---- language label extraction -------------------------------------------
 
@@ -74,13 +74,6 @@ extract_repo_url <- function (body) {
 
 # ---- stargazer counts (GraphQL) -------------------------------------------
 
-# One REST call per repo (`/repos/{owner}/{repo}`) would cost as many
-# requests as there are repos. GraphQL lets many repos share a single HTTP
-# request instead, by aliasing a `repository()` field per repo in one query
-# - so a few thousand repos cost a few dozen requests rather than a few
-# thousand. Uses `gh::gh_gql()` rather than a hand-built httr2 request, which
-# also picks up GITHUB_TOKEN/GITHUB_PAT (or a stored gitcreds credential)
-# automatically.
 STARS_BATCH_SIZE <- 50L
 
 #' One aliased `repository(){ stargazerCount }` field per repo, keyed by
@@ -158,6 +151,69 @@ join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
     dplyr::left_join (tbl, registry_tbl, by = "repo_url")
 }
 
+# ---- issue listing (GraphQL) -----------------------------------------------
+
+# LONGTAIL_TESTS = "true" is set by tests that need it (see
+# fetch_issue_authors() in R/analyses.R for the same convention). Whenever a
+# test is actually running, request just 2 issues per page instead of 100,
+# and stop after that single page rather than following cursors to the real
+# (thousands-strong) end of the list - so that a live, test_all-gated run
+# against the real API stays small and fast, and any httptest2 fixture
+# recorded from it is a couple of real issues, not a frozen slice of
+# everything ever accepted by JOSS.
+joss_issues_page_size <- function () {
+    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) 2L else 100L
+}
+
+build_joss_issues_query <- function (owner, repo, cursor = NULL) {
+    after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
+    first <- joss_issues_page_size ()
+    stringr::str_glue (
+        'query {{
+            repository(owner: "{owner}", name: "{repo}") {{
+                issues(first: {first}{after}, labels: ["{JOSSLABEL}"], states: [OPEN, CLOSED]) {{
+                    pageInfo {{ hasNextPage endCursor }}
+                    nodes {{
+                        number
+                        title
+                        url
+                        body
+                        labels (first: 20) {{ nodes {{ name }} }}
+                    }}
+                }}
+            }}
+        }}'
+    )
+}
+
+#' Every `JOSSLABEL`-labeled issue on `JOSSREPO` (pull requests excluded by
+#' construction), paginated via GraphQL cursors.
+#'
+#' @return A list of issue nodes, each with `number`, `title`, `url`,
+#' `body`, and `labels$nodes` (a list of `{name}` objects, the same shape
+#' `extract_language()` expects from REST's `labels`).
+#'
+#' @noRd
+fetch_joss_issues <- function () {
+    parts <- strsplit (JOSSREPO, "/", fixed = TRUE) [[1]]
+    owner <- parts [1]
+    repo <- parts [2]
+    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+
+    cursor <- NULL
+    issues <- list ()
+    repeat {
+        body <- gh::gh_gql (build_joss_issues_query (owner, repo, cursor))
+        node <- body$data$repository$issues
+        issues <- c (issues, node$nodes)
+        if (single_page_only || !isTRUE (node$pageInfo$hasNextPage)) {
+            break
+        }
+        cursor <- node$pageInfo$endCursor
+    }
+    issues
+}
+
 # ---- main -----------------------------------------------------------------
 
 #' Build a (issue_number, title, issue_url, repo_url, language, stars,
@@ -170,21 +226,17 @@ join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
 #' @return A tibble with one row per accepted JOSS submission.
 #' @export
 build_joss_table <- function (pypi_tbl = NULL, npm_tbl = NULL) {
-    message ("Fetching all '", LABEL, "'-labeled issues from ", REPO, "...")
-    issues <- github_api_get_all (
-        stringr::str_glue ("/repos/{REPO}/issues"),
-        query = list (labels = LABEL, state = "all")
-    )
-    issues <- purrr::keep (issues, \ (i) is.null (i$pull_request)) # this repo shouldn't have any, but be safe
+    message ("Fetching all '", JOSSLABEL, "'-labeled issues from ", JOSSREPO, "...")
+    issues <- fetch_joss_issues ()
 
     message ("Extracting repo URLs from ", length (issues), " issue bodies...")
     tbl <- purrr::map_dfr (issues, \ (i) {
         tibble::tibble (
             issue_number = i$number,
             title = i$title,
-            issue_url = i$html_url,
+            issue_url = i$url,
             repo_url = extract_repo_url (i$body),
-            language = extract_language (i$labels)
+            language = extract_language (i$labels$nodes)
         )
     })
 

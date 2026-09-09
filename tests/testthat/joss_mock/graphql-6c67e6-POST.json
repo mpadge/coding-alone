@@ -1,0 +1,58 @@
+{
+    "data": {
+        "repository": {
+            "issues": {
+                "pageInfo": {
+                    "hasNextPage": true,
+                    "endCursor": "Y3Vyc29yOnYyOpK0MjAxNi0wNS0wNVQwMzoxNjowMVrOCSELRw=="
+                },
+                "nodes": [
+                    {
+                        "number": 11,
+                        "title": "[REVIEW]: carl: a likelihood-free inference toolbox",
+                        "url": "https://github.com/openjournals/joss-reviews/issues/11",
+                        "body": "**Submitting author:** @glouppe (<a href=\"http://orcid.org/0000-0002-2082-3106\">Gilles Louppe<\/a>)\r\n**Repository:** <a href=\"https://github.com/diana-hep/carl\" target=\"_blank\">https://github.com/diana-hep/carl<\/a>\r\n**Version:** v0.2\r\n**Editor:** @arfon\r\n**Reviewer:** @betatim \r\n**Archive:** <a href=\"http://dx.doi.org/10.5281/zenodo.47798\" target=\"_blank\" >10.5281/zenodo.47798<\/a>\r\n## Status\r\n\r\n[![status](http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37/status.svg)](http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37)\r\n\r\nStatus badge code:\r\n\r\n```\r\nHTML: <a href=\"http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37\"><img src=\"http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37/status.svg\"><\/a>\r\nMarkdown: [![status](http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37/status.svg)](http://joss.theoj.org/papers/26a9ffd9e7b98b1911d89d2ceb268f37)\r\n```\r\n## Reviewer questions\r\n### General checks\r\n- [x] **Repository:** Is the source code for this software available at the <a target=\"_blank\" href=\"https://github.com/diana-hep/carl\">repository url<\/a>?\r\n- [x] **License:** Does the repository contain a plain-text LICENSE file with the contents of an [OSI approved](https://opensource.org/licenses/alphabetical) software license?\r\n- [x] **Version:** Does the release version given match the GitHub release (v0.2)?\r\n- [x] **Archive:** Does the <a target=\"_blank\" href=\"http://dx.doi.org/10.5281/zenodo.47798\">software archive<\/a> resolve?\r\n### Functionality\r\n- [x] **Installation:** Does installation proceed as outlined in the documentation?\r\n- [x] **Functionality:** Have the functional claims of the software been confirmed?\r\n- ~~[ ] **Performance:** Have the performance claims of the software been confirmed?~~ \r\n### Documentation\r\n- [x] **A statement of need:** Do the authors clearly state what problems the software is designed to solve and who the target audience is? diana-hep/carl#53\r\n- [x] **Installation instructions:** Is there a clearly-stated list of dependencies? Ideally these should be handled with an automated package management solution.\r\n- [x] **Example usage:** Do the authors include examples of how to use the software (ideally to solve real-world analysis problems).\r\n- [x] **Functionality documentation:** Is the functionality of the software documented to a satisfactory level (e.g. API method documentation)?\r\n- [x] **Automated tests:** Are there automated tests or manual steps described so that the function of the software can be verified?\r\n- [x] **Community guidelines:** Are there clear guidelines for third parties wishing to 1) Contribute to the software 2) Report issues or problems with the software 3) Seek support diana-hep/carl#53\r\n### Software paper\r\n- [x] **Authors:** Does the `paper.md` file include a list of authors with their affiliations?\r\n- [x] **A statement of need:** Do the authors clearly state what problems the software is designed to solve and who the target audience is? diana-hep/carl#53\r\n- [ ] **References:** Do all archival references that should have a DOI list one (e.g. papers, datasets, software)?\r\n",
+                        "labels": {
+                            "nodes": [
+                                {
+                                    "name": "accepted"
+                                },
+                                {
+                                    "name": "review"
+                                },
+                                {
+                                    "name": "recommend-accept"
+                                },
+                                {
+                                    "name": "published"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "number": 12,
+                        "title": "[REVIEW]: mst_clustering: Clustering via Minimum Spanning Trees",
+                        "url": "https://github.com/openjournals/joss-reviews/issues/12",
+                        "body": "**Submitting author:** @jakevdp (<a href=\"http://orcid.org/0000-0002-9623-3401\">Jacob VanderPlas<\/a>)\r\n**Repository:** <a href=\"http://github.com/jakevdp/mst_clustering\" target=\"_blank\">http://github.com/jakevdp/mst_clustering<\/a>\r\n**Version:** v1.0.0\r\n**Editor:** @arfon\r\n**Reviewer:** @nicoguaro \r\n**Archive:** <a href=\"http://dx.doi.org/10.5281/zenodo.50995\" target =\"_blank\">http://dx.doi.org/10.5281/zenodo.50995<\/a>\r\n## Status\r\n\r\n[![status](http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014/status.svg)](http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014)\r\n\r\nStatus badge code:\r\n\r\n```\r\nHTML: <a href=\"http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014\"><img src=\"http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014/status.svg\"><\/a>\r\nMarkdown: [![status](http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014/status.svg)]http://joss.theoj.org/papers/0b73d249cd34985b6fa1a5ad4f4f8014\r\n```\r\n## Reviewer questions\r\n### General checks\r\n- [x] **Repository:** Is the source code for this software available at the <a target=\"_blank\" href=\"http://github.com/jakevdp/mst_clustering\">repository url<\/a>?\r\n- [x] **License:** Does the repository contain a plain-text LICENSE file with the contents of an [OSI approved](https://opensource.org/licenses/alphabetical) software license?\r\n- [x] **Version:** Does the release version given match the GitHub release (v1.0.0)?\r\n- [x] **Archive:** Does the <a target=\"_blank\" href=\"http://dx.doi.org/10.5281/zenodo.50995\">software archive<\/a> resolve?\r\n### Functionality\r\n- [x] **Installation:** Does installation proceed as outlined in the documentation?\r\n- [x] **Functionality:** Have the functional claims of the software been confirmed?\r\n- [x] **Performance:** Have the performance claims of the software been confirmed?\r\n### Documentation\r\n- [x] **A statement of need:** Do the authors clearly state what problems the software is designed to solve and who the target audience is?\r\n- [x] **Installation instructions:** Is there a clearly-stated list of dependencies? Ideally these should be handled with an automated package management solution.\r\n- [x] **Example usage:** Do the authors include examples of how to use the software (ideally to solve real-world analysis problems).\r\n- [x] **Functionality documentation:** Is the functionality of the software documented to a satisfactory level (e.g. API method documentation)?\r\n- [x] **Automated tests:** Are there automated tests or manual steps described so that the function of the software can be verified?\r\n- [ ] **Community guidelines:** Are there clear guidelines for third parties wishing to 1) Contribute to the software 2) Report issues or problems with the software 3) Seek support\r\n### Software paper\r\n- [x] **Authors:** Does the `paper.md` file include a list of authors with their affiliations?\r\n- [x] **A statement of need:** Do the authors clearly state what problems the software is designed to solve and who the target audience is?\r\n- [x] **References:** Do all archival references that should have a DOI list one (e.g. papers, datasets, software)?\r\n",
+                        "labels": {
+                            "nodes": [
+                                {
+                                    "name": "accepted"
+                                },
+                                {
+                                    "name": "review"
+                                },
+                                {
+                                    "name": "recommend-accept"
+                                },
+                                {
+                                    "name": "published"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
