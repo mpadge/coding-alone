@@ -33,6 +33,9 @@ clickhouse_query <- function (sql) {
 #' Full PyPI download-count population (~870k packages, last complete
 #' calendar month), paginated in chunks of CLICKHOUSE_PAGE_SIZE. Typically
 #' ~9 requests, well under a minute, no rate limiting encountered.
+#'
+#' @return A table of all PyPI packages.
+#' @export
 pypi_downloads_full <- function () {
     base_sql <- "
     SELECT SUM(count) AS downloads, project

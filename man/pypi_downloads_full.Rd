@@ -8,6 +8,9 @@ calendar month), paginated in chunks of CLICKHOUSE_PAGE_SIZE. Typically
 \usage{
 pypi_downloads_full()
 }
+\value{
+A table of all PyPI packages.
+}
 \description{
 Full PyPI download-count population (~870k packages, last complete
 calendar month), paginated in chunks of CLICKHOUSE_PAGE_SIZE. Typically

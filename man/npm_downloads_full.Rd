@@ -7,11 +7,12 @@
 — a single static JSON object, republished monthly, mapping package name
 to last-month download count. This is npm's practical equivalent of
 PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
-BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
-are never exported anywhere public; only pre-aggregated counts are
-exposed, via the REST API).}
+BigQuery's public PyPI download-log dataset.}
 \usage{
 npm_downloads_full()
+}
+\value{
+A table of all npm packages.
 }
 \description{
 Full npm monthly download-count population (~3.77M packages), via the
@@ -19,7 +20,5 @@ Full npm monthly download-count population (~3.77M packages), via the
 — a single static JSON object, republished monthly, mapping package name
 to last-month download count. This is npm's practical equivalent of
 PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
-BigQuery's public PyPI download-log dataset (confirmed — npm's raw logs
-are never exported anywhere public; only pre-aggregated counts are
-exposed, via the REST API).
+BigQuery's public PyPI download-log dataset.
 }
