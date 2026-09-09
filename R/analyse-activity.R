@@ -7,7 +7,8 @@ POPULARITY_METRIC <- c (
     pypi = "downloads",
     npm = "downloads",
     joss = "stars",
-    ropensci = "stars"
+    ropensci = "stars",
+    cran = "downloads"
 )
 
 # Proper-cased display forms of each source's internal (lowercase)
@@ -19,7 +20,8 @@ SOURCE_DISPLAY_NAME <- c (
     pypi = "PyPI",
     npm = "npm",
     joss = "JOSS",
-    ropensci = "rOpenSci"
+    ropensci = "rOpenSci",
+    cran = "CRAN"
 )
 
 #' First-of-month for a Date/date-like vector.
