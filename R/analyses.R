@@ -87,10 +87,13 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
 #' @export
 fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
-    requireNamespace ("progressify", quietly = TRUE)
-    requireNamespace ("futurize", quietly = TRUE)
+    is_test_env <- !identical (Sys.getenv ("LONGTAIL_TESTS", "true"), "false")
 
-    progressr::handlers (global = TRUE)
+    if (!is_test_env) {
+        requireNamespace ("progressify", quietly = TRUE)
+        requireNamespace ("futurize", quietly = TRUE)
+        progressr::handlers (global = TRUE)
+    }
 
     issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
     issue_authors_done_rds <- file.path (out_dir, "issue-authors-done.rds")
@@ -128,9 +131,13 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         batch <- batches [[b]]
         cli::cli_alert_info ("Issue authors: batch {b}/{length (batches)} ({length (batch)} repos)...")
 
-        batch_tbl <- lapply (batch, get_issue_authors_safe) |>
-            progressify::progressify () |>
-            futurize::futurize ()
+        if (is_test_env) {
+            batch_tbl <- lapply (batch, get_issue_authors_safe)
+        } else {
+            batch_tbl <- batch_tbl |>
+                progressify::progressify () |>
+                futurize::futurize ()
+        }
         issue_authors_tbl <- dplyr::bind_rows (issue_authors_tbl, batch_tbl)
         repo_urls_done <- c (repo_urls_done, batch)
 
