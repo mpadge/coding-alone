@@ -87,9 +87,10 @@ cran_data_pkgstats <- function () {
     )
     f <- fs::path (fs::path_temp (), basename (u))
     if (!file.exists (f)) {
-        download.file (u, f)
+        utils::download.file (u, f)
     }
 
+    package <- NULL # suppress no vis binding note
     x <- readRDS (f) |>
         dplyr::group_by (package) |>
         dplyr::slice_max (date, n = 1, with_ties = FALSE)
@@ -116,7 +117,11 @@ cran_data_pkgstats <- function () {
     x <- x [index, ]
     gh_urls <- gh_urls [index]
 
-    tibble::tibble (package = x$package, version = x$version, repo_url = gh_urls)
+    tibble::tibble (
+        package = x$package,
+        version = x$version,
+        repo_url = gh_urls
+    )
 }
 
 #' Get download data for all CRAN packages
