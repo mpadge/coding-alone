@@ -1,6 +1,6 @@
 test_that ("floor_month rounds down to first-of-month", {
-    expect_equal (floor_month ("2022-03-17"), as.Date ("2022-03-01"))
-    expect_equal (
+    expect_identical (floor_month ("2022-03-17"), as.Date ("2022-03-01"))
+    expect_identical (
         floor_month (c ("2022-03-17", "2022-01-01")),
         as.Date (c ("2022-03-01", "2022-01-01"))
     )
@@ -11,18 +11,18 @@ test_that ("popularity_strata splits into n_strata ordered quantile bins", {
     out <- popularity_strata (x, n_strata = 4L)
 
     expect_s3_class (out, "factor")
-    expect_true (is.ordered (out))
-    expect_equal (nlevels (out), 4L)
-    expect_equal (levels (out), paste0 ("Q", 1:4))
-    expect_true (out [1] <= out [length (out)]) # roughly monotonic ordering
+    expect_s3_class (out, "ordered")
+    expect_identical (nlevels (out), 4L)
+    expect_identical (levels (out), paste0 ("Q", 1:4))
+    expect_lte (out [1], out [length (out)]) # roughly monotonic ordering
 })
 
 test_that ("popularity_strata falls back when ties collapse", {
 
     x <- c (rep (1, 10), 1000)
     out <- popularity_strata (x, n_strata = 4L)
-    expect_equal (nlevels (out), 1L)
-    expect_equal (levels (out), "Q1")
+    expect_identical (nlevels (out), 1L)
+    expect_identical (levels (out), "Q1")
 })
 
 test_that ("popularity_strata errors when ALL values are identical", {
@@ -42,19 +42,19 @@ test_that ("label_stratum_extremes labels only the first/last levels", {
         ordered = TRUE
     )
     out <- label_stratum_extremes (x)
-    expect_equal (levels (out), c ("Q1 (low)", "Q2", "Q3 (high)"))
+    expect_identical (levels (out), c ("Q1 (low)", "Q2", "Q3 (high)"))
 })
 
 test_that ("label_stratum_extremes leaves a single-level factor untouched", {
     x <- factor ("Q1", levels = "Q1", ordered = TRUE)
     out <- label_stratum_extremes (x)
-    expect_equal (levels (out), "Q1")
+    expect_identical (levels (out), "Q1")
 })
 
 test_that ("trailing_roll_sum sums a trailing window, partial at the start", {
     x <- c (1, 1, 1, 1, 1)
     out <- trailing_roll_sum (x, window = 3L)
-    expect_equal (out, c (1, 2, 3, 3, 3))
+    expect_identical (out, c (1, 2, 3, 3, 3))
 })
 
 test_that ("activity_metric_label reports metric verb, window, and threshold", {
@@ -103,12 +103,12 @@ test_that ("issue_rate_tbl returns empty tibble", {
     )
 
     out <- longtail::issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
-    expect_equal (nrow (out), 0L)
-    expect_equal (
-        names (out),
+    expect_identical (nrow (out), 0L)
+    expect_named (
+        out,
         c ("popularity_stratum", "month", "n_metric", "n_repo_months", "rate")
     )
-    expect_equal (attr (out, "source_name"), "pypi")
+    expect_identical (attr (out, "source_name"), "pypi")
 })
 
 test_that ("issue_rate_tbl errors on an unknown source", {
@@ -161,7 +161,7 @@ test_that ("issue_rate_tbl computes exposure and rate", {
         date_end = as.Date ("2020-03-01")
     )
 
-    expect_equal (nrow (out), 2L * 3L) # 2 strata x 3 months
+    expect_identical (nrow (out), 2L * 3L) # 2 strata x 3 months
     expect_true (all (c (
         "popularity_stratum", "month", "n_metric", "n_repo_months", "rate"
     ) %in% names (out)))
@@ -171,13 +171,13 @@ test_that ("issue_rate_tbl computes exposure and rate", {
     popular_march <- dplyr::filter (
         out, month == as.Date ("2020-03-01"), popularity_stratum == "Q2"
     )
-    expect_equal (popular_march$n_metric, 2)
-    expect_equal (popular_march$n_repo_months, 3L) # Jan, Feb, Mar exposure
+    expect_identical (popular_march$n_metric, 2)
+    expect_identical (popular_march$n_repo_months, 3L) # Jan, Feb, Mar exposure
 
-    expect_equal (attr (out, "metric"), "issues")
-    expect_equal (attr (out, "window"), 12L)
+    expect_identical (attr (out, "metric"), "issues")
+    expect_identical (attr (out, "window"), 12L)
     expect_equal (attr (out, "contrib_threshold"), 0.01)
-    expect_equal (attr (out, "source_name"), "pypi")
+    expect_identical (attr (out, "source_name"), "pypi")
 })
 
 test_that ("issue_rate_tbl excludes contributor issues above threshold", {
@@ -206,7 +206,7 @@ test_that ("issue_rate_tbl excludes contributor issues above threshold", {
         n_strata = 1L, contrib_threshold = 0.01,
         date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-01-01")
     )
-    expect_equal (sum (out$n_metric), 1) # only non-ctb issue counted
+    expect_identical (sum (out$n_metric), 1) # only non-ctb issue counted
 })
 
 test_that ("issue_rate_tbl supports metric = 'comments'", {
@@ -230,8 +230,8 @@ test_that ("issue_rate_tbl supports metric = 'comments'", {
         n_strata = 1L, metric = "comments",
         date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-01-01")
     )
-    expect_equal (sum (out$n_metric), 7)
-    expect_equal (attr (out, "metric"), "comments")
+    expect_identical (sum (out$n_metric), 7)
+    expect_identical (attr (out, "metric"), "comments")
 })
 
 test_that ("fit_activity_model fits GLM with interaction term", {
@@ -252,7 +252,11 @@ test_that ("fit_activity_model fits GLM with interaction term", {
     fit <- longtail::fit_activity_model (rate_tbl)
     expect_s3_class (fit, "glm")
     expect_true (any (
-        grepl ("month_num:popularity_stratum", names (stats::coef (fit)))
+        grepl (
+            "month_num:popularity_stratum",
+            names (stats::coef (fit)),
+            fixed = TRUE
+        )
     ))
 })
 
@@ -271,7 +275,7 @@ test_that ("fit_activity_model drops rows with zero repo-months exposure", {
         n_repo_months = c (0L, 10L, 10L, 10L, 10L, 10L, 10L, 10L)
     )
     fit <- longtail::fit_activity_model (rate_tbl)
-    expect_equal (nrow (fit$model), 7L) # the one zero-exposure row is dropped
+    expect_identical (nrow (fit$model), 7L) # the one zero-exposure row is dropped
 })
 
 # ---- plotting ---------------------------------------------------------------
@@ -316,8 +320,8 @@ test_that ("plot_activity honours start_year by cropping the plotted data", {
     p_full <- longtail::plot_activity (rate_tbl)
     p_cropped <- longtail::plot_activity (rate_tbl, start_year = 2021)
 
-    expect_true (min (p_cropped$data$month) >= as.Date ("2021-01-01"))
-    expect_true (min (p_full$data$month) < as.Date ("2021-01-01"))
+    expect_gte (min (p_cropped$data$month), as.Date ("2021-01-01"))
+    expect_lt (min (p_full$data$month), as.Date ("2021-01-01"))
 })
 
 test_that ("plot_activity_by_source builds one line for one stratum", {

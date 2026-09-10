@@ -118,7 +118,7 @@ build_table_from_db <- function (univ = "cran") {
     ))
     dat <- dat [index, ]
 
-    orgs_to_rm <- c ("r-forge")
+    orgs_to_rm <- "r-forge"
     orgs <- vapply (
         dat$repo_url,
         function (u) fs::path_split (u) [[1]] [3],

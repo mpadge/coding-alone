@@ -26,7 +26,7 @@ test_that ("github_stars_many works but NAs unresolvable repos", {
             "not-a-github-url" # fails parse_github_repo_url() before request
         )))
     })
-    expect_equal (out, c (13L, NA_integer_, NA_integer_))
+    expect_identical (out, c (13L, NA_integer_, NA_integer_))
 })
 
 # github_issue_authors() (contributors REST + issues GraphQL) and
@@ -48,9 +48,9 @@ test_that ("github_issue_authors composes real contributors + issues", {
         )
     )
 
-    expect_true (nrow (out) > 0L)
-    expect_equal (
-        names (out),
+    expect_gt (nrow (out), 0L)
+    expect_named (
+        out,
         c (
             "repo_url", "issue_number", "author", "created_at",
             "n_comments", "contribution", "repo_created_at"
@@ -68,10 +68,10 @@ test_that ("github_repo_issues_graphql works", {
         github_repo_issues_graphql ("hypertidy", "ncmeta")
     })
 
-    expect_equal (result$repo_created_at, "2017-06-10T03:38:22Z")
-    expect_true (nrow (result$issues) > 0L)
-    expect_equal (
-        names (result$issues),
+    expect_identical (result$repo_created_at, "2017-06-10T03:38:22Z")
+    expect_gt (nrow (result$issues), 0L)
+    expect_named (
+        result$issues,
         c ("issue_number", "author", "created_at", "n_comments")
     )
 })
@@ -81,10 +81,10 @@ test_that ("build_joss_table extracts repo/language/stars from real issues", {
         longtail::build_joss_table ()
     }))
 
-    expect_true (nrow (out) > 0L)
-    expect_true (nrow (out) <= 2L) # LONGTAIL_TESTS caps the query at 2 issues
-    expect_equal (
-        names (out),
+    expect_gt (nrow (out), 0L)
+    expect_lte (nrow (out), 2L) # LONGTAIL_TESTS caps the query at 2 issues
+    expect_named (
+        out,
         c (
             "issue_number", "title", "issue_url",
             "repo_url", "language", "stars", "downloads"
@@ -101,6 +101,6 @@ test_that ("build_joss_table extracts repo/language/stars from real issues", {
     # Every extracted repo_url should at least be a real, resolvable repo,
     # reflected in a non-NA stargazer count:
     resolved <- !is.na (out$repo_url)
-    expect_true (all (!is.na (out$stars [resolved])))
+    expect_false (anyNA (out$stars [resolved]))
     expect_true (all (is.na (out$downloads))) # no pypi_tbl/npm_tbl supplied
 })

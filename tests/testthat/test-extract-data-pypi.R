@@ -4,7 +4,7 @@ test_that ("clickhouse_query returns JSONCompact as character matrix", {
         clickhouse_query ("SELECT 1 AS one, 2 AS two FORMAT JSONCompact")
     })
     expect_true (is.matrix (out))
-    expect_equal (dim (out), c (1L, 2L))
+    expect_identical (dim (out), c (1L, 2L))
 })
 
 
@@ -16,12 +16,12 @@ test_that ("pypi_downloads_full returns a short page of name/downloads", {
         longtail::pypi_downloads_full ()
     })
 
-    expect_equal (names (out), c ("downloads", "name"))
-    expect_true (nrow (out) > 0L)
-    expect_true (nrow (out) <= 5L) # LONGTAIL_TESTS caps the query at 5 rows
+    expect_named (out, c ("downloads", "name"))
+    expect_gt (nrow (out), 0L)
+    expect_lte (nrow (out), 5L) # LONGTAIL_TESTS caps the query at 5 rows
     expect_type (out$name, "character")
     expect_true (all (out$downloads > 0))
-    expect_true (!is.unsorted (rev (out$downloads))) # ORDER BY downloads DESC
+    expect_false (is.unsorted (rev (out$downloads))) # ORDER BY downloads DESC
 })
 
 # pypi_repo_urls_many() uses req_perform_parallel() internally
@@ -40,7 +40,7 @@ test_that ("pypi_repo_urls_many resolves via project_urls, NA on 404", {
         )
     })
 
-    expect_equal (
+    expect_identical (
         out,
         c (
             "https://github.com/psf/requests",

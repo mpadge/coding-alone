@@ -7,15 +7,15 @@ test_that ("build_repo_tbl combines source CSVs, tagging each with its source", 
 
     out <- longtail::build_repo_tbl (out_dir)
 
-    expect_equal (
-        names (out),
+    expect_named (
+        out,
         c ("name", "repo_url", "downloads", "stars", "source")
     )
     expect_setequal (out$source, c ("pypi", "npm", "joss"))
     expect_false ("https://github.com/o/ignored" %in% out$repo_url)
 
     joss_row <- dplyr::filter (out, source == "joss")
-    expect_equal (joss_row$name, "Some Tool") # "[REVIEW]: " prefix stripped
+    expect_identical (joss_row$name, "Some Tool") # "[REVIEW]: " prefix stripped
 
     pypi_rows <- dplyr::filter (out, source == "pypi")
     expect_true (all (is.na (pypi_rows$stars))) # no stars column in pypi.csv
@@ -29,7 +29,7 @@ test_that ("build_repo_tbl returns a emtpy when out_dir has no matches", {
     )
 
     out <- longtail::build_repo_tbl (out_dir)
-    expect_equal (nrow (out), 0L) # no source file matched, so no rows read
+    expect_identical (nrow (out), 0L) # no source file matched, so no rows read
 })
 
 # ---- fetch_issue_authors ----------------------------------------------------
@@ -59,7 +59,7 @@ test_that ("fetch_issue_authors writes both checkpoint files on a fresh run", {
         batch_size = 50L
     )
 
-    expect_equal (nrow (res), 2L)
+    expect_identical (nrow (res), 2L)
     expect_true (file.exists (file.path (out_dir, "issue-authors.csv")))
     expect_true (file.exists (file.path (out_dir, "issue-authors-done.rds")))
 })
@@ -69,7 +69,7 @@ test_that ("fetch_issue_authors resumes, skipping repos already marked done", {
     calls <- character ()
     testthat::local_mocked_bindings (
         github_issue_authors = function (repo_url) {
-            calls <<- c (calls, repo_url)
+            calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
             fake_issue_authors_row (repo_url)
         },
         .package = "longtail"
@@ -88,9 +88,9 @@ test_that ("fetch_issue_authors resumes, skipping repos already marked done", {
     )
 
     # only the new repo was fetched:
-    expect_equal (calls, "https://github.com/o/c")
+    expect_identical (calls, "https://github.com/o/c")
     # accumulated result includes the earlier run's rows:
-    expect_equal (nrow (res2), 3L)
+    expect_identical (nrow (res2), 3L)
 })
 
 test_that ("fetch_issue_authors isolates error without abort", {
@@ -98,7 +98,7 @@ test_that ("fetch_issue_authors isolates error without abort", {
     out_dir <- withr::local_tempdir ()
     testthat::local_mocked_bindings (
         github_issue_authors = function (repo_url) {
-            if (grepl ("bad", repo_url)) stop ("boom")
+            if (grepl ("bad", repo_url, fixed = TRUE)) stop ("boom")
             fake_issue_authors_row (repo_url)
         },
         .package = "longtail"
@@ -112,8 +112,8 @@ test_that ("fetch_issue_authors isolates error without abort", {
         "failed for https://github.com/o/bad"
     )
 
-    expect_equal (nrow (res), 1L) # only the good repo contributed rows
-    expect_equal (res$repo_url, "https://github.com/o/a")
+    expect_identical (nrow (res), 1L) # only the good repo contributed rows
+    expect_identical (res$repo_url, "https://github.com/o/a")
 })
 
 test_that ("join_repo_metadata attaches repo_tbl columns by repo_url", {
@@ -133,11 +133,11 @@ test_that ("join_repo_metadata attaches repo_tbl columns by repo_url", {
     out <- longtail::join_repo_metadata (issue_authors_tbl, repo_tbl)
 
     # unchanged, no fan-out from the duplicate repo_url:
-    expect_equal (nrow (out), 3L)
+    expect_identical (nrow (out), 3L)
     expect_true (
         all (c ("name", "downloads", "stars", "source") %in% names (out))
     )
-    expect_equal (
+    expect_identical (
         unique (out$name [out$repo_url == "https://github.com/o/a"]),
         "a-pypi"
     )

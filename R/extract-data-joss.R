@@ -43,7 +43,7 @@ JOSS_NON_LANGUAGE_LABELS <- c (
 extract_language <- function (labels) {
     label_names <- purrr::map_chr (labels, "name")
     lang <- label_names [!label_names %in% JOSS_NON_LANGUAGE_LABELS]
-    if (length (lang) == 0) NA_character_ else paste (lang, collapse = ", ")
+    if (length (lang) == 0) NA_character_ else toString (lang)
 }
 
 # ---- repo URL extraction -------------------------------------------------

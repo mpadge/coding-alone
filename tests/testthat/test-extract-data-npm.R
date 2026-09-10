@@ -40,7 +40,7 @@ test_that ("npm_repo_urls_many resolves via repository/homepage, NA on 404", {
             c ("is-number", "left-pad", "this-package-does-not-exist-xyz123")
         )
     })
-    expect_equal (
+    expect_identical (
         out,
         c (
             "https://github.com/jonschlinkert/is-number",

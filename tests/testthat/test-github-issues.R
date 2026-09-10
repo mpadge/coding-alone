@@ -12,11 +12,11 @@ test_that ("github_repo_contribs returns login + ctb proportion", {
     )
 
     expect_s3_class (ctbs, "tbl_df")
-    expect_equal (names (ctbs), c ("login", "contribution"))
-    expect_equal (nrow (ctbs), 7L)
+    expect_named (ctbs, c ("login", "contribution"))
+    expect_identical (nrow (ctbs), 7L)
     expect_equal (sum (ctbs$contribution), 1, tolerance = 1e-6)
-    expect_true (
-        ctbs$contribution [ctbs$login == "mdsumner"] > 0.5
+    expect_gt (
+        ctbs$contribution [ctbs$login == "mdsumner"], 0.5
     ) # dominant contributor
 })
 
@@ -31,8 +31,8 @@ test_that ("github_repo_contribs returns empty when no ctbs", {
         .package = "longtail"
     )
     out <- github_repo_contributors ("o", "empty-repo")
-    expect_equal (nrow (out), 0L)
-    expect_equal (names (out), c ("login", "contribution"))
+    expect_identical (nrow (out), 0L)
+    expect_named (out, c ("login", "contribution"))
 })
 
 # github_repo_issues_graphql()'s and github_issue_authors()'s real-repo/
@@ -54,9 +54,9 @@ test_that ("github_issue_authors returns the empty-shape tibble for a repo with 
         .package = "longtail"
     )
     out <- longtail::github_issue_authors ("https://github.com/o/empty-repo")
-    expect_equal (nrow (out), 0L)
-    expect_equal (
-        names (out),
+    expect_identical (nrow (out), 0L)
+    expect_named (
+        out,
         c ("repo_url", "issue_number", "author", "created_at", "n_comments", "contribution", "repo_created_at")
     )
 })

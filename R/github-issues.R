@@ -105,7 +105,8 @@ github_repo_issues_graphql <- function (owner, repo) {
                 issue_number = purrr::map_int (issue_nodes, "number"),
                 author = purrr::map_chr (
                     issue_nodes,
-                    \ (n) purrr::pluck (n, "author", "login", .default = NA_character_)
+                    purrr::pluck, "author", "login",
+                    .default = NA_character_
                 ),
                 created_at = purrr::map_chr (issue_nodes, "createdAt"),
                 n_comments = purrr::map_int (issue_nodes, \ (n) n$comments$totalCount)

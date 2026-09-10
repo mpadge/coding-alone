@@ -4,7 +4,7 @@ test_that ("extract_language finds language label(s), excluding workflow tags", 
         list (name = "R"),
         list (name = "review")
     )
-    expect_equal (extract_language (labels), "R")
+    expect_identical (extract_language (labels), "R")
 })
 
 test_that ("extract_language joins multiple language labels", {
@@ -13,7 +13,7 @@ test_that ("extract_language joins multiple language labels", {
         list (name = "Python"),
         list (name = "accepted")
     )
-    expect_equal (extract_language (labels), "R, Python")
+    expect_identical (extract_language (labels), "R, Python")
 })
 
 test_that ("extract_language returns NA when no language label present", {
@@ -27,7 +27,7 @@ test_that ("extract_repo_url parses the HTML-comment-delimited form", {
         "https://github.com/owner/repo<!--end-target-repository-->\n",
         "**Version:** v1.0.0"
     )
-    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
+    expect_identical (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url parses the anchor-tag form", {
@@ -37,12 +37,12 @@ test_that ("extract_repo_url parses the anchor-tag form", {
         "target=\"_blank\">",
         "https://github.com/owner/repo</a>"
     )
-    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
+    expect_identical (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url falls back to a bare URL", {
     body <- "**Repository:** https://github.com/owner/repo\n**Version:** v1.0.0"
-    expect_equal (extract_repo_url (body), "https://github.com/owner/repo")
+    expect_identical (extract_repo_url (body), "https://github.com/owner/repo")
 })
 
 test_that ("extract_repo_url returns NA for NULL/NA/no-match input", {
@@ -63,8 +63,8 @@ test_that ("join_registry_dls left-joins by repo_url, PyPI winning ties", {
     )
 
     out <- join_registry_downloads (tbl, pypi_tbl, npm_tbl)
-    expect_equal (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
-    expect_equal (out$downloads [out$repo_url == "https://github.com/o/b"], 200)
+    expect_identical (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
+    expect_identical (out$downloads [out$repo_url == "https://github.com/o/b"], 200)
 })
 
 test_that ("join_registry_downloads handles a single source", {
@@ -75,7 +75,7 @@ test_that ("join_registry_downloads handles a single source", {
     )
 
     out <- join_registry_downloads (tbl, pypi_tbl, NULL)
-    expect_equal (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
+    expect_identical (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
     expect_true (is.na (
         out$downloads [out$repo_url == "https://github.com/o/b"]
     ))
@@ -85,7 +85,7 @@ test_that ("join_registry_dls gives all-NA when sources are NULL", {
     tbl <- tibble::tibble (repo_url = three_gh_urls)
     out <- join_registry_downloads (tbl, NULL, NULL)
     expect_true (all (is.na (out$downloads)))
-    expect_equal (nrow (out), nrow (tbl))
+    expect_identical (nrow (out), nrow (tbl))
 })
 
 test_that ("build_stars_query builds one aliased field per repo", {
@@ -98,7 +98,7 @@ test_that ("build_stars_query builds one aliased field per repo", {
 
 test_that ("github_stars_many returns all-NA when not resolvable", {
     out <- github_stars_many (c ("not-a-url", NA_character_))
-    expect_equal (out, c (NA_integer_, NA_integer_))
+    expect_identical (out, c (NA_integer_, NA_integer_))
 })
 
 test_that ("build_joss_issues_query filters by label/state and pages via cursor", {

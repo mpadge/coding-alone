@@ -5,37 +5,37 @@ test_that ("normalize_github_url handles NA/empty input", {
 })
 
 test_that ("normalize_github_url normalizes plain github.com URLs", {
-    expect_equal (
+    expect_identical (
         normalize_github_url ("https://github.com/owner/repo"),
         "https://github.com/owner/repo"
     )
-    expect_equal (
+    expect_identical (
         normalize_github_url ("http://github.com/owner/repo"),
         "https://github.com/owner/repo"
     )
-    expect_equal (
+    expect_identical (
         normalize_github_url ("https://github.com/owner/repo.git"),
         "https://github.com/owner/repo"
     )
-    expect_equal (
+    expect_identical (
         normalize_github_url ("https://github.com/owner/repo/issues"),
         "https://github.com/owner/repo"
     )
-    expect_equal (
+    expect_identical (
         normalize_github_url ("git+https://github.com/owner/repo.git"),
         "https://github.com/owner/repo"
     )
 })
 
 test_that ("normalize_github_url handles the git@github.com: SSH form", {
-    expect_equal (
+    expect_identical (
         normalize_github_url ("git@github.com:owner/repo.git"),
         "https://github.com/owner/repo"
     )
 })
 
 test_that ("normalize_github_url handles the github: shorthand", {
-    expect_equal (
+    expect_identical (
         normalize_github_url ("github:owner/repo"),
         "https://github.com/owner/repo"
     )
@@ -48,7 +48,7 @@ test_that ("normalize_github_url returns NA for non-github URLs", {
 
 test_that ("find_github_url returns first resolvable candidate", {
     candidates <- c (NA_character_, "https://example.com/x", "https://github.com/owner/repo")
-    expect_equal (find_github_url (candidates), "https://github.com/owner/repo")
+    expect_identical (find_github_url (candidates), "https://github.com/owner/repo")
 })
 
 test_that ("find_github_url handles NULL entries and empty/all-non-matching input", {
@@ -59,10 +59,10 @@ test_that ("find_github_url handles NULL entries and empty/all-non-matching inpu
 
 test_that ("parse_github_repo_url splits owner/repo", {
     parsed <- parse_github_repo_url ("https://github.com/owner/repo")
-    expect_equal (parsed, list (owner = "owner", repo = "repo"))
+    expect_identical (parsed, list (owner = "owner", repo = "repo"))
 
     parsed2 <- parse_github_repo_url ("https://github.com/owner/repo.git")
-    expect_equal (parsed2$repo, "repo")
+    expect_identical (parsed2$repo, "repo")
 })
 
 test_that ("parse_github_repo_url errors on non-github URLs", {
@@ -79,11 +79,11 @@ test_that ("github_token reads GITHUB_TOKEN, falls back to GITHUB_PAT, else NA",
     )
     withr::with_envvar (
         c (GITHUB_TOKEN = "tok-1", GITHUB_PAT = "tok-2"),
-        expect_equal (github_token (), "tok-1")
+        expect_identical (github_token (), "tok-1")
     )
     withr::with_envvar (
         c (GITHUB_TOKEN = NA, GITHUB_PAT = "tok-2"),
-        expect_equal (github_token (), "tok-2")
+        expect_identical (github_token (), "tok-2")
     )
 })
 

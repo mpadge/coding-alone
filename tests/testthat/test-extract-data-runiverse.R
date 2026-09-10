@@ -11,16 +11,16 @@ test_that ("build_runiv_table extracts URLs and review metadata from real packag
         longtail::build_runiv_table ("ropensci")
     }))
 
-    expect_true (nrow (out) > 0L)
-    expect_true (nrow (out) <= 5L) # LONGTAIL_TESTS caps the query at 5 packages
-    expect_equal (
-        names (out),
+    expect_gt (nrow (out), 0L)
+    expect_lte (nrow (out), 5L) # LONGTAIL_TESTS caps the query at 5 packages
+    expect_named (
+        out,
         c ("package", "repo_url", "downloads", "stars", "reviewed", "review_id")
     )
     expect_type (out$package, "character")
     expect_type (out$reviewed, "logical")
     # Every reviewed package should carry a review_id, and vice versa:
-    expect_equal (out$reviewed, !is.na (out$review_id))
+    expect_identical (out$reviewed, !is.na (out$review_id))
 })
 
 skip_if_not (test_all)
@@ -32,6 +32,6 @@ test_that ("build table from db", {
     univ <- "urbananalyst"
     x <- build_table_from_db (univ)
     expect_s3_class (x, "tbl")
-    expect_equal (ncol (x), 4L)
+    expect_identical (ncol (x), 4L)
     expect_named (x, c ("package", "version", "repo_url", "downloads"))
 })
