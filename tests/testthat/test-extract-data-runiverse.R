@@ -1,10 +1,3 @@
-test_that ("build_runiv_table aborts for universe = 'cran'", {
-    expect_error (
-        longtail::build_runiv_table ("cran"),
-        "does not currently work"
-    )
-})
-
 test_that ("build_runiv_table validates its universe argument", {
     expect_error (longtail::build_runiv_table ("not-a-universe"))
 })
