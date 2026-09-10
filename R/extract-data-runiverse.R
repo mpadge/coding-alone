@@ -21,6 +21,11 @@ runiv_packages_limit <- function () {
 #' `universe == "ropensci"` only, a `reviewed` flag
 #' (`_metadata$review$status == "reviewed"`) and, for those, the
 #' `review_id` of its rOpenSci software review (`NA` otherwise).
+#'
+#' @examples
+#' \dontrun{
+#' runiv_tbl <- build_runiv_table ("ropensci")
+#' }
 #' @export
 build_runiv_table <- function (universe = c ("ropensci", "cran")) {
     universe <- match.arg (universe)

@@ -28,3 +28,8 @@ and \code{stars} (\verb{_stars}, GitHub stargazer count); plus, for
 Build a (package, title, package_url, repo_url) table for every
 package currently published in a given r-universe.
 }
+\examples{
+\dontrun{
+runiv_tbl <- build_runiv_table ("ropensci")
+}
+}
