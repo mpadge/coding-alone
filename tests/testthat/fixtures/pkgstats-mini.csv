@@ -1,7 +1,0 @@
-package,version,date,urls
-toolA,1.0.0,2024-01-01,"https://github.com/testauthor/toolA, https://toola.docs.io"
-toolA,0.9.0,2023-01-01,https://github.com/testauthor/toolA
-toolB,2.0.0,2024-02-01,https://github.com/testauthor/toolB/issues
-toolC,1.5.0,2024-03-01,https://example.com/toolC
-toolD,3.0.0,2024-04-01,"https://github.com/testauthor/toolD,
-https://toold.docs.io"
