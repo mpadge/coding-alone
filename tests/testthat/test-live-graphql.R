@@ -10,6 +10,13 @@ test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
 
 skip_if (!test_all)
 
+# All fixtures here were recorded with LONGTAIL_TESTS = "true" (shrinks
+# GraphQL page sizes - see github_issues_page_size() in R/github-issues.R
+# and joss_issues_page_size() in R/extract-data-joss.R), so it must also be
+# set for replay: the query text (and hence the mock file's hash) differs
+# between the small test-mode page size and the real default.
+Sys.setenv ("LONGTAIL_TESTS" = "true")
+
 test_that ("github_stars_many works but NAs unresolvable repos", {
 
     out <- httptest2::with_mock_dir ("graphql_stars", {
@@ -60,7 +67,6 @@ test_that ("github_issue_authors composes real contributors + issues", {
 })
 
 test_that ("build_joss_table extracts repo/language/stars from real issues", {
-    Sys.setenv ("LONGTAIL_TESTS" = "true")
     out <- suppressMessages (httptest2::with_mock_dir ("joss_mock", {
         longtail::build_joss_table ()
     }))

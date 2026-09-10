@@ -129,9 +129,13 @@ test_that ("github_respect_rate_limit errors if rate-limit headers are absent en
 
 # ---- github_api_get_all (HTTP, mocked via httptest2) -----------------------
 #
-# Fixtures were recorded live against hypertidy/ncmeta (a small, low-traffic
-# public repo: 53 issues+PRs combined, 7 contributors), with `per_page = 20L`
-# to force real pagination across 3 requests despite the small total.
+# github_api_get_all() is a generic REST-paginating helper (also used by
+# github_repo_contributors(), unrelated to issues), so it isn't made
+# LONGTAIL_TESTS-aware itself - instead this test's own query is trimmed:
+# `since` filters hypertidy/ncmeta's real issues down to just the 5 most
+# recently updated (all bulk-touched on the same day, confirmed live),
+# and `per_page = 2` still forces real pagination across 3 requests despite
+# that small total.
 #
 # These fixtures are recorded with `simplify = FALSE`, unlike the other
 # httptest2 fixtures in this suite. `simplify = TRUE` (httptest2's default)
@@ -146,18 +150,20 @@ test_that ("github_respect_rate_limit errors if rate-limit headers are absent en
 # changing production code.
 
 test_that ("github_api_get_all pages through a paginated REST endpoint", {
-    withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
     call_it <- function () {
-        httptest2::with_mock_dir ("ghrepos_issues_paginated", {
-            github_api_get_all (
-                "/repos/hypertidy/ncmeta/issues",
-                query = list (state = "all"),
-                per_page = 20L
-            )
-        })
+        httptest2::with_mock_dir ("ghrepos_issues_paginated",
+            {
+                github_api_get_all (
+                    "/repos/hypertidy/ncmeta/issues",
+                    query = list (state = "all", since = "2026-07-28T00:00:00Z"),
+                    per_page = 2L
+                )
+            },
+            simplify = FALSE
+        )
     }
-    expect_message (issues <- call_it (), "No GITHUB_TOKEN")
+    issues <- call_it ()
 
-    expect_length (issues, 53L)
+    expect_length (issues, 5L)
     expect_true (all (vapply (issues, function (i) "number" %in% names (i), logical (1))))
 })

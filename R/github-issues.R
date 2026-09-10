@@ -44,6 +44,14 @@ github_repo_contributors <- function (owner, repo) {
     tibble::tibble (login = logins, contribution = contributions / sum (contributions))
 }
 
+github_issues_page_size <- function () {
+    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+        5L
+    } else {
+        100L
+    }
+}
+
 #' GraphQL query for one page of a repo's issues (creator login, creation
 #' timestamp, and comment count), plus the repo's own creation timestamp.
 #' Values are interpolated directly into the query string (as elsewhere in
@@ -53,11 +61,12 @@ github_repo_contributors <- function (owner, repo) {
 #' @noRd
 build_issues_query <- function (owner, repo, cursor = NULL) {
     after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
+    first <- github_issues_page_size ()
     stringr::str_glue (
         'query {{
             repository(owner: "{owner}", name: "{repo}") {{
                 createdAt
-                issues(first: 100{after}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
+                issues(first: {first}{after}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
                     pageInfo {{ hasNextPage endCursor }}
                     nodes {{ number createdAt author {{ login }} comments {{ totalCount }} }}
                 }}
@@ -81,6 +90,7 @@ github_repo_issues_graphql <- function (owner, repo) {
     cursor <- NULL
     repo_created_at <- NULL
     pages <- list ()
+    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
 
     repeat {
         body <- gh::gh_gql (build_issues_query (owner, repo, cursor))
@@ -102,7 +112,7 @@ github_repo_issues_graphql <- function (owner, repo) {
             )
         }
 
-        if (!isTRUE (node$issues$pageInfo$hasNextPage)) {
+        if (single_page_only || !isTRUE (node$issues$pageInfo$hasNextPage)) {
             break
         }
         cursor <- node$issues$pageInfo$endCursor

@@ -4,9 +4,12 @@
 test_that ("github_repo_contribs returns login + ctb proportion", {
 
     withr::local_envvar (c (GITHUB_TOKEN = NA, GITHUB_PAT = NA))
-    ctbs <- httptest2::with_mock_dir ("ghrepos_contributors", {
-        suppressMessages (github_repo_contributors ("hypertidy", "ncmeta"))
-    })
+    ctbs <- httptest2::with_mock_dir ("ghrepos_contributors",
+        {
+            suppressMessages (github_repo_contributors ("hypertidy", "ncmeta"))
+        },
+        simplify = FALSE
+    )
 
     expect_s3_class (ctbs, "tbl_df")
     expect_equal (names (ctbs), c ("login", "contribution"))
