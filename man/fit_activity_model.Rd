@@ -23,3 +23,9 @@ The \code{month_num:popularity_stratum} interaction is the term of interest -
 it's what tests whether the long tail is trending differently from the
 popular head, rather than just reporting one global trend line.
 }
+\examples{
+\dontrun{
+model <- fit_activity_model (rate_tbl)
+summary (model)
+}
+}

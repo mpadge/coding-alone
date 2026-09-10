@@ -34,3 +34,15 @@ population, stratified by download popularity: a deterministic head of the
 \code{top_n_head} most-downloaded packages, plus a random draw of up to
 \code{tail_size} packages from the remaining long tail.
 }
+\examples{
+downloads_tbl <- tibble::tibble (
+    name = paste0 ("pkg", seq_len (100)),
+    downloads = round (100 * exp (-seq_len (100) / 15))
+)
+sample_tbl <- build_working_sample (
+    downloads_tbl,
+    top_n_head = 10L,
+    tail_size = 20L
+)
+nrow (sample_tbl)
+}

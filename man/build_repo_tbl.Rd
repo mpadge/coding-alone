@@ -24,3 +24,8 @@ with their \code{source}. Files are matched by exact basename, so anything
 else written to \code{out_dir} (e.g. the issue-authors output below) is
 ignored rather than breaking the read.
 }
+\examples{
+\dontrun{
+repo_tbl <- build_repo_tbl ("path/to/repo-data-out")
+}
+}

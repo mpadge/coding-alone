@@ -43,6 +43,11 @@ clickhouse_query <- function (sql) {
 #' ~9 requests, well under a minute, no rate limiting encountered.
 #'
 #' @return A table of all PyPI packages.
+#'
+#' @examples
+#' \dontrun{
+#' pypi_tbl <- pypi_downloads_full ()
+#' }
 #' @export
 pypi_downloads_full <- function () {
     base_sql <- "

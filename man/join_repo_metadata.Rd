@@ -23,3 +23,17 @@ onto an issue-authors table by \code{repo_url}, after deduplicating \code{repo_t
 on \code{repo_url} so a repo appearing under multiple sources doesn't fan out
 the join.
 }
+\examples{
+issue_authors_tbl <- tibble::tibble (
+    repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+    issue_number = c (1L, 1L)
+)
+repo_tbl <- tibble::tibble (
+    repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+    name = c ("pkg1", "pkg2"),
+    downloads = c (100, 200),
+    stars = c (5, 10),
+    source = c ("pypi", "npm")
+)
+join_repo_metadata (issue_authors_tbl, repo_tbl)
+}

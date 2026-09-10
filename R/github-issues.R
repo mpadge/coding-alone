@@ -146,6 +146,11 @@ github_repo_issues_graphql <- function (owner, repo) {
 #' `author`, `created_at`, `n_comments`, `contribution`, and
 #' `repo_created_at` (the repo's own GitHub creation timestamp, repeated on
 #' every row).
+#'
+#' @examples
+#' \dontrun{
+#' issue_authors <- github_issue_authors ("https://github.com/ropensci/targets")
+#' }
 #' @export
 github_issue_authors <- function (repo_url = NULL) {
 

@@ -43,3 +43,12 @@ limit is a cumulative budget rather than a burst limit, so the risk is
 running through it too fast overall, not concurrency within one batch -
 hence checkpointing after every batch rather than throttling within one.
 }
+\examples{
+repo_urls <- c (
+    "https://github.com/ropensci/targets",
+    "https://github.com/ropensci/drake"
+)
+\dontrun{
+issue_authors_tbl <- fetch_issue_authors (repo_urls, "path/to/repo-data-out")
+}
+}

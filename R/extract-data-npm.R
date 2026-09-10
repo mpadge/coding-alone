@@ -34,6 +34,11 @@ npm_download_counts_fetch <- function () {
 #' BigQuery's public PyPI download-log dataset.
 #'
 #' @return A table of all npm packages.
+#'
+#' @examples
+#' \dontrun{
+#' npm_tbl <- npm_downloads_full ()
+#' }
 #' @export
 npm_downloads_full <- function () {
     fetched <- npm_download_counts_fetch ()

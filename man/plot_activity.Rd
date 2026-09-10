@@ -28,3 +28,9 @@ Plot the trailing-window rate (\code{issue_rate_tbl()}'s \code{rate} column - se
 its \code{metric} param for whether that's issues or comments per repo-month)
 over time, one line per popularity stratum.
 }
+\examples{
+\dontrun{
+rate_tbl <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+plot_activity (rate_tbl)
+}
+}

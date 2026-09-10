@@ -22,3 +22,8 @@ Build a (issue_number, title, issue_url, repo_url, language, stars,
 downloads) table for every JOSS submission whose review issue carries the
 "accepted" label.
 }
+\examples{
+\dontrun{
+joss_tbl <- build_joss_table ()
+}
+}

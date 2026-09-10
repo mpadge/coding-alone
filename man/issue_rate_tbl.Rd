@@ -68,3 +68,8 @@ count - smoothing month-to-month noise at the cost of some lag, and of
 treating the \code{window - 1} months at the very start of the series as a
 shorter, partial window rather than dropping them.
 }
+\examples{
+\dontrun{
+rate_tbl <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+}
+}

@@ -34,3 +34,8 @@ opened the issue"). Also carries each issue's comment count, and the
 repo's own GitHub creation timestamp, used elsewhere as the start of a
 repo's exposure window.
 }
+\examples{
+\dontrun{
+issue_authors <- github_issue_authors ("https://github.com/ropensci/targets")
+}
+}

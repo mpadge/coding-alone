@@ -25,3 +25,17 @@ Applies \code{repo_urls_fn} to the \code{name} column of
 then drops rows for which no GitHub repo URL could be resolved. Shared
 post-processing step for both the PyPI and npm working samples.
 }
+\examples{
+working_sample <- tibble::tibble (
+    name = c ("pkg1", "pkg2", "pkg3"),
+    downloads = c (300, 200, 100)
+)
+fake_repo_urls_fn <- function (names_vec) {
+    ifelse (
+        names_vec == "pkg2",
+        NA_character_,
+        paste0 ("https://github.com/org/", names_vec)
+    )
+}
+resolve_repo_urls (working_sample, fake_repo_urls_fn)
+}

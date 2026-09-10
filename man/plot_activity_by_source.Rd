@@ -72,3 +72,8 @@ top quarter. A source with no data yet for the requested window (e.g.
 not fully fetched - see \code{analysis-plan.md}) just contributes no line,
 rather than erroring.
 }
+\examples{
+\dontrun{
+plot_activity_by_source (issue_authors_tbl, repo_tbl, stratum = 4L)
+}
+}

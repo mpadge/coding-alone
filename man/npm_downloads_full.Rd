@@ -22,3 +22,8 @@ to last-month download count. This is npm's practical equivalent of
 PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of
 BigQuery's public PyPI download-log dataset.
 }
+\examples{
+\dontrun{
+npm_tbl <- npm_downloads_full ()
+}
+}

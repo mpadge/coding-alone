@@ -119,6 +119,11 @@ trailing_roll_sum <- function (x, window) {
 #' sums, not single-month counts. Also carries `metric`, `window`,
 #' `contrib_threshold`, and `source_name` as attributes, so `plot_activity()`
 #' can label its y-axis correctly without being told them again.
+#'
+#' @examples
+#' \dontrun{
+#' rate_tbl <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' }
 #' @export
 issue_rate_tbl <- function (issue_authors_tbl,
                             repo_tbl,
@@ -252,6 +257,12 @@ issue_rate_tbl <- function (issue_authors_tbl,
 #'
 #' @param rate_tbl As returned by `issue_rate_tbl()`.
 #' @return A fitted `glm` object.
+#'
+#' @examples
+#' \dontrun{
+#' model <- fit_activity_model (rate_tbl)
+#' summary (model)
+#' }
 #' @export
 fit_activity_model <- function (rate_tbl) {
     n_repo_months <- NULL # rm no visible binding note
@@ -356,6 +367,12 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend
 #' the window beyond what `issue_rate_tbl()` was already called with.
 #' @return A ggplot object.
+#'
+#' @examples
+#' \dontrun{
+#' rate_tbl <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' plot_activity (rate_tbl)
+#' }
 #' @export
 plot_activity <- function (rate_tbl, start_year = NULL) {
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
@@ -437,6 +454,11 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' is annotated whenever it's not 1, so the scaling isn't silently hidden
 #' from anyone reading the plot.
 #' @return A ggplot object.
+#'
+#' @examples
+#' \dontrun{
+#' plot_activity_by_source (issue_authors_tbl, repo_tbl, stratum = 4L)
+#' }
 #' @export
 plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      n_strata = 4L,

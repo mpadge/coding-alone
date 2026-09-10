@@ -224,6 +224,11 @@ fetch_joss_issues <- function () {
 #' README.Rmd PyPI chunk) to match repo URLs against for `downloads`.
 #' @param npm_tbl Optional npm working-sample table, likewise.
 #' @return A tibble with one row per accepted JOSS submission.
+#'
+#' @examples
+#' \dontrun{
+#' joss_tbl <- build_joss_table ()
+#' }
 #' @export
 build_joss_table <- function (pypi_tbl = NULL, npm_tbl = NULL) {
     message ("Fetching all '", JOSSLABEL, "'-labeled issues from ", JOSSREPO, "...")

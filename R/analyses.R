@@ -13,6 +13,11 @@
 #' @param out_dir Directory holding the source CSVs.
 #' @return A tibble with columns `name`, `repo_url`, `downloads`, `stars`,
 #' `source`.
+#'
+#' @examples
+#' \dontrun{
+#' repo_tbl <- build_repo_tbl ("path/to/repo-data-out")
+#' }
 #' @export
 build_repo_tbl <- function (out_dir) {
     source_patterns <- c (
@@ -84,6 +89,15 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
 #' @return A tibble with columns `repo_url`, `issue_number`, `author`,
 #' `created_at`, `n_comments`, `contribution`, `repo_created_at` - the full
 #' accumulated result, including rows from any previous run(s).
+#'
+#' @examples
+#' repo_urls <- c (
+#'     "https://github.com/ropensci/targets",
+#'     "https://github.com/ropensci/drake"
+#' )
+#' \dontrun{
+#' issue_authors_tbl <- fetch_issue_authors (repo_urls, "path/to/repo-data-out")
+#' }
 #' @export
 fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
@@ -157,6 +171,20 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
 #' @return `issue_authors_tbl` with `repo_tbl`'s columns attached.
+#'
+#' @examples
+#' issue_authors_tbl <- tibble::tibble (
+#'     repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+#'     issue_number = c (1L, 1L)
+#' )
+#' repo_tbl <- tibble::tibble (
+#'     repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+#'     name = c ("pkg1", "pkg2"),
+#'     downloads = c (100, 200),
+#'     stars = c (5, 10),
+#'     source = c ("pypi", "npm")
+#' )
+#' join_repo_metadata (issue_authors_tbl, repo_tbl)
 #' @export
 join_repo_metadata <- function (issue_authors_tbl, repo_tbl) {
     repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)

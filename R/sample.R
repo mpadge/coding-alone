@@ -16,6 +16,18 @@
 #'
 #' @return A tibble combining the head and tail samples, with the same columns
 #' as `downloads_tbl`.
+#'
+#' @examples
+#' downloads_tbl <- tibble::tibble (
+#'     name = paste0 ("pkg", seq_len (100)),
+#'     downloads = round (100 * exp (-seq_len (100) / 15))
+#' )
+#' sample_tbl <- build_working_sample (
+#'     downloads_tbl,
+#'     top_n_head = 10L,
+#'     tail_size = 20L
+#' )
+#' nrow (sample_tbl)
 #' @export
 build_working_sample <- function (downloads_tbl = NULL,
                                   top_n_head = 15000L,
@@ -48,6 +60,20 @@ build_working_sample <- function (downloads_tbl = NULL,
 #'
 #' @return A tibble with `name`, `downloads`, and `repo_url` columns,
 #' filtered to rows with a non-missing `repo_url`.
+#'
+#' @examples
+#' working_sample <- tibble::tibble (
+#'     name = c ("pkg1", "pkg2", "pkg3"),
+#'     downloads = c (300, 200, 100)
+#' )
+#' fake_repo_urls_fn <- function (names_vec) {
+#'     ifelse (
+#'         names_vec == "pkg2",
+#'         NA_character_,
+#'         paste0 ("https://github.com/org/", names_vec)
+#'     )
+#' }
+#' resolve_repo_urls (working_sample, fake_repo_urls_fn)
 #' @export
 resolve_repo_urls <- function (working_sample = NULL, repo_urls_fn = NULL) {
     working_sample |>
