@@ -42,16 +42,22 @@ test_that ("normalize_github_url handles the github: shorthand", {
 })
 
 test_that ("normalize_github_url returns NA for non-github URLs", {
-    expect_true (is.na (normalize_github_url ("https://example.com/owner/repo")))
+    expect_true (is.na (
+        normalize_github_url ("https://example.com/owner/repo")
+    ))
     expect_true (is.na (normalize_github_url ("not a url at all")))
 })
 
 test_that ("find_github_url returns first resolvable candidate", {
-    candidates <- c (NA_character_, "https://example.com/x", "https://github.com/owner/repo")
-    expect_identical (find_github_url (candidates), "https://github.com/owner/repo")
+    candidates <- c (
+        NA_character_, "https://example.com/x", "https://github.com/owner/repo"
+    )
+    expect_identical (
+        find_github_url (candidates), "https://github.com/owner/repo"
+    )
 })
 
-test_that ("find_github_url handles NULL entries and empty/all-non-matching input", {
+test_that ("find_github_url handles NULL/empty/all-non-matching input", {
     candidates <- list (NULL, "https://example.com/x", NULL)
     expect_true (is.na (find_github_url (candidates)))
     expect_true (is.na (find_github_url (character ())))
@@ -72,7 +78,7 @@ test_that ("parse_github_repo_url errors on non-github URLs", {
     )
 })
 
-test_that ("github_token reads GITHUB_TOKEN, falls back to GITHUB_PAT, else NA", {
+test_that ("github_token reads GITHUB_TOKEN, falls back to GITHUB_PAT, or NA", {
     withr::with_envvar (
         c (GITHUB_TOKEN = "", GITHUB_PAT = ""),
         expect_true (is.na (github_token ()))
@@ -87,15 +93,17 @@ test_that ("github_token reads GITHUB_TOKEN, falls back to GITHUB_PAT, else NA",
     )
 })
 
-test_that ("github_respect_rate_limit is silent when quota is not nearly exhausted", {
+test_that ("github_respect_rate_limit is silent when quota is not low", {
     resp_ok <- httr2::response (
         status_code = 200,
-        headers = list (`x-ratelimit-remaining` = "42", `x-ratelimit-reset` = "0")
+        headers = list (
+            `x-ratelimit-remaining` = "42", `x-ratelimit-reset` = "0"
+        )
     )
     expect_silent (github_respect_rate_limit (resp_ok))
 })
 
-test_that ("github_respect_rate_limit messages and waits when quota nearly exhausted", {
+test_that ("github_respect_rate_limit messages and waits when quota is low", {
     resp_low <- httr2::response (
         status_code = 200,
         headers = list (
@@ -112,7 +120,7 @@ test_that ("github_respect_rate_limit messages and waits when quota nearly exhau
     )
 })
 
-test_that ("github_respect_rate_limit errors if rate-limit headers are absent entirely", {
+test_that ("github_respect_rate_limit errors with no rate-limit headers", {
     # Pre-existing edge case: `remaining` comes back as `numeric(0)` (not NA)
     # when the header is missing altogether (rather than present-but-blank),
     # which makes the `!is.na(remaining) && remaining <= 1` guard evaluate to
@@ -155,7 +163,9 @@ test_that ("github_api_get_all pages through a paginated REST endpoint", {
             {
                 github_api_get_all (
                     "/repos/hypertidy/ncmeta/issues",
-                    query = list (state = "all", since = "2026-07-28T00:00:00Z"),
+                    query = list (
+                        state = "all", since = "2026-07-28T00:00:00Z"
+                    ),
                     per_page = 2L
                 )
             },
@@ -165,5 +175,8 @@ test_that ("github_api_get_all pages through a paginated REST endpoint", {
     issues <- call_it ()
 
     expect_length (issues, 5L)
-    expect_true (all (vapply (issues, function (i) "number" %in% names (i), logical (1))))
+    has_number <- vapply (
+        issues, function (i) "number" %in% names (i), logical (1)
+    )
+    expect_true (all (has_number))
 })

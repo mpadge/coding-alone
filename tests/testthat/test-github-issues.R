@@ -39,9 +39,11 @@ test_that ("github_repo_contribs returns empty when no ctbs", {
 # GraphQL-fixture cases are in test-live-graphql.R, gated behind test_all -
 # see that file's header comment.
 
-test_that ("github_issue_authors returns the empty-shape tibble for a repo with zero issues", {
+test_that ("github_issue_authors returns empty-shape tibble for 0 issues", {
     testthat::local_mocked_bindings (
-        github_repo_contributors = function (...) tibble::tibble (login = character (), contribution = double ()),
+        github_repo_contributors = function (...) {
+            tibble::tibble (login = character (), contribution = double ())
+        },
         github_repo_issues_graphql = function (...) {
             list (
                 repo_created_at = "2020-01-01T00:00:00Z",
@@ -57,6 +59,9 @@ test_that ("github_issue_authors returns the empty-shape tibble for a repo with 
     expect_identical (nrow (out), 0L)
     expect_named (
         out,
-        c ("repo_url", "issue_number", "author", "created_at", "n_comments", "contribution", "repo_created_at")
+        c (
+            "repo_url", "issue_number", "author", "created_at",
+            "n_comments", "contribution", "repo_created_at"
+        )
     )
 })

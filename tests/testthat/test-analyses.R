@@ -1,4 +1,4 @@
-test_that ("build_repo_tbl combines source CSVs, tagging each with its source", {
+test_that ("build_repo_tbl combines source CSVs, tagged with source", {
 
     Sys.setenv ("LONGTAIL_TESTS" = "true")
 

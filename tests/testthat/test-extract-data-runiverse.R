@@ -5,7 +5,7 @@ test_that ("build_runiv_table validates its universe argument", {
     expect_error (longtail::build_runiv_table ("not-a-universe"))
 })
 
-test_that ("build_runiv_table extracts URLs and review metadata from real packages", {
+test_that ("build_runiv_table extracts URLs and review metadata", {
     Sys.setenv ("LONGTAIL_TESTS" = "true")
     out <- suppressMessages (httptest2::with_mock_dir ("runiv_mock", {
         longtail::build_runiv_table ("ropensci")

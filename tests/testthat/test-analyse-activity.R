@@ -275,7 +275,8 @@ test_that ("fit_activity_model drops rows with zero repo-months exposure", {
         n_repo_months = c (0L, 10L, 10L, 10L, 10L, 10L, 10L, 10L)
     )
     fit <- longtail::fit_activity_model (rate_tbl)
-    expect_identical (nrow (fit$model), 7L) # the one zero-exposure row is dropped
+    # the one zero-exposure row is dropped
+    expect_identical (nrow (fit$model), 7L)
 })
 
 # ---- plotting ---------------------------------------------------------------
@@ -287,7 +288,8 @@ make_rate_tbl <- function (n_strata = 2L, n_months = 12L) {
     tbl <- tidyr_expand_grid_stub (strata, months)
     set.seed (42)
     tbl$rate <- stats::runif (nrow (tbl), 0, 5)
-    tbl$popularity_stratum <- factor (tbl$strata, levels = strata, ordered = TRUE)
+    tbl$popularity_stratum <-
+        factor (tbl$strata, levels = strata, ordered = TRUE)
     tbl$month <- tbl$months
     attr (tbl, "metric") <- "issues"
     attr (tbl, "window") <- 12L

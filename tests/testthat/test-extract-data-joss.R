@@ -1,4 +1,4 @@
-test_that ("extract_language finds language label(s), excluding workflow tags", {
+test_that ("extract_language finds language label(s), excluding workflow", {
     labels <- list (
         list (name = "accepted"),
         list (name = "R"),
@@ -63,8 +63,12 @@ test_that ("join_registry_dls left-joins by repo_url, PyPI winning ties", {
     )
 
     out <- join_registry_downloads (tbl, pypi_tbl, npm_tbl)
-    expect_identical (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
-    expect_identical (out$downloads [out$repo_url == "https://github.com/o/b"], 200)
+    expect_identical (
+        out$downloads [out$repo_url == "https://github.com/o/a"], 100
+    )
+    expect_identical (
+        out$downloads [out$repo_url == "https://github.com/o/b"], 200
+    )
 })
 
 test_that ("join_registry_downloads handles a single source", {
@@ -75,7 +79,9 @@ test_that ("join_registry_downloads handles a single source", {
     )
 
     out <- join_registry_downloads (tbl, pypi_tbl, NULL)
-    expect_identical (out$downloads [out$repo_url == "https://github.com/o/a"], 100)
+    expect_identical (
+        out$downloads [out$repo_url == "https://github.com/o/a"], 100
+    )
     expect_true (is.na (
         out$downloads [out$repo_url == "https://github.com/o/b"]
     ))
@@ -101,15 +107,20 @@ test_that ("github_stars_many returns all-NA when not resolvable", {
     expect_identical (out, c (NA_integer_, NA_integer_))
 })
 
-test_that ("build_joss_issues_query filters by label/state and pages via cursor", {
+test_that ("build_joss_issues_query filters by label/state, pages via cursor", {
     q <- build_joss_issues_query ("openjournals", "joss-reviews")
     expect_type (q, "character")
-    expect_match (q, 'repository\\(owner: "openjournals", name: "joss-reviews"\\)')
+    expect_match (
+        q, 'repository\\(owner: "openjournals", name: "joss-reviews"\\)'
+    )
     expect_match (q, 'labels: \\["accepted"\\]')
     expect_match (q, "states: \\[OPEN, CLOSED\\]")
     expect_no_match (q, "after:")
 
-    q_cursor <- build_joss_issues_query ("openjournals", "joss-reviews", cursor = "CURSOR1")
+    q_cursor <- build_joss_issues_query (
+        "openjournals", "joss-reviews",
+        cursor = "CURSOR1"
+    )
     expect_match (q_cursor, 'after: "CURSOR1"')
 })
 
