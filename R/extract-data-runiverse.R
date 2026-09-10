@@ -32,7 +32,7 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
     universe <- match.arg (universe)
 
     if (universe == "cran") {
-        return (build_cran_table ())
+        return (build_table_from_db ("cran"))
     }
 
     host <- stringr::str_glue ("{universe}.r-universe.dev")
@@ -80,22 +80,22 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
 #' \url{https://docs.r-universe.dev/browse/api.html#database-dump}.
 #'
 #' @noRd
-build_cran_table <- function () {
+build_table_from_db <- function (univ = "cran") {
 
     requireNamespace ("mongolite", quietly = TRUE)
-    u <- "https://cran.r-universe.dev/api/dbdump"
-    cran <- mongolite::read_bson (u)
+    u <- stringr::str_glue ("https://{univ}.r-universe.dev/api/dbdump")
+    dump <- mongolite::read_bson (u)
 
-    package <- vapply (cran, function (p) p$Package, character (1L))
-    version <- vapply (cran, function (p) p$Version, character (1L))
-    downloads <- vapply (cran, function (p) {
+    package <- vapply (dump, function (p) p$Package, character (1L))
+    version <- vapply (dump, function (p) p$Version, character (1L))
+    downloads <- vapply (dump, function (p) {
         ifelse (
             length (p$`_downloads`$count) == 0L,
             0L,
             p$`_downloads`$count
         )
     }, integer (1L))
-    url <- vapply (cran, function (p) {
+    url <- vapply (dump, function (p) {
         ifelse (
             length (p$`_devurl`) == 0L,
             NA_character_,

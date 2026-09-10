@@ -1,8 +1,9 @@
+test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
+    identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
+
 test_that ("build_runiv_table validates its universe argument", {
     expect_error (longtail::build_runiv_table ("not-a-universe"))
 })
-
-# ---- build_runiv_table (HTTP, dynamically-recorded httptest2 fixture) ------
 
 test_that ("build_runiv_table extracts URLs and review metadata from real packages", {
     Sys.setenv ("LONGTAIL_TESTS" = "true")
@@ -20,4 +21,17 @@ test_that ("build_runiv_table extracts URLs and review metadata from real packag
     expect_type (out$reviewed, "logical")
     # Every reviewed package should carry a review_id, and vice versa:
     expect_equal (out$reviewed, !is.na (out$review_id))
+})
+
+skip_if_not (test_all)
+
+test_that ("build table from db", {
+
+    # This does an actual live extraction - no mocking
+
+    univ <- "urbananalyst"
+    x <- build_table_from_db (univ)
+    expect_s3_class (x, "tbl")
+    expect_equal (ncol (x), 4L)
+    expect_named (x, c ("package", "version", "repo_url", "downloads"))
 })
