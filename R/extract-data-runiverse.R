@@ -28,13 +28,11 @@ runiv_packages_limit <- function () {
 #' }
 #' @export
 build_runiv_table <- function (universe = c ("ropensci", "cran")) {
+
     universe <- match.arg (universe)
+
     if (universe == "cran") {
-        cli::cli_abort (
-            "'cran' does not currently work, because the r-universe \
-            API fails to return full CRAN dump. Use 'build_cran_table()' \
-            instead."
-        )
+        return (build_cran_table ())
     }
 
     host <- stringr::str_glue ("{universe}.r-universe.dev")
@@ -77,18 +75,12 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
     tbl
 }
 
-#' Alternative way to get CRAN data, until r-universe full CRAN dump works.
+#' The r-universe API only returns unique packages, to avoid duplication. Only
+#' current way to get the full CRAN dump is as described in
+#' \url{https://docs.r-universe.dev/browse/api.html#database-dump}.
 #'
-#' @export
-build_cran_table <- function () {
-
-    cran_data_pkgstats () |>
-        cran_data_downloads ()
-}
-
-#' Get GitHub URLs for all CRAN packages which have them
 #' @noRd
-cran_data_full <- function () {
+build_cran_table <- function () {
 
     requireNamespace ("mongolite", quietly = TRUE)
     u <- "https://cran.r-universe.dev/api/dbdump"
