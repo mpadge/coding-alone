@@ -42,16 +42,26 @@ npm_download_counts_fetch <- function () {
 #' @export
 npm_downloads_full <- function () {
     fetched <- npm_download_counts_fetch ()
-    cli::cli_alert_info ("npm: using download-counts@{fetched$version} (monthly snapshot, may be a few months old)")
+    msg <- stringr::str_glue (
+        "npm: using download-counts@{fetched$version} ",
+        "(monthly snapshot, may be a few months old)"
+    )
+    cli::cli_alert_info (msg)
 
     tmp_tgz <- tempfile (fileext = ".tgz")
     tmp_dir <- tempfile ()
     dir.create (tmp_dir)
     writeBin (fetched$tarball, tmp_tgz)
     utils::untar (tmp_tgz, exdir = tmp_dir)
-    counts_json <- list.files (tmp_dir, pattern = "counts\\.json$", recursive = TRUE, full.names = TRUE) [1]
+    counts_json <- list.files (
+        tmp_dir,
+        pattern = "counts\\.json$", recursive = TRUE, full.names = TRUE
+    ) [1]
     counts <- jsonlite::fromJSON (counts_json)
-    tibble::tibble (name = names (counts), downloads = as.numeric (unlist (counts, use.names = FALSE)))
+    tibble::tibble (
+        name = names (counts),
+        downloads = as.numeric (unlist (counts, use.names = FALSE))
+    )
 }
 
 #' Repo URL for many npm packages at once (concurrent requests). Uses the
@@ -65,7 +75,11 @@ npm_downloads_full <- function () {
 npm_repo_urls_many <- function (names_vec) {
     registry_repo_urls_many (
         names_vec,
-        url_fn = \ (names_vec) stringr::str_glue ("https://registry.npmjs.org/{URLencode(names_vec)}/latest"),
+        url_fn = \ (names_vec) {
+            stringr::str_glue (
+                "https://registry.npmjs.org/{URLencode(names_vec)}/latest"
+            )
+        },
         extract_candidates = \ (body) {
             repo <- body$repository
             repo_url <- if (is.list (repo)) repo$url else repo

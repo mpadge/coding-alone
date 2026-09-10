@@ -26,10 +26,11 @@ JOSSLABEL <- "accepted"
 # set of non-language tags is far more robust than trying to allowlist the
 # open-ended set of Linguist language names.
 JOSS_NON_LANGUAGE_LABELS <- c (
-    "accepted", "bug", "duplicate", "enhancement", "invalid", "question", "wontfix",
-    "review", "pre-review", "recommend-accept", "rejected", "waitlisted", "withdrawn",
-    "published", "paused", "in-danger-of-rejection", "looking for a second reviewer",
-    "out of scope", "pending-major-enhancements", "pending-minor-enhancements",
+    "accepted", "bug", "duplicate", "enhancement", "invalid", "question",
+    "wontfix", "review", "pre-review", "recommend-accept", "rejected",
+    "waitlisted", "withdrawn", "published", "paused", "in-danger-of-rejection",
+    "looking for a second reviewer", "out of scope",
+    "pending-major-enhancements", "pending-minor-enhancements",
     "pre-2026-submission", "query-scope", "reviewer-completed-1st-round",
     "rOpenSci", "pyOpenSci", "RSECon26", "AAS",
     "Track: 1 (AASS)", "Track: 2 (BCM)", "Track: 3 (PE)", "Track: 4 (SBCS)",
@@ -63,7 +64,8 @@ extract_repo_url <- function (body) {
     if (is.null (body) || is.na (body)) {
         return (NA_character_)
     }
-    for (re in list (repo_url_comment_re, repo_url_anchor_re, repo_url_bare_re)) {
+    all_res <- list (repo_url_comment_re, repo_url_anchor_re, repo_url_bare_re)
+    for (re in all_res) {
         m <- stringr::str_match (body, re)
         if (!is.na (m [1, 2])) {
             return (stringr::str_trim (m [1, 2]))
@@ -82,7 +84,10 @@ STARS_BATCH_SIZE <- 50L
 #' @noRd
 build_stars_query <- function (owners, repos, ids) {
     fields <- purrr::pmap_chr (list (owners, repos, ids), \ (owner, repo, id) {
-        stringr::str_glue ('r{id}: repository(owner: "{owner}", name: "{repo}") {{ stargazerCount }}')
+        stringr::str_glue (
+            'r{id}: repository(owner: "{owner}", name: "{repo}") ',
+            "{{ stargazerCount }}"
+        )
     })
     stringr::str_glue ("query {{ {paste (fields, collapse = ' ')} }}")
 }
@@ -97,7 +102,9 @@ build_stars_query <- function (owners, repos, ids) {
 #' @return Integer vector of stargazer counts, same length/order as `repo_urls`.
 #' @noRd
 github_stars_many <- function (repo_urls, batch_size = STARS_BATCH_SIZE) {
-    parsed <- purrr::map (repo_urls, purrr::possibly (parse_github_repo_url, otherwise = NULL))
+    parsed <- purrr::map (
+        repo_urls, purrr::possibly (parse_github_repo_url, otherwise = NULL)
+    )
     valid <- !vapply (parsed, is.null, logical (1))
     stars <- rep (NA_integer_, length (repo_urls))
     if (!any (valid)) {
@@ -109,7 +116,10 @@ github_stars_many <- function (repo_urls, batch_size = STARS_BATCH_SIZE) {
     ids <- which (valid)
 
     batches <- split (seq_along (ids), ceiling (seq_along (ids) / batch_size))
-    message ("Fetching stargazer counts for ", length (ids), " repos via GraphQL (", length (batches), " batched requests)...")
+    message (
+        "Fetching stargazer counts for ", length (ids),
+        " repos via GraphQL (", length (batches), " batched requests)..."
+    )
 
     for (b in batches) {
         body <- tryCatch (
@@ -166,7 +176,11 @@ joss_issues_page_size <- function () {
 }
 
 build_joss_issues_query <- function (owner, repo, cursor = NULL) {
-    after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
+    after <- if (is.null (cursor)) {
+        ""
+    } else {
+        stringr::str_glue (', after: "{cursor}"')
+    }
     first <- joss_issues_page_size ()
     stringr::str_glue (
         'query {{
@@ -231,7 +245,9 @@ fetch_joss_issues <- function () {
 #' }
 #' @export
 build_joss_table <- function (pypi_tbl = NULL, npm_tbl = NULL) {
-    message ("Fetching all '", JOSSLABEL, "'-labeled issues from ", JOSSREPO, "...")
+    message (
+        "Fetching all '", JOSSLABEL, "'-labeled issues from ", JOSSREPO, "..."
+    )
     issues <- fetch_joss_issues ()
 
     message ("Extracting repo URLs from ", length (issues), " issue bodies...")
@@ -248,7 +264,8 @@ build_joss_table <- function (pypi_tbl = NULL, npm_tbl = NULL) {
     n_missing <- sum (is.na (tbl$repo_url))
     if (n_missing > 0) {
         message (stringr::str_glue (
-            "Warning: {n_missing} of {nrow(tbl)} issues had no repo URL extracted."
+            "Warning: {n_missing} of {nrow(tbl)} issues had no repo URL ",
+            "extracted."
         ))
     }
 

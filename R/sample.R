@@ -35,12 +35,16 @@ build_working_sample <- function (downloads_tbl = NULL,
                                   label = NULL) {
 
     if (!is.null (label)) {
-        cli::cli_alert_info ("{label}: building working sample (head + random tail)...")
+        msg <- stringr::str_glue (
+            "{label}: building working sample (head + random tail)..."
+        )
+        cli::cli_alert_info (msg)
     }
 
     head_tbl <- downloads_tbl |> dplyr::slice_max (downloads, n = top_n_head)
     tail_pool <- downloads_tbl |> dplyr::anti_join (head_tbl, by = "name")
-    tail_tbl <- tail_pool |> dplyr::slice_sample (n = min (tail_size, nrow (tail_pool)))
+    tail_tbl <- tail_pool |>
+        dplyr::slice_sample (n = min (tail_size, nrow (tail_pool)))
     dplyr::bind_rows (head_tbl, tail_tbl)
 }
 

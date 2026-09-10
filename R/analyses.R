@@ -46,7 +46,11 @@ build_repo_tbl <- function (out_dir) {
         tibble::tibble (
             name = name,
             repo_url = tbl$repo_url,
-            downloads = if ("downloads" %in% names (tbl)) tbl$downloads else NA_integer_,
+            downloads = if ("downloads" %in% names (tbl)) {
+                tbl$downloads
+            } else {
+                NA_integer_
+            },
             stars = if ("stars" %in% names (tbl)) tbl$stars else NA_integer_,
             source = source_for_file (path)
         )
@@ -117,33 +121,53 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
     } else {
         tibble::tibble (
             repo_url = character (), issue_number = integer (),
-            author = character (), created_at = character (), n_comments = integer (),
+            author = character (), created_at = character (),
+            n_comments = integer (),
             contribution = double (),
             repo_created_at = character ()
         )
     }
-    repo_urls_done <- if (file.exists (issue_authors_done_rds)) readRDS (issue_authors_done_rds) else character ()
+    repo_urls_done <- if (file.exists (issue_authors_done_rds)) {
+        readRDS (issue_authors_done_rds)
+    } else {
+        character ()
+    }
 
     repo_urls <- unique (repo_urls)
     repo_urls_todo <- setdiff (repo_urls, repo_urls_done)
-    cli::cli_alert_info (
-        "Issue authors: {length (repo_urls_done)} of {length (repo_urls)} repos already done, {length (repo_urls_todo)} remaining..."
+    n_done <- length (repo_urls_done)
+    n_total <- length (repo_urls)
+    n_todo <- length (repo_urls_todo)
+    msg <- stringr::str_glue (
+        "Issue authors: {n_done} of {n_total} repos already done, ",
+        "{n_todo} remaining..."
     )
+    cli::cli_alert_info (msg)
 
     get_issue_authors_safe <- function (repo_url) {
         tryCatch (
             github_issue_authors (repo_url),
             error = function (e) {
-                cli::cli_alert_warning ("Issue authors: failed for {repo_url}: {conditionMessage (e)}")
+                msg <- stringr::str_glue (
+                    "Issue authors: failed for {repo_url}: ",
+                    "{conditionMessage (e)}"
+                )
+                cli::cli_alert_warning (msg)
                 tibble::tibble (repo_url = repo_url) [0, ]
             }
         )
     }
 
-    batches <- split (repo_urls_todo, ceiling (seq_along (repo_urls_todo) / batch_size))
+    batches <- split (
+        repo_urls_todo, ceiling (seq_along (repo_urls_todo) / batch_size)
+    )
     for (b in seq_along (batches)) {
         batch <- batches [[b]]
-        cli::cli_alert_info ("Issue authors: batch {b}/{length (batches)} ({length (batch)} repos)...")
+        msg <- stringr::str_glue (
+            "Issue authors: batch {b}/{length (batches)} ",
+            "({length (batch)} repos)..."
+        )
+        cli::cli_alert_info (msg)
 
         if (is_test_env) {
             batch_tbl <- lapply (batch, get_issue_authors_safe)
@@ -158,7 +182,11 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         readr::write_csv (issue_authors_tbl, issue_authors_csv)
         saveRDS (repo_urls_done, issue_authors_done_rds)
     }
-    cli::cli_alert_success ("Issue authors: wrote {nrow(issue_authors_tbl)} rows to {issue_authors_csv}")
+    msg <- stringr::str_glue (
+        "Issue authors: wrote {nrow(issue_authors_tbl)} rows to ",
+        "{issue_authors_csv}"
+    )
+    cli::cli_alert_success (msg)
 
     issue_authors_tbl
 }
@@ -173,11 +201,15 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 #'
 #' @examples
 #' issue_authors_tbl <- tibble::tibble (
-#'     repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+#'     repo_url = c (
+#'         "https://github.com/org/pkg1", "https://github.com/org/pkg2"
+#'     ),
 #'     issue_number = c (1L, 1L)
 #' )
 #' repo_tbl <- tibble::tibble (
-#'     repo_url = c ("https://github.com/org/pkg1", "https://github.com/org/pkg2"),
+#'     repo_url = c (
+#'         "https://github.com/org/pkg1", "https://github.com/org/pkg2"
+#'     ),
 #'     name = c ("pkg1", "pkg2"),
 #'     downloads = c (100, 200),
 #'     stars = c (5, 10),

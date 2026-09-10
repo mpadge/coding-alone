@@ -3,7 +3,8 @@
 # script that drives these to actually build the table.
 
 CLICKHOUSE_URL <- "https://sql-clickhouse.clickhouse.com"
-CLICKHOUSE_PAGE_SIZE <- 100000L # server-enforced max rows per query on the public `demo` user
+# server-enforced max rows per query on the public `demo` user
+CLICKHOUSE_PAGE_SIZE <- 100000L
 
 clickhouse_page_size <- function () {
     if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
@@ -68,7 +69,8 @@ pypi_downloads_full <- function () {
     offset <- 0L
     repeat {
         rows <- clickhouse_query (sprintf (base_sql, page_size, offset))
-        n <- if (is.matrix (rows)) nrow (rows) else length (rows) # length(rows) == 0 for an empty result
+        # length(rows) == 0 for an empty result
+        n <- if (is.matrix (rows)) nrow (rows) else length (rows)
         if (n == 0) break
         pages [[length (pages) + 1]] <- tibble::tibble (
             downloads = as.numeric (rows [, 1]),
@@ -87,7 +89,16 @@ pypi_downloads_full <- function () {
 pypi_repo_urls_many <- function (names_vec) {
     registry_repo_urls_many (
         names_vec,
-        url_fn = \ (names_vec) stringr::str_glue ("https://pypi.org/pypi/{URLencode(names_vec)}/json"),
-        extract_candidates = \ (body) c (unlist (body$info$project_urls, use.names = FALSE), body$info$home_page)
+        url_fn = \ (names_vec) {
+            stringr::str_glue (
+                "https://pypi.org/pypi/{URLencode(names_vec)}/json"
+            )
+        },
+        extract_candidates = \ (body) {
+            c (
+                unlist (body$info$project_urls, use.names = FALSE),
+                body$info$home_page
+            )
+        }
     )
 }

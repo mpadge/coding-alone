@@ -22,16 +22,24 @@ perform_json_parallel <- function (urls, max_active = 40L) {
     # req_perform() calls instead - slower, but otherwise identical
     # (same per-request error handling below) and traceable/recordable.
     if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
-        resps <- lapply (reqs, \ (req) tryCatch (httr2::req_perform (req), error = \ (e) e))
+        resps <- lapply (reqs, \ (req) {
+            tryCatch (httr2::req_perform (req), error = \ (e) e)
+        })
     } else {
-        resps <- httr2::req_perform_parallel (reqs, on_error = "continue", max_active = max_active)
+        resps <- httr2::req_perform_parallel (
+            reqs,
+            on_error = "continue", max_active = max_active
+        )
     }
 
     purrr::map (resps, \ (resp) {
         if (inherits (resp, "error") || httr2::resp_status (resp) >= 400) {
             return (NULL)
         }
-        tryCatch (httr2::resp_body_json (resp, simplifyVector = FALSE), error = \ (e) NULL)
+        tryCatch (
+            httr2::resp_body_json (resp, simplifyVector = FALSE),
+            error = \ (e) NULL
+        )
     })
 }
 
@@ -42,7 +50,10 @@ perform_json_parallel <- function (urls, max_active = 40L) {
 #' `npm_repo_urls_many()`, which differ only in those two arguments.
 #'
 #' @noRd
-registry_repo_urls_many <- function (names_vec, url_fn, extract_candidates, max_active = 40L) {
+registry_repo_urls_many <- function (names_vec,
+                                     url_fn,
+                                     extract_candidates,
+                                     max_active = 40L) {
     urls <- url_fn (names_vec)
     bodies <- perform_json_parallel (urls, max_active = max_active)
     purrr::map_chr (bodies, \ (body) {

@@ -57,11 +57,17 @@ github_token <- function () {
 #' Sleep until quota resets if we're about to run out, rather than erroring.
 #' @noRd
 github_respect_rate_limit <- function (resp) {
-    remaining <- suppressWarnings (as.numeric (httr2::resp_header (resp, "x-ratelimit-remaining")))
+    remaining <- suppressWarnings (as.numeric (
+        httr2::resp_header (resp, "x-ratelimit-remaining")
+    ))
     if (!is.na (remaining) && remaining <= 1) {
-        reset_at <- suppressWarnings (as.numeric (httr2::resp_header (resp, "x-ratelimit-reset")))
+        reset_at <- suppressWarnings (as.numeric (
+            httr2::resp_header (resp, "x-ratelimit-reset")
+        ))
         wait <- max (0, reset_at - as.numeric (Sys.time ())) + 2
-        message (stringr::str_glue ("Rate limit nearly exhausted, waiting {round(wait)}s for reset..."))
+        message (stringr::str_glue (
+            "Rate limit nearly exhausted, waiting {round(wait)}s for reset..."
+        ))
         Sys.sleep (wait)
     }
 }
@@ -71,22 +77,39 @@ github_respect_rate_limit <- function (resp) {
 #' parsed JSON items across all pages. `query` carries any extra query
 #' parameters (e.g. `list(state = "all", labels = "accepted")`).
 #' @noRd
-github_api_get_all <- function (path, query = list (), per_page = 100L, token = github_token ()) {
+github_api_get_all <- function (path,
+                                query = list (),
+                                per_page = 100L,
+                                token = github_token ()) {
     if (is.na (token)) {
         message (
             "No GITHUB_TOKEN/GITHUB_PAT set - using unauthenticated requests ",
-            "(60/hour limit). Set a token in the environment to raise this to 5000/hour."
+            "(60/hour limit). Set a token in the environment to raise this ",
+            "to 5000/hour."
         )
     }
 
     items <- list ()
     page <- 1L
     repeat {
-        req <- httr2::request (stringr::str_glue ("https://api.github.com{path}")) |>
-            httr2::req_headers (Accept = "application/vnd.github+json", `User-Agent` = "longtail-R-package") |>
+        req <- httr2::request (
+            stringr::str_glue ("https://api.github.com{path}")
+        ) |>
+            httr2::req_headers (
+                Accept = "application/vnd.github+json",
+                `User-Agent` = "longtail-R-package"
+            ) |>
             httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i)
-        req <- do.call (httr2::req_url_query, c (list (req), query, list (per_page = per_page, page = page)))
-        if (!is.na (token)) req <- httr2::req_headers (req, Authorization = stringr::str_glue ("Bearer {token}"))
+        req <- do.call (
+            httr2::req_url_query,
+            c (list (req), query, list (per_page = per_page, page = page))
+        )
+        if (!is.na (token)) {
+            req <- httr2::req_headers (
+                req,
+                Authorization = stringr::str_glue ("Bearer {token}")
+            )
+        }
         resp <- httr2::req_perform (req)
         body <- httr2::resp_body_json (resp, simplifyVector = FALSE)
         if (length (body) == 0) break

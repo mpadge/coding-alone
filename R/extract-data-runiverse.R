@@ -38,7 +38,8 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
     host <- stringr::str_glue ("{universe}.r-universe.dev")
 
     message ("Fetching ", universe, " r-universe package dump...")
-    resp <- httr2::request (stringr::str_glue ("https://{host}/api/packages")) |>
+    url <- stringr::str_glue ("https://{host}/api/packages")
+    resp <- httr2::request (url) |>
         httr2::req_url_query (limit = runiv_packages_limit ()) |>
         httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i) |>
         httr2::req_perform ()
@@ -69,7 +70,8 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
     n_missing <- sum (is.na (tbl$repo_url))
     if (n_missing > 0) {
         message (stringr::str_glue (
-            "Warning: {n_missing} of {nrow(tbl)} packages had no repo URL extracted."
+            "Warning: {n_missing} of {nrow(tbl)} packages had no repo URL ",
+            "extracted."
         ))
     }
     tbl

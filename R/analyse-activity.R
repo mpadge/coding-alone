@@ -199,7 +199,9 @@ issue_rate_tbl <- function (issue_authors_tbl,
         dplyr::count (popularity_stratum, month, name = "n_repo_months")
 
     filtered_issues <- issue_authors_tbl |>
-        dplyr::filter (repo_url %in% repos$repo_url, contribution <= contrib_threshold) |>
+        dplyr::filter (
+            repo_url %in% repos$repo_url, contribution <= contrib_threshold
+        ) |>
         dplyr::mutate (month = floor_month (created_at)) |>
         dplyr::filter (month >= date_start, month <= date_end) |>
         dplyr::inner_join (
@@ -208,7 +210,10 @@ issue_rate_tbl <- function (issue_authors_tbl,
         )
 
     issues <- if (metric == "issues") {
-        dplyr::count (filtered_issues, popularity_stratum, month, name = "n_metric")
+        dplyr::count (
+            filtered_issues, popularity_stratum, month,
+            name = "n_metric"
+        )
     } else {
         filtered_issues |>
             dplyr::group_by (popularity_stratum, month) |>
@@ -219,7 +224,10 @@ issue_rate_tbl <- function (issue_authors_tbl,
     # gaps in either dimension to silently skip over.
     grid <- dplyr::cross_join (
         tibble::tibble (
-            popularity_stratum = factor (stratum_levels, levels = stratum_levels, ordered = TRUE)
+            popularity_stratum = factor (
+                stratum_levels,
+                levels = stratum_levels, ordered = TRUE
+            )
         ),
         tibble::tibble (month = months)
     )
@@ -239,7 +247,9 @@ issue_rate_tbl <- function (issue_authors_tbl,
         ) |>
         dplyr::ungroup () |>
         dplyr::mutate (
-            rate = dplyr::if_else (n_repo_months > 0, n_metric / n_repo_months, NA_real_)
+            rate = dplyr::if_else (
+                n_repo_months > 0, n_metric / n_repo_months, NA_real_
+            )
         )
 
     attr (result, "metric") <- metric
@@ -321,11 +331,14 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
 #' authors", since what counts as "non-contributor" depends entirely on
 #' that value.
 #' @noRd
-activity_metric_label <- function (metric = c ("issues", "comments"), window = 12L, contrib_threshold = 0.01) {
+activity_metric_label <- function (metric = c ("issues", "comments"),
+                                   window = 12L,
+                                   contrib_threshold = 0.01) {
     metric <- match.arg (metric)
     verb <- if (metric == "issues") "Issues opened" else "Comments received"
     stringr::str_glue (
-        "{verb} per repo-month ({window}-month trailing avg, contrib-threshold={contrib_threshold})"
+        "{verb} per repo-month ({window}-month trailing avg, ",
+        "contrib-threshold={contrib_threshold})"
     )
 }
 
@@ -385,9 +398,11 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
     source_name <- attr (rate_tbl, "source_name")
 
     if (!is.null (start_year)) {
-        rate_tbl <- dplyr::filter (rate_tbl, month >= as.Date (stringr::str_glue ("{start_year}-01-01")))
+        start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
+        rate_tbl <- dplyr::filter (rate_tbl, month >= start_date)
     }
-    rate_tbl$popularity_stratum <- label_stratum_extremes (rate_tbl$popularity_stratum)
+    rate_tbl$popularity_stratum <-
+        label_stratum_extremes (rate_tbl$popularity_stratum)
 
     p <- ggplot2::ggplot (
         rate_tbl,
@@ -467,7 +482,8 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      relative = TRUE,
                                      start_year = NULL,
                                      ros_joss_mult = 20) {
-    month <- rate <- source_name <- popularity_stratum <- NULL # rm no visible binding notes
+    # rm no visible binding notes
+    month <- rate <- source_name <- popularity_stratum <- NULL
     metric <- match.arg (metric)
 
     date_start <- if (is.null (start_year)) {
@@ -510,7 +526,10 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                 source_name %in% mult_these, rate * ros_joss_mult, rate
             )
         )
-        y_lab <- paste (y_lab, stringr::str_glue ("- ropensci/joss/cran shown at {ros_joss_mult}x"))
+        y_lab <- paste (
+            y_lab,
+            stringr::str_glue ("- ropensci/joss/cran shown at {ros_joss_mult}x")
+        )
     }
 
     ggplot2::ggplot (
@@ -520,6 +539,8 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
         activity_plot_layers (rate_tbl, "source_name", y_lab) +
         ggplot2::labs (
             colour = "Source",
-            title = stringr::str_glue ("Popularity stratum {stratum} of {n_strata}")
+            title = stringr::str_glue (
+                "Popularity stratum {stratum} of {n_strata}"
+            )
         )
 }

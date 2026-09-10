@@ -32,7 +32,9 @@
 #' (non-anonymous) contributors.
 #' @noRd
 github_repo_contributors <- function (owner, repo) {
-    items <- github_api_get_all (stringr::str_glue ("/repos/{owner}/{repo}/contributors"))
+    items <- github_api_get_all (
+        stringr::str_glue ("/repos/{owner}/{repo}/contributors")
+    )
     items <- purrr::keep (items, \ (x) !is.null (x$login))
     if (length (items) == 0) {
         return (tibble::tibble (login = character (), contribution = double ()))
@@ -41,7 +43,9 @@ github_repo_contributors <- function (owner, repo) {
     logins <- purrr::map_chr (items, "login")
     contributions <- purrr::map_dbl (items, "contributions")
 
-    tibble::tibble (login = logins, contribution = contributions / sum (contributions))
+    tibble::tibble (
+        login = logins, contribution = contributions / sum (contributions)
+    )
 }
 
 github_issues_page_size <- function () {
@@ -60,7 +64,11 @@ github_issues_page_size <- function () {
 #' support for the latter.
 #' @noRd
 build_issues_query <- function (owner, repo, cursor = NULL) {
-    after <- if (is.null (cursor)) "" else stringr::str_glue (', after: "{cursor}"')
+    after <- if (is.null (cursor)) {
+        ""
+    } else {
+        stringr::str_glue (', after: "{cursor}"')
+    }
     first <- github_issues_page_size ()
     stringr::str_glue (
         'query {{
@@ -109,7 +117,9 @@ github_repo_issues_graphql <- function (owner, repo) {
                     .default = NA_character_
                 ),
                 created_at = purrr::map_chr (issue_nodes, "createdAt"),
-                n_comments = purrr::map_int (issue_nodes, \ (n) n$comments$totalCount)
+                n_comments = purrr::map_int (
+                    issue_nodes, \ (n) n$comments$totalCount
+                )
             )
         }
 
