@@ -29,27 +29,23 @@ test_that ("github_stars_many works but NAs unresolvable repos", {
     expect_equal (out, c (13L, NA_integer_, NA_integer_))
 })
 
-test_that ("github_repo_issues_graphql works", {
-
-    result <- httptest2::with_mock_dir ("gh_issue_authors_ncmeta", {
-        github_repo_issues_graphql ("hypertidy", "ncmeta")
-    })
-
-    expect_equal (result$repo_created_at, "2017-06-10T03:38:22Z")
-    expect_true (nrow (result$issues) > 0L)
-    expect_equal (
-        names (result$issues),
-        c ("issue_number", "author", "created_at", "n_comments")
-    )
-})
+# github_issue_authors() (contributors REST + issues GraphQL) and
+# github_repo_issues_graphql() (issues GraphQL only) share the
+# "gh_issue_authors_ncmeta" mock dir. with_mock_dir() decides record-vs-
+# replay purely by whether the directory exists yet - so whichever test
+# runs first must be the one that exercises the *full* set of requests
+# (github_issue_authors()'s).
 
 test_that ("github_issue_authors composes real contributors + issues", {
     out <- suppressMessages (
-        httptest2::with_mock_dir ("gh_issue_authors_ncmeta", {
-            longtail::github_issue_authors (
-                "https://github.com/hypertidy/ncmeta"
-            )
-        })
+        httptest2::with_mock_dir ("gh_issue_authors_ncmeta",
+            {
+                longtail::github_issue_authors (
+                    "https://github.com/hypertidy/ncmeta"
+                )
+            },
+            simplify = FALSE
+        )
     )
 
     expect_true (nrow (out) > 0L)
@@ -64,6 +60,20 @@ test_that ("github_issue_authors composes real contributors + issues", {
     expect_true (all (out$repo_created_at == "2017-06-10T03:38:22Z"))
     # mdsumner is ncmeta's dominant real contributor:
     expect_true (any (out$author == "mdsumner" & out$contribution > 0.5))
+})
+
+test_that ("github_repo_issues_graphql works", {
+
+    result <- httptest2::with_mock_dir ("gh_issue_authors_ncmeta", {
+        github_repo_issues_graphql ("hypertidy", "ncmeta")
+    })
+
+    expect_equal (result$repo_created_at, "2017-06-10T03:38:22Z")
+    expect_true (nrow (result$issues) > 0L)
+    expect_equal (
+        names (result$issues),
+        c ("issue_number", "author", "created_at", "n_comments")
+    )
 })
 
 test_that ("build_joss_table extracts repo/language/stars from real issues", {
