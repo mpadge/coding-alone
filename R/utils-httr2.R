@@ -6,6 +6,7 @@
 #'
 #' @noRd
 perform_json_parallel <- function (urls, max_active = 40L) {
+
     reqs <- purrr::map (urls, \ (u) {
         httr2::request (u) |>
             httr2::req_retry (max_tries = 3) |>
@@ -22,10 +23,13 @@ perform_json_parallel <- function (urls, max_active = 40L) {
     # req_perform() calls instead - slower, but otherwise identical
     # (same per-request error handling below) and traceable/recordable.
     if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+
         resps <- lapply (reqs, \ (req) {
             tryCatch (httr2::req_perform (req), error = \ (e) e)
         })
+
     } else {
+
         resps <- httr2::req_perform_parallel (
             reqs,
             on_error = "continue", max_active = max_active
@@ -33,9 +37,11 @@ perform_json_parallel <- function (urls, max_active = 40L) {
     }
 
     purrr::map (resps, \ (resp) {
+
         if (inherits (resp, "error") || httr2::resp_status (resp) >= 400) {
             return (NULL)
         }
+
         tryCatch (
             httr2::resp_body_json (resp, simplifyVector = FALSE),
             error = \ (e) NULL
@@ -54,8 +60,10 @@ registry_repo_urls_many <- function (names_vec,
                                      url_fn,
                                      extract_candidates,
                                      max_active = 40L) {
+
     urls <- url_fn (names_vec)
     bodies <- perform_json_parallel (urls, max_active = max_active)
+
     purrr::map_chr (bodies, \ (body) {
         if (is.null (body)) {
             return (NA_character_)

@@ -20,6 +20,7 @@
 #' }
 #' @export
 build_repo_tbl <- function (out_dir) {
+
     source_patterns <- c (
         ropensci = "ropensci.csv",
         joss = "joss.csv",
@@ -35,6 +36,7 @@ build_repo_tbl <- function (out_dir) {
     }
 
     read_one <- function (path) {
+
         tbl <- readr::read_csv (path, show_col_types = FALSE, progress = FALSE)
         name_col <- intersect (c ("name", "package", "title"), names (tbl)) [1]
 
@@ -117,8 +119,11 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
     issue_authors_done_rds <- file.path (out_dir, "issue-authors-done.rds")
 
     issue_authors_tbl <- if (file.exists (issue_authors_csv)) {
+
         readr::read_csv (issue_authors_csv, col_types = ISSUE_AUTHORS_COL_TYPES)
+
     } else {
+
         tibble::tibble (
             repo_url = character (), issue_number = integer (),
             author = character (), created_at = character (),
@@ -127,6 +132,7 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
             repo_created_at = character ()
         )
     }
+
     repo_urls_done <- if (file.exists (issue_authors_done_rds)) {
         readRDS (issue_authors_done_rds)
     } else {
@@ -161,7 +167,9 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
     batches <- split (
         repo_urls_todo, ceiling (seq_along (repo_urls_todo) / batch_size)
     )
+
     for (b in seq_along (batches)) {
+
         batch <- batches [[b]]
         msg <- stringr::str_glue (
             "Issue authors: batch {b}/{length (batches)} ",
@@ -176,12 +184,14 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
                 progressify::progressify () |>
                 futurize::futurize ()
         }
+
         issue_authors_tbl <- dplyr::bind_rows (issue_authors_tbl, batch_tbl)
         repo_urls_done <- c (repo_urls_done, batch)
 
         readr::write_csv (issue_authors_tbl, issue_authors_csv)
         saveRDS (repo_urls_done, issue_authors_done_rds)
     }
+
     msg <- stringr::str_glue (
         "Issue authors: wrote {nrow(issue_authors_tbl)} rows to ",
         "{issue_authors_csv}"
@@ -218,6 +228,10 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 #' join_repo_metadata (issue_authors_tbl, repo_tbl)
 #' @export
 join_repo_metadata <- function (issue_authors_tbl, repo_tbl) {
+
+    # suppress no visible binding notes:
+    repo_url <- NULL
+
     repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
     dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
 }

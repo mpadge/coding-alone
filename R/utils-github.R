@@ -5,6 +5,7 @@ github_shorthand_re <- "^github:([^/\\s\"']+)/([^/\\s\"'#]+)$"
 #' (npm's `repository` field allows this), to https://github.com/<owner>/<repo>
 #' @noRd
 normalize_github_url <- function (url) {
+
     if (is.null (url) || is.na (url) || !nzchar (url)) {
         return (NA_character_)
     }
@@ -15,22 +16,27 @@ normalize_github_url <- function (url) {
     if (is.na (m [1, 1])) {
         return (NA_character_)
     }
+
     owner <- m [1, 2]
     repo <- stringr::str_remove (m [1, 3], "\\.git$")
+
     stringr::str_glue ("https://github.com/{owner}/{repo}")
 }
 
 #' First github.com URL found among a set of candidate URL strings, or NA.
 #' @noRd
 find_github_url <- function (candidates) {
+
     candidates <- candidates [!vapply (candidates, is.null, logical (1))]
     candidates <- unlist (candidates, use.names = FALSE)
+
     for (url in candidates) {
         norm <- normalize_github_url (url)
         if (!is.na (norm)) {
             return (norm)
         }
     }
+
     NA_character_
 }
 
@@ -38,9 +44,11 @@ find_github_url <- function (candidates) {
 #' @noRd
 parse_github_repo_url <- function (url) {
     m <- stringr::str_match (url, github_url_re)
+
     if (is.na (m [1, 1])) {
         stop ("Not a github.com repo URL: ", url, call. = FALSE)
     }
+
     list (owner = m [1, 2], repo = stringr::str_remove (m [1, 3], "\\.git$"))
 }
 
@@ -50,6 +58,7 @@ parse_github_repo_url <- function (url) {
 #' requests: 60/hour, vs 5000/hour authenticated).
 #' @noRd
 github_token <- function () {
+
     tok <- Sys.getenv ("GITHUB_TOKEN", Sys.getenv ("GITHUB_PAT", ""))
     if (nzchar (tok)) tok else NA_character_
 }
@@ -60,6 +69,7 @@ github_respect_rate_limit <- function (resp) {
     remaining <- suppressWarnings (as.numeric (
         httr2::resp_header (resp, "x-ratelimit-remaining")
     ))
+
     if (!is.na (remaining) && remaining <= 1) {
         reset_at <- suppressWarnings (as.numeric (
             httr2::resp_header (resp, "x-ratelimit-reset")
@@ -91,7 +101,9 @@ github_api_get_all <- function (path,
 
     items <- list ()
     page <- 1L
+
     repeat {
+
         req <- httr2::request (
             stringr::str_glue ("https://api.github.com{path}")
         ) |>
@@ -104,6 +116,7 @@ github_api_get_all <- function (path,
             httr2::req_url_query,
             c (list (req), query, list (per_page = per_page, page = page))
         )
+
         if (!is.na (token)) {
             req <- httr2::req_headers (
                 req,
@@ -111,12 +124,15 @@ github_api_get_all <- function (path,
             )
         }
         resp <- httr2::req_perform (req)
+
         body <- httr2::resp_body_json (resp, simplifyVector = FALSE)
         if (length (body) == 0) break
         items [[length (items) + 1]] <- body
         github_respect_rate_limit (resp)
         if (length (body) < per_page) break
+
         page <- page + 1L
     }
+
     purrr::flatten (items)
 }

@@ -7,6 +7,7 @@ CLICKHOUSE_URL <- "https://sql-clickhouse.clickhouse.com"
 CLICKHOUSE_PAGE_SIZE <- 100000L
 
 clickhouse_page_size <- function () {
+
     if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
         5L
     } else {
@@ -31,11 +32,13 @@ clickhouse_page_size <- function () {
 #' 100k+ rows.
 #' @noRd
 clickhouse_query <- function (sql) {
+
     resp <- httr2::request (CLICKHOUSE_URL) |>
         httr2::req_url_query (user = "demo", default_format = "JSONCompact") |>
         httr2::req_body_raw (sql) |>
         httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i) |>
         httr2::req_perform ()
+
     httr2::resp_body_json (resp, simplifyVector = TRUE)$data
 }
 
@@ -51,6 +54,7 @@ clickhouse_query <- function (sql) {
 #' }
 #' @export
 pypi_downloads_full <- function () {
+
     base_sql <- "
     SELECT SUM(count) AS downloads, project
     FROM pypi.pypi_downloads_per_month
@@ -67,6 +71,7 @@ pypi_downloads_full <- function () {
 
     pages <- list ()
     offset <- 0L
+
     repeat {
         rows <- clickhouse_query (sprintf (base_sql, page_size, offset))
         # length(rows) == 0 for an empty result
@@ -79,6 +84,7 @@ pypi_downloads_full <- function () {
         if (single_page_only || n < page_size) break
         offset <- offset + page_size
     }
+
     dplyr::bind_rows (pages)
 }
 
@@ -87,6 +93,7 @@ pypi_downloads_full <- function () {
 #' @param names_vec Character vector of PyPI package names.
 #' @noRd
 pypi_repo_urls_many <- function (names_vec) {
+
     registry_repo_urls_many (
         names_vec,
         url_fn = \ (names_vec) {

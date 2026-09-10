@@ -39,13 +39,16 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
 
     message ("Fetching ", universe, " r-universe package dump...")
     url <- stringr::str_glue ("https://{host}/api/packages")
+
     resp <- httr2::request (url) |>
         httr2::req_url_query (limit = runiv_packages_limit ()) |>
         httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i) |>
         httr2::req_perform ()
+
     pkgs <- httr2::resp_body_json (resp, simplifyVector = FALSE)
 
     message ("Extracting repo URLs from ", length (pkgs), " packages...")
+
     tbl <- purrr::map_dfr (pkgs, \ (p) {
         url_candidates <- c (p$URL, p$BugReports)
         if (universe == "ropensci") {
@@ -74,6 +77,7 @@ build_runiv_table <- function (universe = c ("ropensci", "cran")) {
             "extracted."
         ))
     }
+
     tbl
 }
 

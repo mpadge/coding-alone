@@ -49,6 +49,7 @@ github_repo_contributors <- function (owner, repo) {
 }
 
 github_issues_page_size <- function () {
+
     if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
         5L
     } else {
@@ -64,12 +65,15 @@ github_issues_page_size <- function () {
 #' support for the latter.
 #' @noRd
 build_issues_query <- function (owner, repo, cursor = NULL) {
+
     after <- if (is.null (cursor)) {
         ""
     } else {
         stringr::str_glue (', after: "{cursor}"')
     }
+
     first <- github_issues_page_size ()
+
     stringr::str_glue (
         'query {{
             repository(owner: "{owner}", name: "{repo}") {{
@@ -95,12 +99,14 @@ build_issues_query <- function (owner, repo, cursor = NULL) {
 #' `n_comments`).
 #' @noRd
 github_repo_issues_graphql <- function (owner, repo) {
+
     cursor <- NULL
     repo_created_at <- NULL
     pages <- list ()
     single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
 
     repeat {
+
         body <- gh::gh_gql (build_issues_query (owner, repo, cursor))
         node <- body$data$repository
         if (is.null (repo_created_at)) {

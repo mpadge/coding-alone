@@ -34,6 +34,9 @@ build_working_sample <- function (downloads_tbl = NULL,
                                   tail_size = 40000L,
                                   label = NULL) {
 
+    # suppress no visible binding notes
+    downloads <- NULL
+
     if (!is.null (label)) {
         msg <- stringr::str_glue (
             "{label}: building working sample (head + random tail)..."
@@ -45,6 +48,7 @@ build_working_sample <- function (downloads_tbl = NULL,
     tail_pool <- downloads_tbl |> dplyr::anti_join (head_tbl, by = "name")
     tail_tbl <- tail_pool |>
         dplyr::slice_sample (n = min (tail_size, nrow (tail_pool)))
+
     dplyr::bind_rows (head_tbl, tail_tbl)
 }
 
@@ -80,10 +84,12 @@ build_working_sample <- function (downloads_tbl = NULL,
 #' resolve_repo_urls (working_sample, fake_repo_urls_fn)
 #' @export
 resolve_repo_urls <- function (working_sample = NULL, repo_urls_fn = NULL) {
+
+    # suppress no visible binding notes
+    downloads <- name <- repo_url <- NULL
+
     working_sample |>
         dplyr::mutate (repo_url = repo_urls_fn (name)) |>
         dplyr::filter (!is.na (repo_url)) |>
         dplyr::select (name, downloads, repo_url)
 }
-
-utils::globalVariables (c ("downloads", "name", "repo_url"))

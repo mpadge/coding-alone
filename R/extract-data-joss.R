@@ -42,8 +42,10 @@ JOSS_NON_LANGUAGE_LABELS <- c (
 #' above. Multiple matches (rare) are comma-joined; none gives NA.
 #' @noRd
 extract_language <- function (labels) {
+
     label_names <- purrr::map_chr (labels, "name")
     lang <- label_names [!label_names %in% JOSS_NON_LANGUAGE_LABELS]
+
     if (length (lang) == 0) NA_character_ else toString (lang)
 }
 
@@ -61,16 +63,20 @@ repo_url_bare_re <- "\\*\\*Repository:\\*\\*\\s*([^\\s<]+)"
 #' then a bare-URL fallback. Returns NA if none match.
 #' @noRd
 extract_repo_url <- function (body) {
+
     if (is.null (body) || is.na (body)) {
         return (NA_character_)
     }
+
     all_res <- list (repo_url_comment_re, repo_url_anchor_re, repo_url_bare_re)
+
     for (re in all_res) {
         m <- stringr::str_match (body, re)
         if (!is.na (m [1, 2])) {
             return (stringr::str_trim (m [1, 2]))
         }
     }
+
     NA_character_
 }
 
@@ -83,6 +89,7 @@ STARS_BATCH_SIZE <- 50L
 #' be scattered back into place regardless of batching.
 #' @noRd
 build_stars_query <- function (owners, repos, ids) {
+
     fields <- purrr::pmap_chr (list (owners, repos, ids), \ (owner, repo, id) {
         stringr::str_glue (
             'r{id}: repository(owner: "{owner}", name: "{repo}") ',
@@ -102,6 +109,7 @@ build_stars_query <- function (owners, repos, ids) {
 #' @return Integer vector of stargazer counts, same length/order as `repo_urls`.
 #' @noRd
 github_stars_many <- function (repo_urls, batch_size = STARS_BATCH_SIZE) {
+
     parsed <- purrr::map (
         repo_urls, purrr::possibly (parse_github_repo_url, otherwise = NULL)
     )
@@ -122,6 +130,7 @@ github_stars_many <- function (repo_urls, batch_size = STARS_BATCH_SIZE) {
     )
 
     for (b in batches) {
+
         body <- tryCatch (
             gh::gh_gql (build_stars_query (owners [b], repos [b], ids [b])),
             error = function (e) NULL
@@ -149,14 +158,20 @@ github_stars_many <- function (repo_urls, batch_size = STARS_BATCH_SIZE) {
 #' consistent tie-break); either table may be omitted.
 #' @noRd
 join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
+
+    # suppress no visible binding notes
+    repo_url <- NULL
+
     registry_tbl <- dplyr::bind_rows (
         pypi_tbl [, c ("repo_url", "downloads")],
         npm_tbl [, c ("repo_url", "downloads")]
     )
     if (nrow (registry_tbl) == 0) {
+
         tbl$downloads <- NA_integer_
         return (tbl)
     }
+
     registry_tbl <- dplyr::distinct (registry_tbl, repo_url, .keep_all = TRUE)
     dplyr::left_join (tbl, registry_tbl, by = "repo_url")
 }
@@ -176,12 +191,15 @@ joss_issues_page_size <- function () {
 }
 
 build_joss_issues_query <- function (owner, repo, cursor = NULL) {
+
     after <- if (is.null (cursor)) {
         ""
     } else {
         stringr::str_glue (', after: "{cursor}"')
     }
+
     first <- joss_issues_page_size ()
+
     stringr::str_glue (
         'query {{
             repository(owner: "{owner}", name: "{repo}") {{
@@ -209,6 +227,7 @@ build_joss_issues_query <- function (owner, repo, cursor = NULL) {
 #'
 #' @noRd
 fetch_joss_issues <- function () {
+
     parts <- strsplit (JOSSREPO, "/", fixed = TRUE) [[1]]
     owner <- parts [1]
     repo <- parts [2]
@@ -216,6 +235,7 @@ fetch_joss_issues <- function () {
 
     cursor <- NULL
     issues <- list ()
+
     repeat {
         body <- gh::gh_gql (build_joss_issues_query (owner, repo, cursor))
         node <- body$data$repository$issues
@@ -225,6 +245,7 @@ fetch_joss_issues <- function () {
         }
         cursor <- node$pageInfo$endCursor
     }
+
     issues
 }
 
@@ -245,12 +266,14 @@ fetch_joss_issues <- function () {
 #' }
 #' @export
 build_joss_table <- function (pypi_tbl = NULL, npm_tbl = NULL) {
+
     message (
         "Fetching all '", JOSSLABEL, "'-labeled issues from ", JOSSREPO, "..."
     )
     issues <- fetch_joss_issues ()
 
     message ("Extracting repo URLs from ", length (issues), " issue bodies...")
+
     tbl <- purrr::map_dfr (issues, \ (i) {
         tibble::tibble (
             issue_number = i$number,

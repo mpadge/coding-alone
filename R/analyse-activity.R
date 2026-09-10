@@ -38,6 +38,7 @@ floor_month <- function (x) as.Date (format (as.Date (x), "%Y-%m-01"))
 #' @return An ordered factor, one level per stratum, lowest-popularity first.
 #' @noRd
 popularity_strata <- function (x, n_strata = 4L) {
+
     breaks <- stats::quantile (
         log10 (x + 1),
         probs = seq (0, 1, length.out = n_strata + 1),
@@ -46,7 +47,9 @@ popularity_strata <- function (x, n_strata = 4L) {
     breaks <- unique (breaks)
     breaks [1] <- -Inf
     breaks [length (breaks)] <- Inf
+
     labels <- paste0 ("Q", seq_len (length (breaks) - 1))
+
     cut (log10 (x + 1), breaks = breaks, labels = labels, ordered_result = TRUE)
 }
 
@@ -57,12 +60,14 @@ popularity_strata <- function (x, n_strata = 4L) {
 #' apply purely for display right before plotting.
 #' @noRd
 label_stratum_extremes <- function (x) {
+
     lv <- levels (x)
     if (length (lv) >= 2) {
         lv [1] <- paste (lv [1], "(low)")
         lv [length (lv)] <- paste (lv [length (lv)], "(high)")
     }
     levels (x) <- lv
+
     x
 }
 
@@ -210,11 +215,14 @@ issue_rate_tbl <- function (issue_authors_tbl,
         )
 
     issues <- if (metric == "issues") {
+
         dplyr::count (
             filtered_issues, popularity_stratum, month,
             name = "n_metric"
         )
+
     } else {
+
         filtered_issues |>
             dplyr::group_by (popularity_stratum, month) |>
             dplyr::summarise (n_metric = sum (n_comments), .groups = "drop")
@@ -256,6 +264,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
     attr (result, "window") <- window
     attr (result, "contrib_threshold") <- contrib_threshold
     attr (result, "source_name") <- source_name
+
     result
 }
 
@@ -275,6 +284,7 @@ issue_rate_tbl <- function (issue_authors_tbl,
 #' }
 #' @export
 fit_activity_model <- function (rate_tbl) {
+
     n_repo_months <- NULL # rm no visible binding note
 
     rate_tbl <- dplyr::filter (rate_tbl, n_repo_months > 0)
@@ -303,9 +313,11 @@ fit_activity_model <- function (rate_tbl) {
 #' across all groups.
 #' @noRd
 loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
+
     rate <- NULL # rm no visible binding note
 
     rate_tbl <- dplyr::filter (rate_tbl, !is.na (rate))
+
     fitted <- lapply (split (rate_tbl, rate_tbl [[group_col]]), \ (df) {
         if (nrow (df) < 5) {
             return (NULL)
@@ -317,6 +329,7 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
         if (is.null (fit)) NULL else stats::predict (fit)
     })
     fitted <- unlist (fitted)
+
     c (min (fitted, na.rm = TRUE), max (fitted, na.rm = TRUE))
 }
 
@@ -334,8 +347,10 @@ loess_range <- function (rate_tbl, group_col = "popularity_stratum") {
 activity_metric_label <- function (metric = c ("issues", "comments"),
                                    window = 12L,
                                    contrib_threshold = 0.01) {
+
     metric <- match.arg (metric)
     verb <- if (metric == "issues") "Issues opened" else "Comments received"
+
     stringr::str_glue (
         "{verb} per repo-month ({window}-month trailing avg, ",
         "contrib-threshold={contrib_threshold})"
@@ -353,6 +368,7 @@ activity_metric_label <- function (metric = c ("issues", "comments"),
 #' left at ggplot2's own default lower limit.
 #' @noRd
 activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
+
     rng <- loess_range (rate_tbl, group_col)
     lower <- if (rng [1] < 0) 0 else NA
     upper <- 1.25 * rng [2]
@@ -388,6 +404,7 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
 #' }
 #' @export
 plot_activity <- function (rate_tbl, start_year = NULL) {
+
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
     metric <- attr (rate_tbl, "metric")
     if (is.null (metric)) metric <- "issues"
@@ -416,8 +433,10 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
     if (!is.null (source_name)) {
+
         display_name <- unname (SOURCE_DISPLAY_NAME [source_name])
         if (is.na (display_name)) display_name <- source_name
+
         p <- p + ggplot2::annotate (
             "text",
             x = structure (Inf, class = "Date"),
@@ -429,6 +448,7 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
             size = 8
         )
     }
+
     p
 }
 
@@ -484,6 +504,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
                                      ros_joss_mult = 20) {
     # rm no visible binding notes
     month <- rate <- source_name <- popularity_stratum <- NULL
+
     metric <- match.arg (metric)
 
     date_start <- if (is.null (start_year)) {
@@ -505,12 +526,15 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
             dplyr::mutate (source_name = src)
     })
     rate_tbl$source_name <- factor (rate_tbl$source_name, levels = sources)
+
     attr (rate_tbl, "metric") <- metric
     attr (rate_tbl, "window") <- window
     attr (rate_tbl, "contrib_threshold") <- contrib_threshold
 
     y_lab <- activity_metric_label (metric, window, contrib_threshold)
+
     if (relative) {
+
         rate_tbl <- rate_tbl |>
             dplyr::group_by (source_name) |>
             dplyr::mutate (rate = rate / mean (rate, na.rm = TRUE)) |>
@@ -519,6 +543,7 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
     }
 
     if (ros_joss_mult != 1) {
+
         mult_these <- c ("ropensci", "joss", "cran")
         rate_tbl <- dplyr::mutate (
             rate_tbl,

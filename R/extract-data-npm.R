@@ -6,6 +6,7 @@
 #' tarball URL).
 #' @noRd
 npm_download_counts_meta <- function () {
+
     httr2::request ("https://registry.npmjs.org/download-counts/latest") |>
         httr2::req_perform () |>
         httr2::resp_body_json (simplifyVector = FALSE)
@@ -19,10 +20,12 @@ npm_download_counts_meta <- function () {
 #' bytes of its tarball).
 #' @noRd
 npm_download_counts_fetch <- function () {
+
     meta <- npm_download_counts_meta ()
     tarball <- httr2::request (meta$dist$tarball) |>
         httr2::req_perform () |>
         httr2::resp_body_raw ()
+
     list (version = meta$version, tarball = tarball)
 }
 
@@ -41,6 +44,7 @@ npm_download_counts_fetch <- function () {
 #' }
 #' @export
 npm_downloads_full <- function () {
+
     fetched <- npm_download_counts_fetch ()
     msg <- stringr::str_glue (
         "npm: using download-counts@{fetched$version} ",
@@ -58,6 +62,7 @@ npm_downloads_full <- function () {
         pattern = "counts\\.json$", recursive = TRUE, full.names = TRUE
     ) [1]
     counts <- jsonlite::fromJSON (counts_json)
+
     tibble::tibble (
         name = names (counts),
         downloads = as.numeric (unlist (counts, use.names = FALSE))
@@ -73,6 +78,7 @@ npm_downloads_full <- function () {
 #' @param names_vec Character vector of npm package names.
 #' @noRd
 npm_repo_urls_many <- function (names_vec) {
+
     registry_repo_urls_many (
         names_vec,
         url_fn = \ (names_vec) {
