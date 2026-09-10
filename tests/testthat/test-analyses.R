@@ -116,6 +116,30 @@ test_that ("fetch_issue_authors isolates error without abort", {
     expect_identical (res$repo_url, "https://github.com/o/a")
 })
 
+test_that ("fetch_issue_authors samples evenly across repo_urls, not sequentially from the top", {
+    out_dir <- withr::local_tempdir ()
+    calls <- character ()
+    testthat::local_mocked_bindings (
+        github_issue_authors = function (repo_url) {
+            calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
+            fake_issue_authors_row (repo_url)
+        },
+        .package = "longtail"
+    )
+
+    # ordered as if by descending popularity, most-popular first:
+    repo_urls <- paste0 ("https://github.com/o/r", seq_len (100))
+
+    fetch_issue_authors (repo_urls, out_dir, batch_size = 25L)
+
+    # first batch (first 25 calls) should span the full range, not just the
+    # most-popular prefix:
+    first_batch_idx <- as.integer (sub (".*/r", "", calls [1:25]))
+    expect_true (max (first_batch_idx) > 75)
+    # and should be evenly spread (stride 4, since n_batches = 100/25 = 4):
+    expect_identical (sort (first_batch_idx), seq (1L, 97L, by = 4L))
+})
+
 test_that ("join_repo_metadata attaches repo_tbl columns by repo_url", {
     issue_authors_tbl <- tibble::tibble (
         repo_url = three_gh_urls,

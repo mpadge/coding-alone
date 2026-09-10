@@ -76,20 +76,50 @@ ISSUE_AUTHORS_COL_TYPES <- readr::cols (
     repo_created_at = readr::col_character ()
 )
 
-#' Fetch issue-author data (`github_issue_authors()`, which now also
-#' returns each repo's own GitHub creation timestamp as `repo_created_at` -
-#' used elsewhere as the start of a repo's exposure window) for many repos,
-#' batched and checkpointed to disk. Repos already recorded as done (in
-#' `<out_dir>/issue-authors-done.rds`, tracked independently of row count so
-#' a repo with zero issues isn't retried forever) are skipped, so
-#' re-running after an interruption - rate-limited or otherwise - picks up
-#' where it left off rather than starting over. Each batch's repos are
-#' fetched concurrently (via `progressify`/`futurize`); GitHub's hourly rate
-#' limit is a cumulative budget rather than a burst limit, so the risk is
-#' running through it too fast overall, not concurrency within one batch -
-#' hence checkpointing after every batch rather than throttling within one.
+#' Split a vector into `n_batches` groups so that fetching group 1, then
+#' group 2, etc. gives even coverage of the whole vector at any stopping
+#' point, rather than exhausting one end of it first. Assumes `x` arrives
+#' already prioritised (e.g. `repo_tbl`'s PyPI/npm rows, built by
+#' `build_working_sample()` as a deterministic head of the most-downloaded
+#' packages followed by a random tail).
+#'
+#' @param x Vector already ordered by priority (highest first).
+#' @param n_batches Number of interleaved groups to split `x` into - in
+#' practice `fetch_issue_authors()`'s number of batches, so each
+#' checkpointed batch is itself one such group.
+#' @return A list of `n_batches` groups (as from `split()`), each an evenly
+#' spread subsample of `x`, in group order.
+#' @noRd
+interlace_for_even_coverage <- function (x, n_batches) {
+
+    if (n_batches <= 1 || length (x) == 0) {
+        return (list (x))
+    }
+
+    split (x, rep (seq_len (n_batches), length.out = length (x)))
+}
+
+#' Fetch issue-author data (`github_issue_authors()`, for many repos,
+#' batched and checkpointed to disk.
+#'
+#' Repos already recorded as done (in `<out_dir>/issue-authors-done.rds`,
+#' tracked independently of row count so a repo with zero issues isn't retried
+#' forever) are skipped, so re-running after an interruption - rate-limited or
+#' otherwise - picks up where it left off rather than starting over. Each
+#' batch's repos are fetched concurrently (via `progressify`/`futurize`);
+#' GitHub's hourly rate limit is a cumulative budget rather than a burst limit,
+#' so the risk is running through it too fast overall, not concurrency within
+#' one batch - hence checkpointing after every batch rather than throttling
+#' within one.
+#'
+#' Batches are drawn via `interlace_for_even_coverage()` rather than taken
+#' sequentially off `repo_urls`, so that however far fetching gets before
+#' stopping, the fetched subsample stays evenly spread across `repo_urls`'s own
+#' order instead of silently favouring whatever came first in it.
 #'
 #' @param repo_urls Character vector of repo URLs to fetch issue authors for.
+#' Assumed already ordered by priority if it matters which get fetched
+#' first (see `interlace_for_even_coverage()`).
 #' @param out_dir Directory to read/write the CSV + done-list checkpoint files.
 #' @param batch_size Repos fetched (concurrently) per checkpoint.
 #' @return A tibble with columns `repo_url`, `issue_number`, `author`,
@@ -164,9 +194,8 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         )
     }
 
-    batches <- split (
-        repo_urls_todo, ceiling (seq_along (repo_urls_todo) / batch_size)
-    )
+    n_batches <- ceiling (length (repo_urls_todo) / batch_size)
+    batches <- interlace_for_even_coverage (repo_urls_todo, n_batches)
 
     for (b in seq_along (batches)) {
 
