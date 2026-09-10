@@ -1,6 +1,4 @@
-LFILE = README
-YFILE = data-raw/insert-yaml-in-use-action
-VIGNETTE = extending-checks
+REPORT = docs/README
 
 all: help
 
@@ -16,20 +14,14 @@ pkgdown: ## Build entire pkgdown site
 pkgdowncheck: ## Check 'pkgdown' site structure
 	echo "pkgdown::check_pkgdown()" | R --no-save -q
 
-vignette: ## Build pkgdown article
-	echo "pkgdown::build_article('$(VIGNETTE)',quiet=FALSE)" | R --no-save -q
+knith: $(REPORT).Rmd ## Render README as HTML, with external image files
+	echo "rmarkdown::render('$(REPORT).Rmd',output_format='html_document',output_file='$(notdir $(REPORT)).html')" | R --no-save -q
 
-knith: $(LFILE).Rmd ## Render README as HTML
-	echo "rmarkdown::render('$(LFILE).Rmd',output_file='$(LFILE).html')" | R --no-save -q
-
-knitr: $(LFILE).Rmd ## Render README as markdown
-	echo "rmarkdown::render('$(LFILE).Rmd',output_file='$(LFILE).md')" | R --no-save -q
+knitr: $(REPORT).Rmd ## Render README as markdown, with external image files
+	echo "rmarkdown::render('$(REPORT).Rmd',output_format='github_document',output_file='$(notdir $(REPORT)).md')" | R --no-save -q
 
 open: ## Open main HTML vignette in browser
-	xdg-open docs/articles/$(VIGNETTE).html &
-
-allcon: ## Run 'allcontributors::add_contributors'
-	Rscript -e 'allcontributors::add_contributors()'
+	xdg-open $(REPORT).html &
 
 check: ## Run `rcmdcheck`
 	Rscript -e 'rcmdcheck::rcmdcheck()'
@@ -37,14 +29,11 @@ check: ## Run `rcmdcheck`
 test: ## Run test suite
 	Rscript -e 'testthat::test_local()'
 
-pkgcheck: ## Run `pkgcheck` and print results to screen.
-	Rscript -e 'library(pkgcheck); checks <- pkgcheck(); print(checks); summary (checks)'
-
 urls: ## Apply 'urlchecker::url_update()' to update all URLs
 	Rscript -e 'urlchecker::url_update()'
 
 clean: ## Clean all junk files, including all pkgdown docs
-	rm -rf *.html *.png README_cache docs/
+	rm -rf *.html *.png README_cache
 
 help: ## Show this help
 	@printf "Usage:\033[36m make [target]\033[0m\n"
