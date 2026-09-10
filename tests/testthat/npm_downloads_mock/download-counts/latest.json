@@ -4,7 +4,7 @@
     },
     "dist": {
         "shasum": "e517b7aed51565b95b58c4184314f690f0a5b8e6",
-        "tarball": "npm/download-counts/-/download-counts-2.20260301.0.tgz",
+        "tarball": "download-counts/-/download-counts-2.20260301.0.tgz",
         "fileCount": 3,
         "integrity": "sha512-WqcD98+fytHCwR+qP+dpEAg8zO34YTQC7B81oR4DIRQxN4TuiWu9r3zT052mm6tAi5MIGEb1q6CbXdBz2BuUhw==",
         "signatures": [
@@ -14,7 +14,7 @@
             }
         ],
         "attestations": {
-            "url": "npm/-/npm/v1/attestations/download-counts@2.20260301.0",
+            "url": "-/npm/v1/attestations/download-counts@2.20260301.0",
             "provenance": {
                 "predicateType": "https://slsa.dev/provenance/v1"
             }

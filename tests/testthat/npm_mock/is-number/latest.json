@@ -4,7 +4,7 @@
     },
     "dist": {
         "shasum": "7535345b896734d5f80c4d06c50955527a14f12b",
-        "tarball": "npm/is-number/-/is-number-7.0.0.tgz",
+        "tarball": "is-number/-/is-number-7.0.0.tgz",
         "fileCount": 4,
         "integrity": "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==",
         "signatures": [

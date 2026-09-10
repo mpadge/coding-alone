@@ -24,7 +24,7 @@ function (resp) {
     resp <- httptest2::gsub_response (
         resp,
         "https://registry.npmjs.org/",
-        "npm/",
+        "",
         fixed = TRUE
     )
 
