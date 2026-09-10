@@ -89,7 +89,7 @@ trailing_roll_sum <- function (x, window) {
 #' `repo_tbl`, so a repo only contributes exposure once it's been fetched
 #' at least once - repos with zero issues fetched (either not yet fetched
 #' at all, or fetched and genuinely having none) don't have a
-#' `repo_created_at` on file and are excluded here rather than analyzed.
+#' `repo_created_at` on file and are excluded here rather than analysed.
 #'
 #' Each reported month is a trailing aggregate over `window` months (that
 #' month and the `window - 1` preceding it), not a single month's own

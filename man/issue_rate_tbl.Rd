@@ -14,7 +14,7 @@ repo's issues by \code{github_issue_authors()}/\code{fetch_issue_authors()}), no
 \code{repo_tbl}, so a repo only contributes exposure once it's been fetched
 at least once - repos with zero issues fetched (either not yet fetched
 at all, or fetched and genuinely having none) don't have a
-\code{repo_created_at} on file and are excluded here rather than analyzed.}
+\code{repo_created_at} on file and are excluded here rather than analysed.}
 \usage{
 issue_rate_tbl(
   issue_authors_tbl,
