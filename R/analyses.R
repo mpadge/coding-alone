@@ -168,8 +168,7 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 #' on `repo_url` so a repo appearing under multiple sources doesn't fan out
 #' the join.
 #'
-#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
-#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @inheritParams issue_rate_tbl
 #' @return `issue_authors_tbl` with `repo_tbl`'s columns attached.
 #'
 #' @examples

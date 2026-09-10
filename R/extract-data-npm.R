@@ -61,6 +61,7 @@ npm_downloads_full <- function () {
 #' heavily-versioned packages that's enormous.
 #'
 #' @param names_vec Character vector of npm package names.
+#' @noRd
 npm_repo_urls_many <- function (names_vec) {
     registry_repo_urls_many (
         names_vec,

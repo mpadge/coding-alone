@@ -426,8 +426,7 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
 #' not fully fetched - see `analysis-plan.md`) just contributes no line,
 #' rather than erroring.
 #'
-#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
-#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @inheritParams issue_rate_tbl
 #' @param stratum Integer popularity stratum to compare (`1` = lowest
 #' popularity, `n_strata` = highest), matching one of `issue_rate_tbl()`'s
 #' `popularity_stratum` levels (`"Q<stratum>"`).

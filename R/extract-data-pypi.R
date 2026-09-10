@@ -83,6 +83,7 @@ pypi_downloads_full <- function () {
 #' Repo URLs for many PyPI packages at once (concurrent requests).
 #' info.project_urls (free-text keys) + info.home_page.
 #' @param names_vec Character vector of PyPI package names.
+#' @noRd
 pypi_repo_urls_many <- function (names_vec) {
     registry_repo_urls_many (
         names_vec,
