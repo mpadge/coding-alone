@@ -1,29 +1,25 @@
-# ---- npm_download_counts_fetch / npm_downloads_full ------------------------
+# ---- npm_download_counts_meta -----------------------------------------------
 #
-# The fixture tarball (fixtures/counts-mini.tgz) is a hand-built 4-package
-# `package/counts.json`.
+# Only the small metadata call (version + tarball URL) is tested here. The
+# tarball itself is a single ~28MB dump of all ~3.77M npm packages'
+# download counts, with no server-side size-limiting parameter (unlike
+# ClickHouse's LIMIT or the GitHub GraphQL queries' first) - there's no way
+# to get a genuinely live, small sample of it, so npm_downloads_full()'s
+# untar/parse logic isn't covered by a fixture here. This fixture is NOT
+# hand-crafted: it holds a real, live-recorded metadata response. If it's
+# ever regenerated, delete tests/testthat/npm_downloads_mock/ and re-run
+# this test (no token needed) to re-record it - it must never be
+# hand-typed back in.
 
-test_that ("npm_download_counts_fetches version and raw tarball bytes", {
-
+test_that ("npm_download_counts_meta fetches version and tarball URL", {
     fetched <- httptest2::with_mock_dir ("npm_downloads_mock", {
-        npm_download_counts_fetch ()
+        npm_download_counts_meta ()
     })
-    expect_equal (fetched$version, "2026.09.08")
-    expect_true (is.raw (fetched$tarball))
-    expect_equal (
-        fetched$tarball,
-        readBin (test_path ("fixtures", "counts-mini.tgz"), "raw", n = 1000)
-    )
-})
-
-test_that ("npm_downloads_full untars and reshapes the counts.json download", {
-    out <- suppressMessages (httptest2::with_mock_dir ("npm_downloads_mock", {
-        longtail::npm_downloads_full ()
-    }))
-
-    expect_equal (names (out), c ("name", "downloads"))
-    expect_equal (nrow (out), 4L)
-    expect_equal (out$downloads [out$name == "is-number"], 5000000)
+    expect_type (fetched$version, "character")
+    expect_type (fetched$dist$tarball, "character")
+    # inst/httptest2/redact.R rewrites "https://registry.npmjs.org/" -> "npm/"
+    # in recorded fixture bodies, so the replayed URL is redacted, not real:
+    expect_match (fetched$dist$tarball, "download-counts.*\\.tgz$")
 })
 
 # npm_repo_urls_many() uses req_perform_parallel() internally

@@ -2,6 +2,15 @@
 # to packages with a resolvable GitHub repo URL. See README.Rmd for the
 # script that drives these to actually build the table.
 
+#' Fetch the `download-counts` npm package's latest metadata (version and
+#' tarball URL).
+#' @noRd
+npm_download_counts_meta <- function () {
+    httr2::request ("https://registry.npmjs.org/download-counts/latest") |>
+        httr2::req_perform () |>
+        httr2::resp_body_json (simplifyVector = FALSE)
+}
+
 #' Fetch the `download-counts` npm package's latest metadata and tarball
 #' bytes.
 #'
@@ -10,13 +19,10 @@
 #' bytes of its tarball).
 #' @noRd
 npm_download_counts_fetch <- function () {
-    meta <- httr2::resp_body_json (
-        httr2::req_perform (httr2::request ("https://registry.npmjs.org/download-counts/latest")),
-        simplifyVector = FALSE
-    )
-    tarball <- httr2::resp_body_raw (
-        httr2::req_perform (httr2::request (meta$dist$tarball))
-    )
+    meta <- npm_download_counts_meta ()
+    tarball <- httr2::request (meta$dist$tarball) |>
+        httr2::req_perform () |>
+        httr2::resp_body_raw ()
     list (version = meta$version, tarball = tarball)
 }
 

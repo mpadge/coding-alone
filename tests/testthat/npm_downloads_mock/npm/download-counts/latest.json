@@ -1,6 +1,69 @@
 {
-    "version": "2026.09.08",
+    "bugs": {
+        "url": "https://github.com/nice-registry/download-counts/issues"
+    },
     "dist": {
-        "tarball": "https://registry.npmjs.org/download-counts/-/download-counts-2026.09.08.tgz"
-    }
+        "shasum": "e517b7aed51565b95b58c4184314f690f0a5b8e6",
+        "tarball": "npm/download-counts/-/download-counts-2.20260301.0.tgz",
+        "fileCount": 3,
+        "integrity": "sha512-WqcD98+fytHCwR+qP+dpEAg8zO34YTQC7B81oR4DIRQxN4TuiWu9r3zT052mm6tAi5MIGEb1q6CbXdBz2BuUhw==",
+        "signatures": [
+            {
+                "sig": "MEUCIQCC3cqX8zLlJ7Xb9HsyujN6dg+7QKd7mEiEfReAilsSCwIgDYtO2uWyWXb/IfG7hHRCSN4spjV/d9t2GGwbpndYDSA=",
+                "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+            }
+        ],
+        "attestations": {
+            "url": "npm/-/npm/v1/attestations/download-counts@2.20260301.0",
+            "provenance": {
+                "predicateType": "https://slsa.dev/provenance/v1"
+            }
+        },
+        "unpackedSize": 95578554
+    },
+    "main": "counts.json",
+    "name": "download-counts",
+    "type": "module",
+    "gitHead": "024e2e9d1d7c8a606ffc7d28c44254bb9dc5513f",
+    "license": "MIT",
+    "_npmUser": {
+        "name": "GitHub Actions",
+        "email": "npm-oidc-no-reply@github.com",
+        "trustedPublisher": {
+            "id": "github",
+            "oidcConfigId": "oidc:38a12397-98ab-4758-987d-10d921221f50"
+        }
+    },
+    "homepage": "https://github.com/nice-registry/download-counts#readme",
+    "repository": {
+        "url": "git+https://github.com/nice-registry/download-counts.git",
+        "type": "git"
+    },
+    "_npmVersion": "11.12.1",
+    "description": "Monthly download counts for every npm package, as a big static object.",
+    "directories": {
+
+    },
+    "maintainers": [
+        {
+            "name": "jimaek",
+            "email": "dakulovgr@gmail.com"
+        },
+        {
+            "name": "zeke",
+            "email": "zeke@sikelianos.com"
+        },
+        {
+            "name": "explodingcabbage",
+            "email": "markrobertamery+npm@gmail.com"
+        }
+    ],
+    "_nodeVersion": "24.14.0",
+    "_hasShrinkwrap": false,
+    "_npmOperationalInternal": {
+        "tmp": "tmp/download-counts_2.20260301.0_1774994169412_0.024461442002451816",
+        "host": "s3://npm-registry-packages-npm-production"
+    },
+    "_id": "download-counts@2.20260301.0",
+    "version": "2.20260301.0"
 }
