@@ -1,0 +1,41 @@
+{
+    "meta": [
+        {
+            "name": "downloads",
+            "type": "Int64"
+        },
+        {
+            "name": "project",
+            "type": "String"
+        }
+    ],
+    "data": [
+        [
+            "3206668324",
+            "boto3"
+        ],
+        [
+            "2253382953",
+            "packaging"
+        ],
+        [
+            "1846201011",
+            "typing-extensions"
+        ],
+        [
+            "1822727244",
+            "certifi"
+        ],
+        [
+            "1801007240",
+            "idna"
+        ]
+    ],
+    "rows": 5,
+    "rows_before_limit_at_least": 868889,
+    "statistics": {
+        "elapsed": 0.088814843,
+        "rows_read": 48359783,
+        "bytes_read": 137770733
+    }
+}

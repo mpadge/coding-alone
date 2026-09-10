@@ -5,21 +5,29 @@
 CLICKHOUSE_URL <- "https://sql-clickhouse.clickhouse.com"
 CLICKHOUSE_PAGE_SIZE <- 100000L # server-enforced max rows per query on the public `demo` user
 
+clickhouse_page_size <- function () {
+    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+        5L
+    } else {
+        CLICKHOUSE_PAGE_SIZE
+    }
+}
+
 #' Run a read-only SQL query against ClickHouse's public playground (the
 #' `demo` user), which mirrors the same PyPI downloads dataset BigQuery's
 #' `bigquery-public-data.pypi.file_downloads` does, updated monthly. This
 #' replaces pypistats.org, which rate-limits per-package polling far too
-#' aggressively to poll tens of thousands of packages (confirmed by testing:
-#' repeated 429s within seconds, backoff never catching up). hugovk's own
+#' aggressively to poll tens of thousands of packages. hugovk's own
 #' top-pypi-packages generator itself switched to querying this endpoint
 #' (see https://github.com/hugovk/top-pypi-packages/blob/main/clickhouse.py).
+#'
 #' The `demo` user caps any single query at CLICKHOUSE_PAGE_SIZE rows, so
 #' pypi_downloads_full() below pages through with LIMIT/OFFSET.
 #' Returns the result as a character matrix (ClickHouse's JSONCompact
 #' encodes all values as strings to avoid UInt64/Int64 precision loss, so
 #' there's no point asking jsonlite for anything fancier). simplifyVector
 #' matters a lot here — the naive per-row list parse is ~100x slower at
-#' 100k+ rows and was the actual bottleneck in early testing, not the network.
+#' 100k+ rows.
 #' @noRd
 clickhouse_query <- function (sql) {
     resp <- httr2::request (CLICKHOUSE_URL) |>
@@ -48,18 +56,21 @@ pypi_downloads_full <- function () {
     ORDER BY downloads DESC
     LIMIT %d OFFSET %d"
 
+    page_size <- clickhouse_page_size ()
+    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+
     pages <- list ()
     offset <- 0L
     repeat {
-        rows <- clickhouse_query (sprintf (base_sql, CLICKHOUSE_PAGE_SIZE, offset))
+        rows <- clickhouse_query (sprintf (base_sql, page_size, offset))
         n <- if (is.matrix (rows)) nrow (rows) else length (rows) # length(rows) == 0 for an empty result
         if (n == 0) break
         pages [[length (pages) + 1]] <- tibble::tibble (
             downloads = as.numeric (rows [, 1]),
             name = rows [, 2]
         )
-        if (n < CLICKHOUSE_PAGE_SIZE) break
-        offset <- offset + CLICKHOUSE_PAGE_SIZE
+        if (single_page_only || n < page_size) break
+        offset <- offset + page_size
     }
     dplyr::bind_rows (pages)
 }
