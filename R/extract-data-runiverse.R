@@ -83,96 +83,49 @@ build_cran_table <- function () {
 
 #' Get GitHub URLs for all CRAN packages which have them
 #' @noRd
-cran_data_pkgstats <- function () {
+cran_data_full <- function () {
 
-    u <- paste0 (
-        "https://github.com/ropensci-review-tools/pkgstats/",
-        "releases/download/v0.1.6/pkgstats-CRAN-current.Rds"
+    requireNamespace ("mongolite", quietly = TRUE)
+    u <- "https://cran.r-universe.dev/api/dbdump"
+    cran <- mongolite::read_bson (u)
+
+    package <- vapply (cran, function (p) p$Package, character (1L))
+    version <- vapply (cran, function (p) p$Version, character (1L))
+    downloads <- vapply (cran, function (p) {
+        ifelse (
+            length (p$`_downloads`$count) == 0L,
+            0L,
+            p$`_downloads`$count
+        )
+    }, integer (1L))
+    url <- vapply (cran, function (p) {
+        ifelse (
+            length (p$`_devurl`) == 0L,
+            NA_character_,
+            p$`_devurl`
+        )
+    }, character (1L))
+
+    dat <- tibble::tibble (
+        package = package,
+        version = version,
+        repo_url = url,
+        downloads = downloads
     )
-    f <- fs::path (fs::path_temp (), basename (u))
-    if (!file.exists (f)) {
-        utils::download.file (u, f)
-    }
-
-    package <- NULL # suppress no vis binding note
-    x <- readRDS (f) |>
-        dplyr::group_by (package) |>
-        dplyr::slice_max (date, n = 1, with_ties = FALSE)
 
     # Reduce to packages with GitHub URLs only:
     index <- which (vapply (
-        x$urls,
+        dat$repo_url,
         function (i) grepl ("github.com", i, fixed = TRUE),
         logical (1L)
     ))
-    x <- x [index, ]
-    gh_urls <- vapply (
-        x$urls,
-        function (i) {
-            j <- strsplit (i, ",(\\n|\\s)") [[1]]
-            grepv ("github.com", j, value = TRUE) [1]
-        },
-        character (1L),
-        USE.NAMES = FALSE
-    )
-    # Then reduce again only to resolvable ones:
-    lens <- vapply (fs::path_split (gh_urls), length, integer (1L))
-    index <- which (lens == 4L)
-    x <- x [index, ]
-    gh_urls <- gh_urls [index]
+    dat <- dat [index, ]
 
-    tibble::tibble (
-        package = x$package,
-        version = x$version,
-        repo_url = gh_urls
-    )
-}
-
-#' Get download data for all CRAN packages
-#'
-#' @param dat Result of 'cran_data_pkgstats()' call.
-#' @return Modified version of input 'dat' with additional "downloads" column.
-#' Downloads are for month prior.
-#'
-#' @noRd
-cran_data_downloads <- function (dat) {
-
-    # Then get total downloads per package over last month.
-    pkgs <- dat$package
-    chunk_size <- 100
-    chunks <- unname (split (pkgs, ceiling (seq_along (pkgs) / chunk_size)))
-
-    urls <- vapply (
-        chunks,
-        function (p) {
-            paste0 (
-                "https://cranlogs.r-pkg.org/downloads/total/last-month/",
-                paste (p, collapse = ",")
-            )
-        },
+    orgs_to_rm <- c ("r-forge")
+    orgs <- vapply (
+        dat$repo_url,
+        function (u) fs::path_split (u) [[1]] [3],
         character (1L)
     )
-
-    reqs <- lapply (urls, httr2::request)
-
-    # See perform_json_parallel() in R/utils-httr2.R for why LONGTAIL_TESTS
-    # switches this to sequential req_perform() calls: httptest2 can only
-    # trace/record req_perform(), not req_perform_parallel().
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
-        resps <- lapply (reqs, function (req) tryCatch (httr2::req_perform (req), error = function (e) e))
-    } else {
-        resps <- httr2::req_perform_parallel (reqs, on_error = "continue")
-    }
-
-    dl <- do.call (rbind, lapply (resps, function (r) {
-        if (!inherits (r, "httr2_response") || httr2::resp_is_error (r)) {
-            return (NULL)
-        }
-        j <- httr2::resp_body_json (r)
-        data.frame (
-            package = vapply (j, function (i) i$package, character (1L)),
-            downloads = vapply (j, function (i) i$downloads, integer (1L))
-        )
-    }))
-    dplyr::left_join (dat, dl, by = "package")
+    dat [which (!orgs %in% orgs_to_rm), ]
 }
