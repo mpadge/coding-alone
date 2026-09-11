@@ -10,6 +10,7 @@ author_density_tbl(
   source_name,
   n_strata = 4L,
   contrib_threshold = 0.01,
+  contrib_min = -Inf,
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL
@@ -29,6 +30,12 @@ author_density_tbl(
 below this value count as "non-contributor" issues. Default 0.01 (allow
 a small nonzero commit share and still call it "non-contributor").}
 
+\item{contrib_min}{Lower bound (exclusive) on \code{contribution}; authors
+are counted when \verb{contrib_min < contribution <= contrib_threshold}.
+Default \code{-Inf} (no lower bound, i.e. the non-core-vs-core split is
+governed by \code{contrib_threshold} alone, as in the original non-core
+headcount).}
+
 \item{window}{Trailing aggregation window, in months. Default 12: each
 reported month's \code{n_metric}/\code{n_repo_months} sum that month and the
 preceding 11.}
@@ -39,7 +46,8 @@ preceding 11.}
 \value{
 A tibble with one row per (popularity stratum, month):
 \code{popularity_stratum}, \code{month}, \code{n_metric} (trailing sum of distinct
-non-core authors active that month), \code{n_repo_months}, \code{rate}. Carries
+authors active that month whose \code{contribution} fell in
+\verb{(contrib_min, contrib_threshold]}), \code{n_repo_months}, \code{rate}. Carries
 \code{metric = "issues"}, \code{window}, \code{contrib_threshold}, and \code{source_name} as
 attributes - \code{metric} is deliberately set to \code{"issues"} rather than
 something like \code{"authors"} so the result can be passed straight into
@@ -61,9 +69,27 @@ density, comparable in construction to \code{issue_rate_tbl()}'s "issues" rate
 rather than a strict lifetime-unique headcount (see the vignette's
 caveats for what that does and doesn't mean).
 }
+\details{
+\code{contrib_min}/\code{contrib_threshold} together select which authors count,
+via \verb{contrib_min < contribution <= contrib_threshold}: the defaults
+(\code{-Inf}, \code{0.01}) reproduce the original non-core-only headcount, but the
+same function also answers the two questions that motivate it -
+\verb{contrib_min = 0.01, contrib_threshold = Inf} counts \emph{core} authors
+only (people over the non-core line), and \verb{contrib_min = -Inf, contrib_threshold = Inf} counts \emph{everyone} who filed an issue,
+core and non-core alike - "all contributors", in this dataset's only
+available sense of that phrase (see the vignette's caveats for what
+that does and doesn't capture, pending direct commit-history-based
+contributor timelines).
+}
 \examples{
 \dontrun{
 ad <- author_density_tbl (issue_authors_tbl, repo_tbl, "pypi")
 plot_activity (ad) + ggplot2::labs (y = "Distinct non-core authors")
+
+# All contributors, core and non-core alike:
+ad_all <- author_density_tbl (
+    issue_authors_tbl, repo_tbl, "pypi",
+    contrib_min = -Inf, contrib_threshold = Inf
+)
 }
 }

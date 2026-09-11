@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Robert Putnam found Americans bowling as much as ever but increasingly outside the leagues that once turned it into a shared civic habit; across five open-source ecosystems, the same shift shows up in who writes code - not less of it, but more of it happening to just one person where several used to overlap"
 author: "Mark Padgham"
-date: "`r format(Sys.Date(), '%d %B %Y')`"
+date: "11 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
@@ -26,17 +26,9 @@ resolve correctly. That committed .Rmd has every chunk already evaluated
 via the usual vignette machinery never needs the data again.
 -->
 
-```{r chunk-setup, echo = FALSE}
-knitr::opts_chunk$set (
-    echo = FALSE, message = FALSE, warning = FALSE,
-    fig.align = "center", fig.width = 9, fig.height = 4, dpi = 150,
-    fig.path = "coding-alone-figures/"
-)
-```
 
-```{r load-package}
-library (peerreview)
-```
+
+
 
 <div class="callout">
 This vignette draws on the same large, locally-fetched dataset as
@@ -48,150 +40,9 @@ in the package source if you want to re-run the analysis yourself once the
 underlying data is available (via Git LFS) from the package repository.
 </div>
 
-```{r initial-data-load}
-out_dir <- "../repo-data-out"
-repo_tbl <- build_repo_tbl (out_dir)
-issue_authors_tbl <- readr::read_csv (
-    file.path (out_dir, "issue-authors.csv"),
-    show_col_types = FALSE, progress = FALSE
-)
 
-primary_sources <- c ("cran", "joss", "npm", "pypi", "ropensci")
-n_repos_primary <- length (unique (
-    repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
-))
-date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
-```
 
-```{r generate-data, include=FALSE}
-contrib_threshold <- 0.01
 
-# Event-count fold-change (rate now vs. Jan 2021), for comparison against
-# the person-count version below.
-fc_issues <- fold_change_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources,
-    metric = "issues", contrib_threshold = contrib_threshold
-)
-
-# Distinct-author fold-change, non-core only - this vignette's first,
-# stricter measure.
-fc_authors <- author_density_fold_change_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources,
-    contrib_threshold = contrib_threshold
-)
-
-fc_compare <- dplyr::inner_join (
-    fc_issues, fc_authors,
-    by = c ("source", "popularity_stratum"),
-    suffix = c ("_issues", "_authors")
-)
-n_authors_declined <- sum (fc_authors$fold_change < 1)
-n_authors_cells <- nrow (fc_authors)
-n_issues_declined <- sum (fc_issues$fold_change < 1)
-n_authors_fell_more <- sum (fc_compare$fold_change_authors < fc_compare$fold_change_issues)
-
-# Non-core / core / total distinct-author fold-change, pooled across
-# popularity strata (n_strata = 1) per source - is the shrinkage confined
-# to the outer circle, or does it reach the inner one too?
-pooled_fold_change <- function (src, contrib_min, contrib_threshold, label,
-                                ref_date = as.Date ("2021-01-01")) {
-    ad <- author_density_tbl (
-        issue_authors_tbl, repo_tbl, src,
-        n_strata = 1L, contrib_min = contrib_min, contrib_threshold = contrib_threshold
-    )
-    ad <- dplyr::filter (ad, !is.na (rate))
-    ref <- dplyr::filter (ad, month == ref_date)$rate
-    latest_month <- max (ad$month)
-    latest <- dplyr::filter (ad, month == latest_month)$rate
-    tibble::tibble (source = src, type = label, fold_change = latest / ref)
-}
-contributor_type_specs <- list (
-    list (cmin = -Inf, cmax = contrib_threshold, label = "Non-core"),
-    list (cmin = contrib_threshold, cmax = Inf, label = "Core"),
-    list (cmin = -Inf, cmax = Inf, label = "Total")
-)
-fc_by_type <- purrr::map_dfr (primary_sources, \ (src) {
-    purrr::map_dfr (contributor_type_specs, \ (spec) {
-        pooled_fold_change (src, spec$cmin, spec$cmax, spec$label)
-    })
-})
-fc_by_type$type <- factor (fc_by_type$type, levels = c ("Non-core", "Core", "Total"))
-n_core_declined <- sum (fc_by_type$fold_change [fc_by_type$type == "Core"] < 1)
-n_total_declined <- sum (fc_by_type$fold_change [fc_by_type$type == "Total"] < 1)
-n_core_less_than_noncore <- sum (
-    fc_by_type$fold_change [fc_by_type$type == "Core"] >
-        fc_by_type$fold_change [fc_by_type$type == "Non-core"]
-)
-
-# Share of active repositories with exactly one distinct person present in
-# the trailing 12 months - the most direct measure this dataset offers of
-# "coding alone".
-solo_tbl <- solo_repo_share_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources, date_start = as.Date ("2016-01-01")
-)
-solo_ref <- dplyr::filter (solo_tbl, month == as.Date ("2021-01-01"))$solo_share
-solo_latest_month <- max (solo_tbl$month)
-solo_latest <- dplyr::filter (solo_tbl, month == solo_latest_month)$solo_share
-
-solo_by_source <- purrr::map_dfr (primary_sources, \ (src) {
-    solo_repo_share_tbl (
-        issue_authors_tbl, repo_tbl, src,
-        months = as.Date (c ("2021-01-01", as.character (solo_latest_month)))
-    ) |>
-        dplyr::mutate (source = src)
-})
-n_solo_sources_risen <- solo_by_source |>
-    dplyr::group_by (source) |>
-    dplyr::summarise (
-        rose = solo_share [month == solo_latest_month] > solo_share [month == as.Date ("2021-01-01")],
-        .groups = "drop"
-    ) |>
-    dplyr::pull (rose) |>
-    sum ()
-
-# Matched-cohort age-vs-calendar-time analysis (same construction as in
-# review-dividend, re-run here so this document stands on its own).
-cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
-
-# Q1-vs-Q4 comparison table for the "no corner spared" section.
-q1q4_tbl <- fc_authors |>
-    dplyr::filter (popularity_stratum %in% c ("Q1", "Q4")) |>
-    dplyr::select (source, popularity_stratum, fold_change) |>
-    tidyr::pivot_wider (names_from = popularity_stratum, values_from = fold_change) |>
-    dplyr::mutate (
-        source = unname (SOURCE_DISPLAY_NAME [source]),
-        gap = Q4 - Q1
-    ) |>
-    dplyr::arrange (gap)
-
-# Raw (non-normalised) combined participation, and how much of its
-# comparative resilience against the per-repo rate is just more repos
-# existing now than in 2021 - referenced in the caveats below.
-repo_created <- issue_authors_tbl |>
-    dplyr::filter (!is.na (repo_created_at)) |>
-    dplyr::distinct (repo_url, repo_created_at) |>
-    dplyr::mutate (repo_created_at = peerreview:::floor_month (repo_created_at))
-repos_primary <- repo_tbl |>
-    dplyr::filter (source %in% primary_sources) |>
-    dplyr::distinct (repo_url, .keep_all = TRUE) |>
-    dplyr::inner_join (repo_created, by = "repo_url")
-n_repos_ref <- sum (repos_primary$repo_created_at <= as.Date ("2021-01-01"), na.rm = TRUE)
-n_repos_now <- nrow (repos_primary)
-repo_growth_factor <- n_repos_now / n_repos_ref
-
-raw_monthly <- issue_authors_tbl |>
-    dplyr::filter (
-        repo_url %in% repos_primary$repo_url, contribution <= contrib_threshold
-    ) |>
-    dplyr::mutate (month = peerreview:::floor_month (created_at)) |>
-    dplyr::filter (month >= as.Date ("2016-01-01")) |>
-    dplyr::distinct (month, repo_url, author) |>
-    dplyr::count (month, name = "n_authors") |>
-    dplyr::arrange (month) |>
-    dplyr::mutate (roll = peerreview:::trailing_roll_sum (n_authors, 12L))
-raw_fold_change <- dplyr::filter (raw_monthly, month == max (month))$roll /
-    dplyr::filter (raw_monthly, month == as.Date ("2021-01-01"))$roll
-```
 
 <style>
 .callout {
@@ -245,9 +96,9 @@ The dataset combines five sources - CRAN, npm and PyPI (general package
 registries) and JOSS and rOpenSci (two GitHub-based software review
 organisations) - matched to their GitHub repositories, with every issue
 ever opened on each one fetched via the GitHub API:
-`r scales::comma (nrow (issue_authors_tbl))` issues across
-`r scales::comma (n_repos_primary)` repositories, spanning
-`r format (date_range [1], "%Y")`–`r format (date_range [2], "%Y")`.
+3,135,960 issues across
+52,461 repositories, spanning
+2003–2026.
 
 Three cuts of "who's there" are used below, all built from the same
 `contribution` field - each issue author's cumulative share of all
@@ -291,31 +142,10 @@ amount.
 
 ## Finding 1: fewer outsiders, counted properly
 
-```{r trend-plots, fig.height=10}
-ad_cran <- author_density_tbl (issue_authors_tbl, repo_tbl, "cran")
-ad_joss <- author_density_tbl (issue_authors_tbl, repo_tbl, "joss")
-ad_npm <- author_density_tbl (issue_authors_tbl, repo_tbl, "npm")
-ad_pypi <- author_density_tbl (issue_authors_tbl, repo_tbl, "pypi")
-ad_ropensci <- author_density_tbl (issue_authors_tbl, repo_tbl, "ropensci")
-
-y_lab <- "Distinct non-core authors per repo-month (12-month trailing avg)"
-
-p1 <- plot_activity (ad_cran, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
-p2 <- plot_activity (ad_joss, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
-p3 <- plot_activity (ad_npm, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
-p4 <- plot_activity (ad_pypi, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
-p5 <- plot_activity (ad_ropensci, start_year = 2016) + ggplot2::labs (y = y_lab)
-
-patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
-    patchwork::plot_annotation (
-        title = "Distinct non-core authors per repo-month, by popularity stratum",
-        subtitle = "12-month trailing average, contrib_threshold = 0.01"
-    )
-```
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/trend-plots-1.png" alt="plot of chunk trend-plots"  />
+<p class="caption">plot of chunk trend-plots</p>
+</div>
 
 The shape is the same one the companion vignette found in issue counts: a
 rise or plateau through the late 2010s, a peak somewhere in the
@@ -326,30 +156,27 @@ without each of them opening fewer on average. What settles it is
 comparing the two fold-changes directly, source by source and stratum by
 stratum:
 
-```{r fold-change-plot-authors, fig.height=3.5, fig.width=10}
-plot_fold_change (fc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
-    ggplot2::labs (
-        title = "Distinct non-core authors",
-        y = "Rate now, as % of rate in Jan 2021"
-    )
-```
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/fold-change-plot-authors-1.png" alt="plot of chunk fold-change-plot-authors"  />
+<p class="caption">plot of chunk fold-change-plot-authors</p>
+</div>
 
-Every one of the `r n_authors_cells` (source, stratum) cells in this
+Every one of the 20 (source, stratum) cells in this
 figure sits below its January-2021 level -
-`r n_authors_declined` out of `r n_authors_cells`, with no exceptions.
+20 out of 20, with no exceptions.
 That includes rOpenSci's least-popular quartile, the one cell in the
 companion vignette's event-count figure that rose rather than fell:
 counted by issues, it reached
-`r scales::percent (fc_compare$fold_change_issues [fc_compare$source == "ropensci" & fc_compare$popularity_stratum == "Q1"], accuracy = 1)`
+124%
 of its 2021 rate; counted by distinct authors, the same cell manages only
-`r scales::percent (fc_compare$fold_change_authors [fc_compare$source == "ropensci" & fc_compare$popularity_stratum == "Q1"], accuracy = 1)`
+98%
 - essentially flat, not growth. Whatever rOpenSci's peer-review process is
 doing for its most obscure packages, it isn't attracting a widening
 circle of new people; at best, on this measure, it's holding the existing
 circle from shrinking.
 
 Beyond that one cell, the two measures mostly move together, but not
-identically: in `r n_authors_fell_more` of the `r n_authors_cells` cells,
+identically: in 15 of the 20 cells,
 the distinct-author count has fallen by *more* than the issue count has,
 meaning the average non-core author isn't opening noticeably more issues
 to compensate for fewer of them showing up - if anything, the opposite.
@@ -367,33 +194,18 @@ and **total** is core and non-core combined, with no threshold at all -
 counting literally everyone this dataset can see interacting with a
 repository through its issues.
 
-```{r fold-change-plot-bytype, fig.height=4.5}
-ggplot2::ggplot (
-    fc_by_type,
-    ggplot2::aes (unname (SOURCE_DISPLAY_NAME [source]), fold_change, fill = type)
-) +
-    ggplot2::geom_col (position = ggplot2::position_dodge (width = 0.75), width = 0.7) +
-    ggplot2::geom_hline (yintercept = 1, linetype = 2, colour = "grey40") +
-    ggplot2::scale_y_continuous (labels = scales::percent) +
-    ggplot2::scale_fill_manual (
-        values = c ("Non-core" = "#c0392b", "Core" = "#2980b9", "Total" = "#7f8c8d")
-    ) +
-    ggplot2::labs (
-        x = NULL, y = "Rate now, as % of rate in Jan 2021", fill = NULL,
-        title = "Distinct-author fold-change since Jan 2021, by contributor type",
-        subtitle = "Pooled across popularity strata, per source"
-    ) +
-    ggplot2::theme_minimal () +
-    ggplot2::theme (legend.position = "top")
-```
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/fold-change-plot-bytype-1.png" alt="plot of chunk fold-change-plot-bytype"  />
+<p class="caption">plot of chunk fold-change-plot-bytype</p>
+</div>
 
 Core headcounts have fallen in every one of the five sources -
-`r n_core_declined` out of 5 - and so has total headcount, core and
+5 out of 5 - and so has total headcount, core and
 non-core combined -
-`r n_total_declined` out of 5. Nobody's circle is exempt. What does
+5 out of 5. Nobody's circle is exempt. What does
 differ is degree: in every one of the five sources, the core headcount
 has fallen by *less* than the non-core headcount did over the same
-period (`r n_core_less_than_noncore` out of 5) - consistent with
+period (5 out of 5) - consistent with
 attrition working its way inward from a project's edges rather than
 hitting the whole population evenly at once, but not with the core being
 insulated from it altogether. A repository's inner circle is shrinking
@@ -408,57 +220,35 @@ plainer, Putnam-shaped question is a repo-count one: out of the
 repositories that heard from *anyone* at all in the last year, how many
 heard from only one person?
 
-```{r solo-share-plot}
-ggplot2::ggplot (solo_tbl, ggplot2::aes (month, solo_share)) +
-    ggplot2::geom_line (colour = "grey60", linewidth = 0.5) +
-    ggplot2::geom_smooth (
-        se = FALSE, method = "loess", formula = y ~ x,
-        colour = "#c0392b", linewidth = 1.1
-    ) +
-    ggplot2::scale_y_continuous (labels = scales::percent) +
-    ggplot2::labs (
-        x = NULL,
-        y = "Share of active repos with exactly 1 distinct author\n(trailing 12-month window)",
-        title = "Share of active repositories with only one person present",
-        subtitle = "Pooled across CRAN, npm, PyPI, JOSS and rOpenSci"
-    ) +
-    ggplot2::theme_minimal ()
-```
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/solo-share-plot-1.png" alt="plot of chunk solo-share-plot"  />
+<p class="caption">plot of chunk solo-share-plot</p>
+</div>
 
 In January 2021,
-`r scales::percent (solo_ref, accuracy = 1)`
+27%
 of repositories with any issue-based activity at all in the preceding
 year had that activity coming from a single person. By
-`r format (solo_latest_month, "%B %Y")`, that share had risen to
-`r scales::percent (solo_latest, accuracy = 1)`
+September 2026, that share had risen to
+43%
 - not a fixed population getting quieter across the board, but a growing
 fraction of it crossing all the way over into having no visible second
 person at all. The share was roughly flat, drifting between about a
 quarter and a third, from 2016 through 2021; essentially the entire rise
 has happened since. Broken out by source, every one of the five moves the
 same direction -
-`r n_solo_sources_risen` out of 5 rose:
+5 out of 5 rose:
 
-```{r solo-share-table}
-solo_by_source |>
-    dplyr::mutate (
-        source = unname (SOURCE_DISPLAY_NAME [source]),
-        month_label = ifelse (
-            month == as.Date ("2021-01-01"), "Jan 2021", format (month, "%b %Y")
-        )
-    ) |>
-    dplyr::select (source, month_label, solo_share) |>
-    tidyr::pivot_wider (names_from = month_label, values_from = solo_share) |>
-    dplyr::transmute (
-        Source = source,
-        `Jan 2021` = scales::percent (`Jan 2021`, accuracy = 1),
-        Latest = scales::percent (.data [[format (solo_latest_month, "%b %Y")]], accuracy = 1)
-    ) |>
-    knitr::kable (
-        align = c ("l", "r", "r"),
-        caption = "Share of active repositories with exactly one distinct author, by source"
-    )
-```
+
+Table: Share of active repositories with exactly one distinct author, by source
+
+|Source   | Jan 2021| Latest|
+|:--------|--------:|------:|
+|CRAN     |      36%|    56%|
+|JOSS     |      25%|    35%|
+|npm      |      19%|    29%|
+|PyPI     |      18%|    31%|
+|rOpenSci |      22%|    48%|
 
 rOpenSci shows the largest relative jump of the five - not the smallest,
 despite housing this dataset's one instance of formal review sustaining
@@ -480,9 +270,10 @@ flat lines at a given age regardless of which year that age happened to
 fall in, while a shared calendar-time effect predicts later cohorts
 showing a lower rate at that same fixed age than earlier ones did.
 
-```{r cohort-age-plot, fig.height=6.5}
-plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
-```
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/cohort-age-plot-1.png" alt="plot of chunk cohort-age-plot"  />
+<p class="caption">plot of chunk cohort-age-plot</p>
+</div>
 
 CRAN, JOSS and npm show the calendar-time signature clearly: at a fixed
 early age, the non-core rate falls steadily as the cohort year increases,
@@ -500,19 +291,16 @@ If the decline were simply outsiders losing interest in open source
 generally, it should land on popular and obscure software alike. It
 doesn't:
 
-```{r q1q4-table}
-q1q4_tbl |>
-    dplyr::transmute (
-        Source = source,
-        `Least popular (Q1)` = scales::percent (Q1, accuracy = 1),
-        `Most popular (Q4)` = scales::percent (Q4, accuracy = 1),
-        `Gap (Q4 − Q1)` = scales::percent (gap, accuracy = 1)
-    ) |>
-    knitr::kable (
-        align = c ("l", "r", "r", "r"),
-        caption = "Distinct-author fold-change since Jan 2021, least vs. most popular quartile"
-    )
-```
+
+Table: Distinct-author fold-change since Jan 2021, least vs. most popular quartile
+
+|Source   | Least popular (Q1)| Most popular (Q4)| Gap (Q4 − Q1)|
+|:--------|------------------:|-----------------:|-------------:|
+|rOpenSci |                98%|               23%|          -75%|
+|JOSS     |                89%|               38%|          -51%|
+|npm      |                43%|               26%|          -17%|
+|CRAN     |                38%|               28%|          -10%|
+|PyPI     |                66%|               62%|           -4%|
 
 In every one of the five sources, the most popular quartile's headcount
 has fallen further below its 2021 baseline than the least popular
@@ -606,15 +394,15 @@ time, and, well before social media, the privatising pull of television
   contributors; both would produce the same falling density.
 - **The per-repo decline is steeper than the decline in total
   participation**, because the population of repositories itself grew
-  over the same period: `r scales::comma (n_repos_now)` primary-source
+  over the same period: 21,548 primary-source
   repositories exist in this dataset now, against
-  `r scales::comma (n_repos_ref)` that already existed by January 2021 -
-  a `r sprintf ("%.1f", repo_growth_factor)`x increase. Raw, unnormalised
+  13,043 that already existed by January 2021 -
+  a 1.7x increase. Raw, unnormalised
   monthly non-core author counts across all five sources combined have
   fallen only to about
-  `r scales::percent (raw_fold_change, accuracy = 1)`
+  75%
   of their January-2021 level, well short of the roughly
-  `r scales::percent (median (fc_authors$fold_change), accuracy = 1)`
+  43%
   median seen per repository. More repositories now compete for a
   shrinking amount of attention per repository - the total pool of
   people engaging with open source hasn't collapsed nearly as sharply as
