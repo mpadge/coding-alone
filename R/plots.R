@@ -199,11 +199,20 @@ plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
 #' Plot fold-change in rOpenSci non-core rate, by review status
 #'
 #' Bar chart of `ropensci_reviewed_fold_change_tbl()` output: one bar for
-#' reviewed, one for non-reviewed, faceted by popularity stratum (columns)
-#' and, if `tbl` carries a `metric` column, by metric (rows) too.
+#' reviewed, one for non-reviewed, faceted by popularity stratum. If `tbl`
+#' carries a `metric` column (e.g. issues vs. comments, row-bound from two
+#' `ropensci_reviewed_fold_change_tbl()` calls), it is filtered down to the
+#' single `metric` requested before plotting - one call produces one
+#' single-metric plot, so issues and comments are two separate figures
+#' rather than two facet rows of the same one.
 #'
 #' @param tbl As returned by `ropensci_reviewed_fold_change_tbl()`,
 #' optionally with an added `metric` column.
+#' @param metric Which metric to plot: `"issues"` (default) or
+#' `"comments"`. Only used to filter `tbl` down to one metric when it
+#' carries a `metric` column (matched case-insensitively against that
+#' column's values, e.g. `"Issues"`/`"Comments"`); otherwise `tbl` is
+#' assumed to already be single-metric, and this only sets the plot title.
 #' @param ref_date As in `plot_fold_change()`, used only to label the plot.
 #' @return A ggplot object.
 #'
@@ -211,18 +220,25 @@ plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
 #' \dontrun{
 #' ros <- ropensci_reviewed_activity_tbl (issue_authors_tbl, repo_tbl, ropensci_raw)
 #' ros_fc <- ropensci_reviewed_fold_change_tbl (ros)
-#' plot_ropensci_reviewed_fold_change (ros_fc)
+#' plot_ropensci_reviewed_fold_change (ros_fc, metric = "issues")
 #' }
 #' @export
-plot_ropensci_reviewed_fold_change <- function (tbl, ref_date = as.Date ("2021-01-01")) {
+plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comments"),
+                                                ref_date = as.Date ("2021-01-01")) {
+
+    metric <- match.arg (metric)
 
     popularity_stratum <- fold_change <- reviewed <- reviewed_label <-
         rate_latest <- rate_ref <- NULL
 
+    if ("metric" %in% names (tbl)) {
+        tbl <- tbl [tolower (as.character (tbl$metric)) == metric, ]
+    }
+
     tbl$reviewed_label <- ifelse (tbl$reviewed, "Formally\nreviewed", "Not\nreviewed")
     ref_lab <- format (ref_date, "%b %Y")
 
-    p <- ggplot2::ggplot (
+    ggplot2::ggplot (
         tbl,
         ggplot2::aes (reviewed_label, fold_change, fill = reviewed_label)
     ) +
@@ -241,16 +257,10 @@ plot_ropensci_reviewed_fold_change <- function (tbl, ref_date = as.Date ("2021-0
         ggplot2::labs (
             x = NULL,
             y = stringr::str_glue ("Rate now, as % of rate in {ref_lab}"),
-            fill = NULL
+            fill = NULL,
+            title = stringr::str_to_title (metric)
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "none")
-
-    if ("metric" %in% names (tbl)) {
-        p <- p + ggplot2::facet_grid (metric ~ popularity_stratum)
-    } else {
-        p <- p + ggplot2::facet_wrap (~popularity_stratum, nrow = 1)
-    }
-
-    p
+        ggplot2::theme (legend.position = "none") +
+        ggplot2::facet_wrap (~popularity_stratum, nrow = 1)
 }

@@ -4,11 +4,21 @@
 \alias{plot_ropensci_reviewed_fold_change}
 \title{Plot fold-change in rOpenSci non-core rate, by review status}
 \usage{
-plot_ropensci_reviewed_fold_change(tbl, ref_date = as.Date("2021-01-01"))
+plot_ropensci_reviewed_fold_change(
+  tbl,
+  metric = c("issues", "comments"),
+  ref_date = as.Date("2021-01-01")
+)
 }
 \arguments{
 \item{tbl}{As returned by \code{ropensci_reviewed_fold_change_tbl()},
 optionally with an added \code{metric} column.}
+
+\item{metric}{Which metric to plot: \code{"issues"} (default) or
+\code{"comments"}. Only used to filter \code{tbl} down to one metric when it
+carries a \code{metric} column (matched case-insensitively against that
+column's values, e.g. \code{"Issues"}/\code{"Comments"}); otherwise \code{tbl} is
+assumed to already be single-metric, and this only sets the plot title.}
 
 \item{ref_date}{As in \code{plot_fold_change()}, used only to label the plot.}
 }
@@ -17,13 +27,17 @@ A ggplot object.
 }
 \description{
 Bar chart of \code{ropensci_reviewed_fold_change_tbl()} output: one bar for
-reviewed, one for non-reviewed, faceted by popularity stratum (columns)
-and, if \code{tbl} carries a \code{metric} column, by metric (rows) too.
+reviewed, one for non-reviewed, faceted by popularity stratum. If \code{tbl}
+carries a \code{metric} column (e.g. issues vs. comments, row-bound from two
+\code{ropensci_reviewed_fold_change_tbl()} calls), it is filtered down to the
+single \code{metric} requested before plotting - one call produces one
+single-metric plot, so issues and comments are two separate figures
+rather than two facet rows of the same one.
 }
 \examples{
 \dontrun{
 ros <- ropensci_reviewed_activity_tbl (issue_authors_tbl, repo_tbl, ropensci_raw)
 ros_fc <- ropensci_reviewed_fold_change_tbl (ros)
-plot_ropensci_reviewed_fold_change (ros_fc)
+plot_ropensci_reviewed_fold_change (ros_fc, metric = "issues")
 }
 }

@@ -89,7 +89,7 @@ doesn't extend to, is what this document builds toward.
 
 The dataset combines the five sources above, matched to their GitHub
 repositories, with every issue ever opened on each one fetched via the
-GitHub API: 3,052,133 issues across
+GitHub API: 3,079,201 issues across
 52,461 repositories, spanning
 2003–2026.
 
@@ -258,8 +258,13 @@ each popularity stratum, answers it:
 </div>
 
 <div class="figure" style="text-align: center">
-<img src="review-dividend-figures/ropensci-reviewed-foldchange-1.png" alt="plot of chunk ropensci-reviewed-foldchange"  />
-<p class="caption">plot of chunk ropensci-reviewed-foldchange</p>
+<img src="review-dividend-figures/ropensci-reviewed-foldchange-issues-1.png" alt="plot of chunk ropensci-reviewed-foldchange-issues"  />
+<p class="caption">plot of chunk ropensci-reviewed-foldchange-issues</p>
+</div>
+
+<div class="figure" style="text-align: center">
+<img src="review-dividend-figures/ropensci-reviewed-foldchange-comments-1.png" alt="plot of chunk ropensci-reviewed-foldchange-comments"  />
+<p class="caption">plot of chunk ropensci-reviewed-foldchange-comments</p>
 </div>
 
 In Q1, the two groups move in opposite directions. Formally reviewed Q1

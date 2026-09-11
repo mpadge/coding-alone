@@ -340,8 +340,12 @@ each popularity stratum, answers it:
 plot_ropensci_reviewed_trend (ros_trend_all, start_year = 2016)
 ```
 
-```{r ropensci-reviewed-foldchange, fig.height=6, fig.width=10}
-plot_ropensci_reviewed_fold_change (ros_fc_all)
+```{r ropensci-reviewed-foldchange-issues, fig.height=3.5}
+plot_ropensci_reviewed_fold_change (ros_fc_all, metric = "issues")
+```
+
+```{r ropensci-reviewed-foldchange-comments, fig.height=3.5}
+plot_ropensci_reviewed_fold_change (ros_fc_all, metric = "comments")
 ```
 
 In Q1, the two groups move in opposite directions. Formally reviewed Q1
