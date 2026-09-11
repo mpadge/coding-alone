@@ -184,11 +184,9 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         tryCatch (
             github_issue_authors (repo_url),
             error = function (e) {
-                msg <- stringr::str_glue (
-                    "Issue authors: failed for {repo_url}: ",
-                    "{conditionMessage (e)}"
+                cli::cli_alert_warning (
+                    "Issue authors: failed for {repo_url}: {conditionMessage (e)}"
                 )
-                cli::cli_alert_warning (msg)
                 tibble::tibble (repo_url = repo_url) [0, ]
             }
         )
