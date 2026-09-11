@@ -288,8 +288,12 @@ point — January 2021, chosen to sit after each source's initial ramp-up
 but before the steepest part of the decline, avoiding cherry-picking each
 stratum's own noisier peak — shows it doesn't:
 
-```{r fold-change-plot, fig.height=6, fig.width=10}
-plot_fold_change (fc_all, SOURCE_DISPLAY_NAME)
+```{r fold-change-plot-issues, fig.height=3.5, fig.width=10}
+plot_fold_change (fc_all, SOURCE_DISPLAY_NAME, metric = "issues")
+```
+
+```{r fold-change-plot-comments, fig.height=3.5, fig.width=10}
+plot_fold_change (fc_all, SOURCE_DISPLAY_NAME, metric = "comments")
 ```
 
 In CRAN, JOSS, npm and rOpenSci, the *most* popular quartile has fallen
@@ -305,7 +309,7 @@ and rOpenSci's Q4 is at
 `r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
 while its Q1 has, on net, *risen* to
 `r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`
-of its 2021 level. Comments (bottom row) show the same ordering within
+of its 2021 level. Comments (second figure) show the same ordering within
 every source, generally with a larger drop at every stratum — comments
 are the more discretionary of the two metrics, so a bigger fall there is
 consistent with, rather than contradicting, the issues-based picture.
@@ -315,7 +319,7 @@ reverse of the other four sources. This dataset doesn't explain why PyPI
 runs the other way; it's reported here as a genuine cross-source
 divergence rather than folded into the general pattern.
 
-rOpenSci's rising Q1 is the sharpest anomaly in the whole figure — the
+rOpenSci's rising Q1 is the sharpest anomaly in either figure — the
 only cell, across five sources, two metrics and four strata, that
 increased rather than fell. The rest of this document is about that one
 cell.

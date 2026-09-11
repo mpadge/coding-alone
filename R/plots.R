@@ -13,12 +13,20 @@
 #' per popularity stratum, `fold_change` on a log y-axis (so a halving and a
 #' doubling are visually symmetric) with a reference line at 1 (no change).
 #' If `tbl` carries a `metric` column (e.g. issues vs. comments, row-bound
-#' from two `fold_change_tbl()` calls), an extra facet row splits on it.
+#' from two `fold_change_tbl()` calls), it is filtered down to the single
+#' `metric` requested before plotting - one call produces one single-metric
+#' plot, so issues and comments are two separate figures rather than two
+#' facet rows of the same one.
 #'
 #' @param tbl As returned by `fold_change_tbl()`, optionally with an added
 #' `metric` column.
 #' @param source_display Named character vector mapping internal source
 #' names to display labels, e.g. `SOURCE_DISPLAY_NAME`.
+#' @param metric Which metric to plot: `"issues"` (default) or
+#' `"comments"`. Only used to filter `tbl` down to one metric when it
+#' carries a `metric` column (matched case-insensitively against that
+#' column's values, e.g. `"Issues"`/`"Comments"`); otherwise `tbl` is
+#' assumed to already be single-metric, and this only sets the plot title.
 #' @param ref_date The same `ref_date` passed to `fold_change_tbl()`, used
 #' only to label the plot.
 #' @return A ggplot object.
@@ -26,13 +34,20 @@
 #' @examples
 #' \dontrun{
 #' fc <- fold_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-#' plot_fold_change (fc, SOURCE_DISPLAY_NAME)
+#' plot_fold_change (fc, SOURCE_DISPLAY_NAME, metric = "issues")
 #' }
 #' @export
 plot_fold_change <- function (tbl, source_display = NULL,
+                              metric = c ("issues", "comments"),
                               ref_date = as.Date ("2021-01-01")) {
 
+    metric <- match.arg (metric)
+
     popularity_stratum <- fold_change <- source <- NULL
+
+    if ("metric" %in% names (tbl)) {
+        tbl <- tbl [tolower (as.character (tbl$metric)) == metric, ]
+    }
 
     if (!is.null (source_display)) {
         lab <- unname (source_display [tbl$source])
@@ -41,7 +56,7 @@ plot_fold_change <- function (tbl, source_display = NULL,
 
     ref_lab <- format (ref_date, "%b %Y")
 
-    p <- ggplot2::ggplot (
+    ggplot2::ggplot (
         tbl,
         ggplot2::aes (popularity_stratum, fold_change, fill = popularity_stratum)
     ) +
@@ -55,18 +70,12 @@ plot_fold_change <- function (tbl, source_display = NULL,
         ggplot2::labs (
             x = "Popularity stratum (Q1 = least popular)",
             y = stringr::str_glue ("Rate now, as % of rate in {ref_lab}"),
-            fill = "Stratum"
+            fill = "Stratum",
+            title = stringr::str_to_title (metric)
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "none")
-
-    if ("metric" %in% names (tbl)) {
-        p <- p + ggplot2::facet_grid (metric ~ source)
-    } else {
-        p <- p + ggplot2::facet_wrap (~source, nrow = 1)
-    }
-
-    p
+        ggplot2::theme (legend.position = "none") +
+        ggplot2::facet_wrap (~source, nrow = 1)
 }
 
 # ---- matched-cohort age-vs-calendar-time analysis --------------------------

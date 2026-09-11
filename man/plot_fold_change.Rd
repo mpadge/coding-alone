@@ -4,7 +4,12 @@
 \alias{plot_fold_change}
 \title{Plot fold-change in non-core rate across sources and strata}
 \usage{
-plot_fold_change(tbl, source_display = NULL, ref_date = as.Date("2021-01-01"))
+plot_fold_change(
+  tbl,
+  source_display = NULL,
+  metric = c("issues", "comments"),
+  ref_date = as.Date("2021-01-01")
+)
 }
 \arguments{
 \item{tbl}{As returned by \code{fold_change_tbl()}, optionally with an added
@@ -12,6 +17,12 @@ plot_fold_change(tbl, source_display = NULL, ref_date = as.Date("2021-01-01"))
 
 \item{source_display}{Named character vector mapping internal source
 names to display labels, e.g. \code{SOURCE_DISPLAY_NAME}.}
+
+\item{metric}{Which metric to plot: \code{"issues"} (default) or
+\code{"comments"}. Only used to filter \code{tbl} down to one metric when it
+carries a \code{metric} column (matched case-insensitively against that
+column's values, e.g. \code{"Issues"}/\code{"Comments"}); otherwise \code{tbl} is
+assumed to already be single-metric, and this only sets the plot title.}
 
 \item{ref_date}{The same \code{ref_date} passed to \code{fold_change_tbl()}, used
 only to label the plot.}
@@ -24,11 +35,14 @@ Bar chart of \code{fold_change_tbl()} output: one column per source, one bar
 per popularity stratum, \code{fold_change} on a log y-axis (so a halving and a
 doubling are visually symmetric) with a reference line at 1 (no change).
 If \code{tbl} carries a \code{metric} column (e.g. issues vs. comments, row-bound
-from two \code{fold_change_tbl()} calls), an extra facet row splits on it.
+from two \code{fold_change_tbl()} calls), it is filtered down to the single
+\code{metric} requested before plotting - one call produces one single-metric
+plot, so issues and comments are two separate figures rather than two
+facet rows of the same one.
 }
 \examples{
 \dontrun{
 fc <- fold_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-plot_fold_change (fc, SOURCE_DISPLAY_NAME)
+plot_fold_change (fc, SOURCE_DISPLAY_NAME, metric = "issues")
 }
 }

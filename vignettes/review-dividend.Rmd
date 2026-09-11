@@ -89,7 +89,7 @@ doesn't extend to, is what this document builds toward.
 
 The dataset combines the five sources above, matched to their GitHub
 repositories, with every issue ever opened on each one fetched via the
-GitHub API: 3,079,201 issues across
+GitHub API: 3,098,375 issues across
 52,461 repositories, spanning
 2003–2026.
 
@@ -204,8 +204,13 @@ but before the steepest part of the decline, avoiding cherry-picking each
 stratum's own noisier peak — shows it doesn't:
 
 <div class="figure" style="text-align: center">
-<img src="review-dividend-figures/fold-change-plot-1.png" alt="plot of chunk fold-change-plot"  />
-<p class="caption">plot of chunk fold-change-plot</p>
+<img src="review-dividend-figures/fold-change-plot-issues-1.png" alt="plot of chunk fold-change-plot-issues"  />
+<p class="caption">plot of chunk fold-change-plot-issues</p>
+</div>
+
+<div class="figure" style="text-align: center">
+<img src="review-dividend-figures/fold-change-plot-comments-1.png" alt="plot of chunk fold-change-plot-comments"  />
+<p class="caption">plot of chunk fold-change-plot-comments</p>
 </div>
 
 In CRAN, JOSS, npm and rOpenSci, the *most* popular quartile has fallen
@@ -221,7 +226,7 @@ and rOpenSci's Q4 is at
 25%
 while its Q1 has, on net, *risen* to
 124%
-of its 2021 level. Comments (bottom row) show the same ordering within
+of its 2021 level. Comments (second figure) show the same ordering within
 every source, generally with a larger drop at every stratum — comments
 are the more discretionary of the two metrics, so a bigger fall there is
 consistent with, rather than contradicting, the issues-based picture.
@@ -231,7 +236,7 @@ reverse of the other four sources. This dataset doesn't explain why PyPI
 runs the other way; it's reported here as a genuine cross-source
 divergence rather than folded into the general pattern.
 
-rOpenSci's rising Q1 is the sharpest anomaly in the whole figure — the
+rOpenSci's rising Q1 is the sharpest anomaly in either figure — the
 only cell, across five sources, two metrics and four strata, that
 increased rather than fell. The rest of this document is about that one
 cell.
