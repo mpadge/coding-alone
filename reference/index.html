@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.005</span>
       </span>
     </div>
 
@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/coding-alone.html">Coding Alone</a>
+    </li>
+    <li>
       <a href="../articles/data-generation.html">Generating the Data</a>
     </li>
     <li>
@@ -61,6 +64,14 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="author_density_fold_change_tbl.html">author_density_fold_change_tbl()</a></code> </p>
+        </td>
+        <td><p>Fold-change in distinct non-core author density, from a reference month to now</p></td>
+      </tr><tr><td>
+          <p><code><a href="author_density_tbl.html">author_density_tbl()</a></code> </p>
+        </td>
+        <td><p>Distinct non-core authors per repo-month, by source and popularity stratum</p></td>
+      </tr><tr><td>
           <p><code><a href="build_joss_table.html">build_joss_table()</a></code> </p>
         </td>
         <td><p>Build a (issue_number, title, issue_url, repo_url, language, stars, downloads) table for every JOSS submission whose review issue carries the "accepted" label.</p></td>
@@ -148,6 +159,10 @@
           <p><code><a href="ropensci_reviewed_fold_change_tbl.html">ropensci_reviewed_fold_change_tbl()</a></code> </p>
         </td>
         <td><p>Fold-change in rOpenSci non-core rate, by review status</p></td>
+      </tr><tr><td>
+          <p><code><a href="solo_repo_share_tbl.html">solo_repo_share_tbl()</a></code> </p>
+        </td>
+        <td><p>Share of "active" repositories interacting with exactly one distinct person, per trailing window</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

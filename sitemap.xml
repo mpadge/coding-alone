@@ -1,10 +1,13 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/articles/coding-alone.html</loc></url>
 <url><loc>/articles/data-generation.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
 <url><loc>/articles/review-dividend.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/author_density_fold_change_tbl.html</loc></url>
+<url><loc>/reference/author_density_tbl.html</loc></url>
 <url><loc>/reference/build_joss_table.html</loc></url>
 <url><loc>/reference/build_repo_tbl.html</loc></url>
 <url><loc>/reference/build_runiv_table.html</loc></url>
@@ -28,5 +31,6 @@
 <url><loc>/reference/resolve_repo_urls.html</loc></url>
 <url><loc>/reference/ropensci_reviewed_activity_tbl.html</loc></url>
 <url><loc>/reference/ropensci_reviewed_fold_change_tbl.html</loc></url>
+<url><loc>/reference/solo_repo_share_tbl.html</loc></url>
 </urlset>
 

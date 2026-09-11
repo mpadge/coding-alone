@@ -21,7 +21,7 @@ shorter, partial window rather than dropping them."><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.005</span>
       </span>
     </div>
 
@@ -36,6 +36,9 @@ shorter, partial window rather than dropping them."><!-- mathjax --><script src=
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/coding-alone.html">Coding Alone</a>
+    </li>
+    <li>
       <a href="../articles/data-generation.html">Generating the Data</a>
     </li>
     <li>
@@ -58,7 +61,7 @@ shorter, partial window rather than dropping them."><!-- mathjax --><script src=
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Build the (popularity stratum-x-month) issue-rate table for one source: a chosen <code>metric</code> from non-contributor issues, aggregated over a trailing rolling <code>window</code> of months and normalized by repo-months of exposure, where a repo's exposure begins at its GitHub creation date. "Non-contributor" here means <code>contribution &lt;= contrib_threshold</code> (see <code>github_issue_authors()</code> for how <code>contribution</code> - each author's fractional share of all commits ever landed on the repo - is computed). <code>repo_created_at</code> lives on <code>issue_authors_tbl</code> (fetched alongside each repo's issues by <code>github_issue_authors()</code>/<code>fetch_issue_authors()</code>), not <code>repo_tbl</code>, so a repo only contributes exposure once it's been fetched at least once - repos with zero issues fetched (either not yet fetched at all, or fetched and genuinely having none) don't have a <code>repo_created_at</code> on file and are excluded here rather than analysed.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/mpadge/peerreview/blob/v0.1/R/analyse-activity.R" class="external-link"><code>R/analyse-activity.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/mpadge/peerreview/blob/main/R/analyse-activity.R" class="external-link"><code>R/analyse-activity.R</code></a></small>
     <div class="hidden name"><code>issue_rate_tbl.Rd</code></div>
     </div>
 
