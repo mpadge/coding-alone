@@ -1,0 +1,443 @@
+---
+title: "The Attrition of Open-Source Community"
+subtitle: "Across five major open-source ecosystems, the number of distinct outsiders who bother to file an issue or leave a comment has fallen every year since 2021 — in every source, in every popularity tier, with no exception left once you count people instead of events"
+author: "Mark Padgham"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The Attrition of Open-Source Community}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+<!--
+This is the LIVE source for the "community-attrition" vignette. It is not
+built directly by R CMD build/check - it requires repo-data-out/, which is
+far too large to ship with the package (see the data-access note in the
+vignette itself). Instead it's precompiled once, on a machine that has that
+data, into the static vignettes/community-attrition.Rmd that actually ships:
+
+    knitr::knit ("vignettes/community-attrition.Rmd.orig", output = "vignettes/community-attrition.Rmd")
+
+run with the working directory set to vignettes/, so relative paths below
+resolve correctly. That committed .Rmd has every chunk already evaluated
+(text and figures baked in as static markdown/images), so re-building it
+via the usual vignette machinery never needs the data again.
+-->
+
+```{r chunk-setup, echo = FALSE}
+knitr::opts_chunk$set (
+    echo = FALSE, message = FALSE, warning = FALSE,
+    fig.align = "center", fig.width = 9, fig.height = 4, dpi = 150,
+    fig.path = "community-attrition-figures/"
+)
+```
+
+```{r load-package}
+library (peerreview)
+```
+
+<div class="callout">
+This vignette draws on the same large, locally-fetched dataset as
+`vignettes/review-dividend.Rmd` (`repo-data-out/`: every GitHub issue ever
+opened on ~50,000 repositories across CRAN, npm, PyPI, JOSS and rOpenSci)
+that is far too large to ship with the package itself. The vignette you're
+reading is precompiled from that data - see
+`vignettes/community-attrition.Rmd.orig` in the package source if you want
+to re-run the analysis yourself once the underlying data is available (via
+Git LFS) from the package repository.
+</div>
+
+```{r initial-data-load}
+out_dir <- "../repo-data-out"
+repo_tbl <- build_repo_tbl (out_dir)
+issue_authors_tbl <- readr::read_csv (
+    file.path (out_dir, "issue-authors.csv"),
+    show_col_types = FALSE, progress = FALSE
+)
+
+primary_sources <- c ("cran", "joss", "npm", "pypi", "ropensci")
+n_repos_primary <- length (unique (
+    repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
+))
+date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
+```
+
+```{r generate-data, include=FALSE}
+contrib_threshold <- 0.01
+
+# Event-count fold-change (rate now vs. Jan 2021), for comparison against
+# the person-count version below.
+fc_issues <- fold_change_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources,
+    metric = "issues", contrib_threshold = contrib_threshold
+)
+
+# Distinct-author fold-change - this vignette's central metric.
+fc_authors <- author_density_fold_change_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources,
+    contrib_threshold = contrib_threshold
+)
+
+fc_compare <- dplyr::inner_join (
+    fc_issues, fc_authors,
+    by = c ("source", "popularity_stratum"),
+    suffix = c ("_issues", "_authors")
+)
+n_authors_declined <- sum (fc_authors$fold_change < 1)
+n_authors_cells <- nrow (fc_authors)
+n_issues_declined <- sum (fc_issues$fold_change < 1)
+n_authors_fell_more <- sum (fc_compare$fold_change_authors < fc_compare$fold_change_issues)
+
+# Matched-cohort age-vs-calendar-time analysis (same construction as in
+# review-dividend, re-run here so this document stands on its own).
+cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
+
+# Q1-vs-Q4 comparison table for the "no corner spared" section.
+q1q4_tbl <- fc_authors |>
+    dplyr::filter (popularity_stratum %in% c ("Q1", "Q4")) |>
+    dplyr::select (source, popularity_stratum, fold_change) |>
+    tidyr::pivot_wider (names_from = popularity_stratum, values_from = fold_change) |>
+    dplyr::mutate (
+        source = unname (SOURCE_DISPLAY_NAME [source]),
+        gap = Q4 - Q1
+    ) |>
+    dplyr::arrange (gap)
+
+# Raw (non-normalised) combined participation, and how much of its
+# comparative resilience against the per-repo rate is just more repos
+# existing now than in 2021 - referenced in the caveats below.
+repo_created <- issue_authors_tbl |>
+    dplyr::filter (!is.na (repo_created_at)) |>
+    dplyr::distinct (repo_url, repo_created_at) |>
+    dplyr::mutate (repo_created_at = peerreview:::floor_month (repo_created_at))
+repos_primary <- repo_tbl |>
+    dplyr::filter (source %in% primary_sources) |>
+    dplyr::distinct (repo_url, .keep_all = TRUE) |>
+    dplyr::inner_join (repo_created, by = "repo_url")
+n_repos_ref <- sum (repos_primary$repo_created_at <= as.Date ("2021-01-01"), na.rm = TRUE)
+n_repos_now <- nrow (repos_primary)
+repo_growth_factor <- n_repos_now / n_repos_ref
+
+raw_monthly <- issue_authors_tbl |>
+    dplyr::filter (
+        repo_url %in% repos_primary$repo_url, contribution <= contrib_threshold
+    ) |>
+    dplyr::mutate (month = peerreview:::floor_month (created_at)) |>
+    dplyr::filter (month >= as.Date ("2016-01-01")) |>
+    dplyr::distinct (month, repo_url, author) |>
+    dplyr::count (month, name = "n_authors") |>
+    dplyr::arrange (month) |>
+    dplyr::mutate (roll = peerreview:::trailing_roll_sum (n_authors, 12L))
+raw_fold_change <- dplyr::filter (raw_monthly, month == max (month))$roll /
+    dplyr::filter (raw_monthly, month == as.Date ("2021-01-01"))$roll
+```
+
+<style>
+.callout {
+    border-left: 4px solid #2c3e50;
+    background: #f7f9fa;
+    padding: 0.8em 1.2em;
+    margin: 1.2em 0;
+    border-radius: 2px;
+}
+.callout p:first-child { margin-top: 0; }
+.callout p:last-child { margin-bottom: 0; }
+</style>
+
+## Who shows up
+
+Every open-source project has a small circle of people who write most of
+its code, and a much larger, looser circle of people who don't - they file
+a bug, ask a question, leave a comment, and then move on. That second
+circle rarely gets counted, but it's where the first circle recruits from:
+newcomers who stick around after a good first interaction are the closest
+thing open source has to a farm system for future maintainers, and
+projects that lose the knack of engaging them lose their own succession
+plan along with it [@steinmacher2013newcomers]. A companion analysis in
+this package (`vignettes/review-dividend.Rmd`) found exactly one corner of
+one ecosystem where that outer circle's engagement has been *growing* in
+recent years - rOpenSci's least-visible packages, but only the ones that
+went through formal peer review. This document sets that single exception
+aside and asks the plainer question: what does the rest of the picture
+look like, across five ecosystems and a decade of data, once you measure
+not just how much outside interest a project draws, but how many distinct
+people are behind it?
+
+## What was measured
+
+The dataset combines five sources - CRAN, npm and PyPI (general package
+registries) and JOSS and rOpenSci (two GitHub-based software review
+organisations) - matched to their GitHub repositories, with every issue
+ever opened on each one fetched via the GitHub API:
+`r scales::comma (nrow (issue_authors_tbl))` issues across
+`r scales::comma (n_repos_primary)` repositories, spanning
+`r format (date_range [1], "%Y")`–`r format (date_range [2], "%Y")`.
+
+As in the companion vignette, **non-core** issues - those from an author
+whose cumulative commit history on that repository is at most 1% of all
+commits ever made to it (`contrib_threshold = 0.01`) - are the ones
+counted throughout, and popularity strata (Q1 = least popular quartile,
+Q4 = most popular) are computed separately within each source, from
+log-scaled downloads (CRAN, npm, PyPI) or GitHub stars (JOSS, rOpenSci).
+
+What's different here is the unit of account. The companion vignette
+counts **events**: issues opened, comments left, summed per repo-month.
+This one adds a stricter, complementary measure - **distinct
+authors**: not how many non-core issues a repository received in a given
+month, but how many different people filed them, counted once each per
+month regardless of how many issues any one of them opened. A repository
+could in principle hold its issue rate steady by hearing from the same
+handful of regulars more often, rather than from a broadening set of
+outsiders; counting heads instead of events is what tells those two
+situations apart. Both measures are built the same way otherwise - summed
+over a 12-month trailing window and normalised by repo-months of
+exposure - and both are compared against the same fixed reference point,
+January 2021, used throughout for the same reason it's used in the
+companion vignette: it sits after each source's initial ramp-up but
+before the steepest part of the decline, so no stratum's own noisier peak
+gets to set its own baseline.
+
+## Finding 1: count people instead of events, and the exception disappears
+
+```{r trend-plots, fig.height=10}
+ad_cran <- author_density_tbl (issue_authors_tbl, repo_tbl, "cran")
+ad_joss <- author_density_tbl (issue_authors_tbl, repo_tbl, "joss")
+ad_npm <- author_density_tbl (issue_authors_tbl, repo_tbl, "npm")
+ad_pypi <- author_density_tbl (issue_authors_tbl, repo_tbl, "pypi")
+ad_ropensci <- author_density_tbl (issue_authors_tbl, repo_tbl, "ropensci")
+
+y_lab <- "Distinct non-core authors per repo-month (12-month trailing avg)"
+
+p1 <- plot_activity (ad_cran, start_year = 2016) +
+    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+p2 <- plot_activity (ad_joss, start_year = 2016) +
+    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+p3 <- plot_activity (ad_npm, start_year = 2016) +
+    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+p4 <- plot_activity (ad_pypi, start_year = 2016) +
+    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+p5 <- plot_activity (ad_ropensci, start_year = 2016) + ggplot2::labs (y = y_lab)
+
+patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
+    patchwork::plot_annotation (
+        title = "Distinct non-core authors per repo-month, by popularity stratum",
+        subtitle = "12-month trailing average, contrib_threshold = 0.01"
+    )
+```
+
+The shape is the same one the companion vignette found in issue counts: a
+rise or plateau through the late 2010s, a peak somewhere in the
+2017–2020 window, and an ongoing decline since. That resemblance alone
+doesn't prove much - a falling issue rate is mechanically compatible with
+a falling author count, since fewer issues can't come from more people
+without each of them opening fewer on average. What settles it is
+comparing the two fold-changes directly, source by source and stratum by
+stratum:
+
+```{r fold-change-plot-authors, fig.height=3.5, fig.width=10}
+plot_fold_change (fc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
+    ggplot2::labs (
+        title = "Distinct non-core authors",
+        y = "Rate now, as % of rate in Jan 2021"
+    )
+```
+
+Every one of the `r n_authors_cells` (source, stratum) cells in this
+figure sits below its January-2021 level -
+`r n_authors_declined` out of `r n_authors_cells`, with no exceptions.
+That includes rOpenSci's least-popular quartile, the one cell in the
+companion vignette's event-count figure that rose rather than fell:
+counted by issues, it reached
+`r scales::percent (fc_compare$fold_change_issues [fc_compare$source == "ropensci" & fc_compare$popularity_stratum == "Q1"], accuracy = 1)`
+of its 2021 rate; counted by distinct authors, the same cell manages only
+`r scales::percent (fc_compare$fold_change_authors [fc_compare$source == "ropensci" & fc_compare$popularity_stratum == "Q1"], accuracy = 1)`
+- essentially flat, not growth. Whatever rOpenSci's peer-review process is
+doing for its most obscure packages, it isn't attracting a widening
+circle of new people; at best, on this measure, it's holding the existing
+circle from shrinking. That's a real effect, and a useful one, but it's
+the ceiling on the exception, not a second data point against the general
+pattern.
+
+Beyond that one cell, the two measures mostly move together, but not
+identically: in `r n_authors_fell_more` of the `r n_authors_cells` cells,
+the distinct-author count has fallen by *more* than the issue count has,
+meaning the average non-core author isn't opening noticeably more issues
+to compensate for fewer of them showing up - if anything, the opposite.
+Wherever event counts and headcounts disagree by more than a rounding
+error, headcounts are usually the ones telling the sharper story.
+
+## Finding 2: not simply projects settling down with age
+
+The same alternative explanation the companion vignette rules out for
+issue counts applies here too: repositories might generate less non-core
+interest simply because they're older - documentation accumulates, FAQs
+get answered once and closed, rough edges get sanded down - independent
+of any shared moment in calendar time. Disentangling the two needs the
+same age/period/cohort trick: fix a repository's *age* and let *cohort*
+(the calendar year that age fell in) vary, so pure maturation predicts
+flat lines at a given age regardless of which year that age happened to
+fall in, while a shared calendar-time effect predicts later cohorts
+showing a lower rate at that same fixed age than earlier ones did.
+
+```{r cohort-age-plot, fig.height=6.5}
+plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
+```
+
+CRAN, JOSS and npm show the calendar-time signature clearly: at a fixed
+early age, the non-core rate falls steadily as the cohort year increases,
+roughly halving or more between repositories born in the mid-2010s and
+those born in the early 2020s - not what pure maturation predicts. PyPI
+and rOpenSci don't show a comparable cohort-driven decline at fixed age,
+which is worth flagging rather than smoothing over: whatever combination
+of forces is driving the broader pattern doesn't touch every source
+through quite the same channel, even though the *outcome* - fewer people
+showing up now than five years ago - turns out to be shared by all five.
+
+## Finding 3: popularity offers no protection - if anything the opposite
+
+If the decline were simply outsiders losing interest in open source
+generally, it should land on popular and obscure software alike. It
+doesn't:
+
+```{r q1q4-table}
+q1q4_tbl |>
+    dplyr::transmute (
+        Source = source,
+        `Least popular (Q1)` = scales::percent (Q1, accuracy = 1),
+        `Most popular (Q4)` = scales::percent (Q4, accuracy = 1),
+        `Gap (Q4 − Q1)` = scales::percent (gap, accuracy = 1)
+    ) |>
+    knitr::kable (
+        align = c ("l", "r", "r", "r"),
+        caption = "Distinct-author fold-change since Jan 2021, least vs. most popular quartile"
+    )
+```
+
+In every one of the five sources, the most popular quartile's headcount
+has fallen further below its 2021 baseline than the least popular
+quartile's has - the same direction the companion vignette reports for
+issue counts, but here without a single source running the other way.
+Popularity buys a project more absolute traffic, but it hasn't bought
+insulation from this trend; the software with the most outside visibility
+to lose is losing proportionally more of it than the software that barely
+had any to begin with.
+
+## What this looks like from outside this dataset
+
+Nothing in this dataset says why. But the pattern - a shrinking pool of
+outside participants, hitting visible and obscure projects alike,
+unexplained by projects simply aging - lines up with what's independently
+being reported about the people who keep open source running day to day.
+Tidelift's 2024 survey of open-source maintainers found that 60% remain
+entirely unpaid and nearly 60% have quit, or seriously considered
+quitting, a project they maintain, citing competing life demands, loss of
+interest, and burnout among the leading reasons
+[@tidelift2024maintainer]. That's a survey of the small inner circle, not
+the outer one this dataset measures, but the two aren't independent: a
+maintainer fielding a thinner, slower stream of outside engagement has
+less of the feedback and help that made the job sustainable in the first
+place. In November 2025, Kubernetes' steering and security committees
+retired Ingress NGINX - one of the most widely deployed pieces of
+cloud-native infrastructure in existence, maintained for years by one or
+two people working nights and weekends - after concluding that no amount
+of public appeal could attract the additional help needed to keep it
+going [@kubernetes2025ingressnginx]. A project that visible sitting in
+this dataset's own Q4 is exactly the kind of case Finding 3 describes:
+popularity that didn't translate into a growing base of contributors
+ready to share the load.
+
+The newcomer side of the pipeline shows a matching strain from the supply
+end. Newcomers have always been hard to retain - a decade-old study of
+one large Apache project found fewer than one in five who showed up ever
+became long-term contributors, largely depending on whether their first
+interaction got a timely, helpful response [@steinmacher2013newcomers].
+More recent evidence suggests the on-ramp meant to fix exactly that
+problem is itself fraying: a 2026 longitudinal study of "good first
+issue" labelling across 37 popular OSS projects found that after holding
+steady for three years, the share of issues labelled as newcomer-friendly
+began a statistically significant decline starting in January 2024
+[@hoshikawa2026goodfirstissue] - maintainers with less time or attention
+to spare evidently have less of it left over for curating an on-ramp, on
+top of everything else. None of this is a new problem invented by any one
+technology; a decade before any of it, Nadia Eghbal's *Roads and
+Bridges* was already describing critical open-source infrastructure
+sustained by a handful of unpaid volunteers, and arguing that the fix
+isn't simply money, because what these projects actually run short of is
+people [@eghbal2016roadsbridges].
+
+The decline's timing loosely coincides with two other, independently
+documented shifts: GitHub Copilot's move from limited preview to general
+availability in mid-2022 [@wikipedia2026copilot], and a well-documented
+collapse in Stack Overflow's own new-question volume beginning around the
+same time [@orosz2025stackoverflow; @holscher2025stackoverflow] - the
+other major venue for the same kind of peer-to-peer technical exchange
+this dataset measures. One speculative mechanism worth naming, though
+this dataset can't test it directly: if AI coding assistants increasingly
+converge developers onto similar solutions and similar code, that kind of
+algorithmic monoculture could itself thin out the organic variety of
+problems that used to generate an issue or a question in the first place
+[@bommasani2022monoculture]. That's one candidate explanation among
+several plausible ones, offered as context rather than as something this
+dataset can adjudicate.
+
+## Caveats
+
+<div class="callout">
+- **Distinct-author density counts author-months, not lifetime-unique
+  people.** Someone active in three different months within a trailing
+  12-month window is counted three times, once per month - the same
+  construction as the underlying issue-rate metric, chosen so the two
+  stay directly comparable. This measure can't distinguish a shrinking
+  pool of *regulars* from a shrinking stream of one-time drive-by
+  contributors; both would produce the same falling density.
+- **The per-repo decline is steeper than the decline in total
+  participation**, because the population of repositories itself grew
+  over the same period: `r scales::comma (n_repos_now)` primary-source
+  repositories exist in this dataset now, against
+  `r scales::comma (n_repos_ref)` that already existed by January 2021 -
+  a `r sprintf ("%.1f", repo_growth_factor)`x increase. Raw, unnormalised
+  monthly non-core author counts across all five sources combined have
+  fallen only to about
+  `r scales::percent (raw_fold_change, accuracy = 1)`
+  of their January-2021 level, well short of the roughly
+  `r scales::percent (median (fc_authors$fold_change), accuracy = 1)`
+  median seen per repository. More repositories now compete for a
+  shrinking amount of attention per repository - the total pool of
+  people engaging with open source hasn't collapsed nearly as sharply as
+  any individual project's own share of it has.
+- **`contribution` is a lifetime measure, not a point-in-time one**, so
+  an issue filed by someone who later became a core maintainer is
+  excluded from "non-core" counts even for that earlier issue.
+- **Popularity strata reflect current downloads/stars, not historical
+  popularity** - stratification here doesn't track a repository's
+  popularity trajectory, only its current standing.
+- **No direct measure of *why* any individual stopped participating.**
+  Nothing here distinguishes burnout, disinterest, AI substitution, or
+  simply moving on to other things - the external context above is
+  context, not measurement.
+</div>
+
+## Where this leaves things
+
+Measured the stricter way - by counting the people behind the issues
+rather than the issues themselves - the pattern the companion vignette
+found in event counts doesn't just hold up, it tightens. Every one of
+five ecosystems, at every level of popularity, now draws fewer distinct
+outside contributors than it did in January 2021. It isn't explained by
+projects simply maturing in three of the five sources where that check is
+cleanest. It isn't concentrated in obscure, low-traffic corners of the
+software world - if anything, the most popular software in every source
+has lost proportionally more of its outside public than the least
+popular has. And the one cell that looked, in event counts alone, like a
+genuine exception - rOpenSci's least-visible reviewed packages - turns
+out on this stricter measure to have merely held its ground rather than
+grown one. None of that is proof of any single cause; what it is, is a
+structural, five-ecosystem-wide thinning of the outer circle that open
+source has always depended on to eventually become its inner one - and
+that thinning shows up in this dataset at almost exactly the same moment
+outside observers, from maintainer surveys to a retired Kubernetes
+component, have been reporting it from the other side.
+
+## References
