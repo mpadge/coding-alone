@@ -94,7 +94,8 @@ plot_fold_change <- function (tbl, source_display = NULL,
 #' @export
 plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30) {
 
-    cohort_year <- rate <- age_year <- source <- n_repo_months <- NULL
+    cohort_year <- rate <- age_year <- age_label <- source <-
+        n_repo_months <- NULL
 
     tbl <- dplyr::filter (tbl, n_repo_months >= min_repo_months, !is.na (rate), rate > 0)
 
@@ -148,7 +149,8 @@ plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30) {
 #' @export
 plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
 
-    month <- rate <- popularity_stratum <- reviewed <- NULL
+    month <- rate <- metric <- popularity_stratum <- reviewed <-
+        reviewed_label <- NULL
 
     if (!is.null (start_year)) {
         start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
@@ -214,7 +216,8 @@ plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
 #' @export
 plot_ropensci_reviewed_fold_change <- function (tbl, ref_date = as.Date ("2021-01-01")) {
 
-    popularity_stratum <- fold_change <- reviewed <- NULL
+    popularity_stratum <- fold_change <- reviewed <- reviewed_label <-
+        rate_latest <- rate_ref <- NULL
 
     tbl$reviewed_label <- ifelse (tbl$reviewed, "Formally\nreviewed", "Not\nreviewed")
     ref_lab <- format (ref_date, "%b %Y")

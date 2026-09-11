@@ -40,7 +40,7 @@ fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
                              window = 12L,
                              ref_date = as.Date ("2021-01-01")) {
 
-    popularity_stratum <- rate <- month <- NULL
+    popularity_stratum <- rate <- month <- rate_latest <- rate_ref <- NULL
 
     purrr::map_dfr (sources, \ (src) {
 
@@ -350,7 +350,8 @@ ropensci_reviewed_activity_tbl <- function (issue_authors_tbl, repo_tbl, ropensc
 #' @export
 ropensci_reviewed_fold_change_tbl <- function (tbl, ref_date = as.Date ("2021-01-01")) {
 
-    popularity_stratum <- reviewed <- rate <- month <- NULL
+    popularity_stratum <- reviewed <- rate <- rate_latest <-
+        rate_ref <- month <- NULL
 
     tbl <- dplyr::filter (tbl, !is.na (rate))
     latest_month <- max (tbl$month)
