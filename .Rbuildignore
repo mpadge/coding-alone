@@ -1,6 +1,8 @@
 ^Meta$
+^\.github$
 ^\.hooks$
 ^\.pre-commit-config\.yaml$
+^doc$
 ^docs$
 ^repo-data-out$
 ^vignettes/review-dividend\.Rmd\.orig$
