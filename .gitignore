@@ -13,3 +13,4 @@ inst/WORDLIST
 # vim files
 .*.un~
 .*.swp
+/Meta/

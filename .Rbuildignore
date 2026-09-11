@@ -1,2 +1,6 @@
+^Meta$
 ^\.hooks$
 ^\.pre-commit-config\.yaml$
+^docs$
+^repo-data-out$
+^vignettes/review-dividend\.Rmd\.orig$
