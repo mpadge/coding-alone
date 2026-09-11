@@ -1,4 +1,5 @@
 VIGNETTE = vignettes/review-dividend
+README = README
 
 all: help
 
@@ -16,6 +17,9 @@ pkgdowncheck: ## Check 'pkgdown' site structure
 
 vignette: $(VIGNETTE).Rmd.orig ## Precompile the review-dividend vignette from live source (requires repo-data-out/)
 	cd vignettes && Rscript -e "devtools::load_all ('..', quiet = TRUE); knitr::knit ('review-dividend.Rmd.orig', output = 'review-dividend.Rmd')"
+
+knitr: $(README).Rmd ## Render README as markdown
+	echo "rmarkdown::render('$(README).Rmd',output_file='$(README).md')" | R --no-save -q
 
 check: ## Run `rcmdcheck`
 	Rscript -e 'rcmdcheck::rcmdcheck()'
