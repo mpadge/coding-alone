@@ -72,9 +72,22 @@ date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
 
 ```{r generate-data, include=FALSE}
 # Cross-source fold-change (rate now vs. Jan 2021), both metrics
-fc_issues <- fold_change_tbl (issue_authors_tbl, repo_tbl, primary_sources, metric = "issues") |>
+contrib_threshold <- 0.01
+fc_issues <- fold_change_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    primary_sources,
+    metric = "issues",
+    contrib_threshold = contrib_threshold
+) |>
     dplyr::mutate (metric = "Issues")
-fc_comments <- fold_change_tbl (issue_authors_tbl, repo_tbl, primary_sources, metric = "comments") |>
+fc_comments <- fold_change_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    primary_sources,
+    metric = "comments",
+    contrib_threshold = contrib_threshold
+) |>
     dplyr::mutate (metric = "Comments")
 fc_all <- dplyr::bind_rows (fc_issues, fc_comments)
 fc_all$metric <- factor (fc_all$metric, levels = c ("Issues", "Comments"))
