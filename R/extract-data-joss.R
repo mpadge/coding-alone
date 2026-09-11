@@ -178,7 +178,7 @@ join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
 
 # ---- issue listing (GraphQL) -----------------------------------------------
 
-# LONGTAIL_TESTS = "true" is set by tests that need it (see
+# PEERREVIEW_TESTS = "true" is set by tests that need it (see
 # fetch_issue_authors() in R/analyses.R for the same convention). Whenever a
 # test is actually running, request just 2 issues per page instead of 100,
 # and stop after that single page rather than following cursors to the real
@@ -187,7 +187,7 @@ join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
 # recorded from it is a couple of real issues, not a frozen slice of
 # everything ever accepted by JOSS.
 joss_issues_page_size <- function () {
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) 2L else 100L
+    if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) 2L else 100L
 }
 
 build_joss_issues_query <- function (owner, repo, cursor = NULL) {
@@ -231,7 +231,7 @@ fetch_joss_issues <- function () {
     parts <- strsplit (JOSSREPO, "/", fixed = TRUE) [[1]]
     owner <- parts [1]
     repo <- parts [2]
-    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+    single_page_only <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
 
     cursor <- NULL
     issues <- list ()

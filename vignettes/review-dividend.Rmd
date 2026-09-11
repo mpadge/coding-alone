@@ -89,7 +89,7 @@ doesn't extend to, is what this document builds toward.
 
 The dataset combines the five sources above, matched to their GitHub
 repositories, with every issue ever opened on each one fetched via the
-GitHub API: 3,098,375 issues across
+GitHub API: 3,135,960 issues across
 52,461 repositories, spanning
 2003–2026.
 

@@ -18,11 +18,11 @@ perform_json_parallel <- function (urls, max_active = 40L) {
     # entirely, submitting straight to a curl pool) - so a missing fixture
     # can never be dynamically (re-)recorded through the parallel path; it
     # would just silently fall through to a live, uncached call on every
-    # run instead. LONGTAIL_TESTS == "true" (see fetch_issue_authors() in
+    # run instead. PEERREVIEW_TESTS == "true" (see fetch_issue_authors() in
     # R/analyses.R for the same convention) switches to sequential
     # req_perform() calls instead - slower, but otherwise identical
     # (same per-request error handling below) and traceable/recordable.
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+    if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) {
 
         resps <- lapply (reqs, \ (req) {
             tryCatch (httr2::req_perform (req), error = \ (e) e)

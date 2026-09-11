@@ -35,7 +35,7 @@ knitr::opts_chunk$set (
 ```
 
 ```{r load-package}
-library (longtail)
+library (peerreview)
 ```
 
 <div class="callout">

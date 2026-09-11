@@ -1,4 +1,4 @@
 library (testthat)
-library (longtail)
+library (peerreview)
 
-test_check ("longtail")
+test_check ("peerreview")

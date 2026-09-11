@@ -1,5 +1,5 @@
 runiv_packages_limit <- function () {
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) 5L else 100000L
+    if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) 5L else 100000L
 }
 
 #' Extract repo data for an r-universe

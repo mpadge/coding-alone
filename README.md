@@ -1,12 +1,12 @@
 
-# longtail
+# peerreview
 
 Code to analyse GitHub repository activity in relation to “popularity”
 metrics.
 
 ``` r
 devtools::load_all ()
-#> ℹ Loading longtail
+#> ℹ Loading peerreview
 ```
 
 ## Input data

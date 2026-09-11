@@ -10,12 +10,12 @@ test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
 
 skip_if (!test_all)
 
-# All fixtures here were recorded with LONGTAIL_TESTS = "true" (shrinks
+# All fixtures here were recorded with PEERREVIEW_TESTS = "true" (shrinks
 # GraphQL page sizes - see github_issues_page_size() in R/github-issues.R
 # and joss_issues_page_size() in R/extract-data-joss.R), so it must also be
 # set for replay: the query text (and hence the mock file's hash) differs
 # between the small test-mode page size and the real default.
-Sys.setenv ("LONGTAIL_TESTS" = "true")
+Sys.setenv ("PEERREVIEW_TESTS" = "true")
 
 test_that ("github_stars_many works but NAs unresolvable repos", {
 
@@ -40,7 +40,7 @@ test_that ("github_issue_authors composes real contributors + issues", {
     out <- suppressMessages (
         httptest2::with_mock_dir ("gh_issue_authors_ncmeta",
             {
-                longtail::github_issue_authors (
+                github_issue_authors (
                     "https://github.com/hypertidy/ncmeta"
                 )
             },
@@ -78,11 +78,11 @@ test_that ("github_repo_issues_graphql works", {
 
 test_that ("build_joss_table extracts repo/language/stars from real issues", {
     out <- suppressMessages (httptest2::with_mock_dir ("joss_mock", {
-        longtail::build_joss_table ()
+        build_joss_table ()
     }))
 
     expect_gt (nrow (out), 0L)
-    expect_lte (nrow (out), 2L) # LONGTAIL_TESTS caps the query at 2 issues
+    expect_lte (nrow (out), 2L) # PEERREVIEW_TESTS caps the query at 2 issues
     expect_named (
         out,
         c (

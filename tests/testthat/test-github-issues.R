@@ -28,7 +28,7 @@ test_that ("github_repo_contribs returns empty when no ctbs", {
     # dedicated "genuinely no contributors" live fixture.
     testthat::local_mocked_bindings (
         github_api_get_all = function (...) list (),
-        .package = "longtail"
+        .package = "peerreview"
     )
     out <- github_repo_contributors ("o", "empty-repo")
     expect_identical (nrow (out), 0L)
@@ -53,9 +53,9 @@ test_that ("github_issue_authors returns empty-shape tibble for 0 issues", {
                 )
             )
         },
-        .package = "longtail"
+        .package = "peerreview"
     )
-    out <- longtail::github_issue_authors ("https://github.com/o/empty-repo")
+    out <- github_issue_authors ("https://github.com/o/empty-repo")
     expect_identical (nrow (out), 0L)
     expect_named (
         out,

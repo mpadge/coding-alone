@@ -139,7 +139,7 @@ test_that ("github_respect_rate_limit errors with no rate-limit headers", {
 #
 # github_api_get_all() is a generic REST-paginating helper (also used by
 # github_repo_contributors(), unrelated to issues), so it isn't made
-# LONGTAIL_TESTS-aware itself - instead this test's own query is trimmed:
+# PEERREVIEW_TESTS-aware itself - instead this test's own query is trimmed:
 # `since` filters hypertidy/ncmeta's real issues down to just the 5 most
 # recently updated (all bulk-touched on the same day, confirmed live),
 # and `per_page = 2` still forces real pagination across 3 requests despite

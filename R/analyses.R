@@ -137,7 +137,7 @@ interlace_for_even_coverage <- function (x, n_batches) {
 #' @export
 fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
-    is_test_env <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+    is_test_env <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
 
     if (!is_test_env) {
         requireNamespace ("progressify", quietly = TRUE)

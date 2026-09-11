@@ -50,7 +50,7 @@ github_repo_contributors <- function (owner, repo) {
 
 github_issues_page_size <- function () {
 
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+    if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) {
         5L
     } else {
         100L
@@ -103,7 +103,7 @@ github_repo_issues_graphql <- function (owner, repo) {
     cursor <- NULL
     repo_created_at <- NULL
     pages <- list ()
-    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+    single_page_only <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
 
     repeat {
 

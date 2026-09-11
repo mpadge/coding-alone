@@ -102,7 +102,7 @@ test_that ("issue_rate_tbl returns empty tibble", {
         stars = double ()
     )
 
-    out <- longtail::issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+    out <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
     expect_identical (nrow (out), 0L)
     expect_named (
         out,
@@ -127,7 +127,7 @@ test_that ("issue_rate_tbl errors on an unknown source", {
         stars = double ()
     )
     expect_error (
-        longtail::issue_rate_tbl (issue_authors_tbl, repo_tbl, "not-a-source"),
+        issue_rate_tbl (issue_authors_tbl, repo_tbl, "not-a-source"),
         "Unknown source"
     )
 })
@@ -151,7 +151,7 @@ test_that ("issue_rate_tbl computes exposure and rate", {
         repo_created_at = c ("2020-01-01", "2020-01-01", "2020-01-01")
     )
 
-    out <- longtail::issue_rate_tbl (
+    out <- issue_rate_tbl (
         issue_authors_tbl,
         repo_tbl,
         "pypi",
@@ -201,7 +201,7 @@ test_that ("issue_rate_tbl excludes contributor issues above threshold", {
         repo_created_at = c ("2020-01-01", "2020-01-01", "2020-01-01")
     )
 
-    out <- longtail::issue_rate_tbl (
+    out <- issue_rate_tbl (
         issue_authors_tbl, repo_tbl, "pypi",
         n_strata = 1L, contrib_threshold = 0.01,
         date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-01-01")
@@ -225,7 +225,7 @@ test_that ("issue_rate_tbl supports metric = 'comments'", {
         repo_created_at = c ("2020-01-01", "2020-01-01", "2020-01-01")
     )
 
-    out <- longtail::issue_rate_tbl (
+    out <- issue_rate_tbl (
         issue_authors_tbl, repo_tbl, "pypi",
         n_strata = 1L, metric = "comments",
         date_start = as.Date ("2020-01-01"), date_end = as.Date ("2020-01-01")
@@ -249,7 +249,7 @@ test_that ("fit_activity_model fits GLM with interaction term", {
         n_repo_months = rep (10L, 12)
     )
 
-    fit <- longtail::fit_activity_model (rate_tbl)
+    fit <- fit_activity_model (rate_tbl)
     expect_s3_class (fit, "glm")
     expect_true (any (
         grepl (
@@ -274,7 +274,7 @@ test_that ("fit_activity_model drops rows with zero repo-months exposure", {
         n_metric = c (0, 1, 2, 3, 1, 2, 3, 4),
         n_repo_months = c (0L, 10L, 10L, 10L, 10L, 10L, 10L, 10L)
     )
-    fit <- longtail::fit_activity_model (rate_tbl)
+    fit <- fit_activity_model (rate_tbl)
     # the one zero-exposure row is dropped
     expect_identical (nrow (fit$model), 7L)
 })
@@ -309,7 +309,7 @@ test_that ("plot_activity returns plot with a colour-mapped stratum lines", {
     rate_tbl <- make_rate_tbl ()
     attr (rate_tbl, "source_name") <- "pypi"
 
-    p <- longtail::plot_activity (rate_tbl)
+    p <- plot_activity (rate_tbl)
     expect_s3_class (p, "ggplot")
     expect_true (
         "colour" %in% names (p$mapping) ||
@@ -319,8 +319,8 @@ test_that ("plot_activity returns plot with a colour-mapped stratum lines", {
 
 test_that ("plot_activity honours start_year by cropping the plotted data", {
     rate_tbl <- make_rate_tbl (n_months = 24L)
-    p_full <- longtail::plot_activity (rate_tbl)
-    p_cropped <- longtail::plot_activity (rate_tbl, start_year = 2021)
+    p_full <- plot_activity (rate_tbl)
+    p_cropped <- plot_activity (rate_tbl, start_year = 2021)
 
     expect_gte (min (p_cropped$data$month), as.Date ("2021-01-01"))
     expect_lt (min (p_full$data$month), as.Date ("2021-01-01"))
@@ -357,7 +357,7 @@ test_that ("plot_activity_by_source builds one line for one stratum", {
         repo_created_at = "2020-01-01"
     )
 
-    p <- longtail::plot_activity_by_source (
+    p <- plot_activity_by_source (
         issue_authors_tbl, repo_tbl,
         stratum = 1,
         n_strata = 1L, start_year = 2020
@@ -383,7 +383,7 @@ test_that ("plot_activity_by_source errors when no repos match", {
     )
 
     expect_error (
-        longtail::plot_activity_by_source (
+        plot_activity_by_source (
             issue_authors_tbl, repo_tbl,
             stratum = 1,
             n_strata = 1L, start_year = 2020

@@ -1,11 +1,11 @@
 test_that ("build_repo_tbl combines source CSVs, tagged with source", {
 
-    Sys.setenv ("LONGTAIL_TESTS" = "true")
+    Sys.setenv ("PEERREVIEW_TESTS" = "true")
 
     out_dir <- withr::local_tempdir ()
     write_test_analyses_data (out_dir)
 
-    out <- longtail::build_repo_tbl (out_dir)
+    out <- build_repo_tbl (out_dir)
 
     expect_named (
         out,
@@ -28,7 +28,7 @@ test_that ("build_repo_tbl returns a emtpy when out_dir has no matches", {
         file.path (out_dir, "unrelated.csv")
     )
 
-    out <- longtail::build_repo_tbl (out_dir)
+    out <- build_repo_tbl (out_dir)
     expect_identical (nrow (out), 0L) # no source file matched, so no rows read
 })
 
@@ -51,7 +51,7 @@ test_that ("fetch_issue_authors writes both checkpoint files on a fresh run", {
     out_dir <- withr::local_tempdir ()
     testthat::local_mocked_bindings (
         github_issue_authors = fake_issue_authors_row,
-        .package = "longtail"
+        .package = "peerreview"
     )
 
     res <- fetch_issue_authors (
@@ -72,7 +72,7 @@ test_that ("fetch_issue_authors resumes, skipping repos already marked done", {
             calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
             fake_issue_authors_row (repo_url)
         },
-        .package = "longtail"
+        .package = "peerreview"
     )
 
     fetch_issue_authors (
@@ -101,7 +101,7 @@ test_that ("fetch_issue_authors isolates error without abort", {
             if (grepl ("bad", repo_url, fixed = TRUE)) stop ("boom")
             fake_issue_authors_row (repo_url)
         },
-        .package = "longtail"
+        .package = "peerreview"
     )
 
     expect_message (
@@ -124,7 +124,7 @@ test_that ("fetch_issue_authors samples evenly across repo_urls, not sequentiall
             calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
             fake_issue_authors_row (repo_url)
         },
-        .package = "longtail"
+        .package = "peerreview"
     )
 
     # ordered as if by descending popularity, most-popular first:
@@ -154,7 +154,7 @@ test_that ("join_repo_metadata attaches repo_tbl columns by repo_url", {
         source = c ("pypi", "npm", "joss")
     )
 
-    out <- longtail::join_repo_metadata (issue_authors_tbl, repo_tbl)
+    out <- join_repo_metadata (issue_authors_tbl, repo_tbl)
 
     # unchanged, no fan-out from the duplicate repo_url:
     expect_identical (nrow (out), 3L)

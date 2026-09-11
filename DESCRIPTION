@@ -1,14 +1,17 @@
-Package: longtail
-Title: AI and The Long-Tailed Distribution of Software Repositories
-Version: 0.0.5.004
+Package: peerreview
+Title: The Effect of Peer Review on Open-Source Community Engagement
+Version: 0.0.5.005
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
   )
-Description: Code to analyse GitHub repository activity in relation to "popularity" metrics.
+Description: Code to analyse GitHub issue activity across open-source
+    ecosystems (CRAN, npm, PyPI, JOSS, rOpenSci) in relation to
+    repository "popularity" metrics and, for rOpenSci, formal
+    peer-review status.
 License: GPL-3
-URL: https://github.com/mpadge/longtail
-BugReports: https://github.com/mpadge/longtail/issues
+URL: https://github.com/mpadge/peerreview
+BugReports: https://github.com/mpadge/peerreview/issues
 Depends: R (>= 4.1.0)
 Imports:
     cli,

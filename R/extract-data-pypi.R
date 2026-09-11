@@ -8,7 +8,7 @@ CLICKHOUSE_PAGE_SIZE <- 100000L
 
 clickhouse_page_size <- function () {
 
-    if (identical (Sys.getenv ("LONGTAIL_TESTS"), "true")) {
+    if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) {
         5L
     } else {
         CLICKHOUSE_PAGE_SIZE
@@ -67,7 +67,7 @@ pypi_downloads_full <- function () {
     LIMIT %d OFFSET %d"
 
     page_size <- clickhouse_page_size ()
-    single_page_only <- identical (Sys.getenv ("LONGTAIL_TESTS"), "true")
+    single_page_only <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
 
     pages <- list ()
     offset <- 0L

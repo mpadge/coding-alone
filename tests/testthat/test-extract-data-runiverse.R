@@ -2,17 +2,17 @@ test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
     identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
 
 test_that ("build_runiv_table validates its universe argument", {
-    expect_error (longtail::build_runiv_table ("not-a-universe"))
+    expect_error (build_runiv_table ("not-a-universe"))
 })
 
 test_that ("build_runiv_table extracts URLs and review metadata", {
-    Sys.setenv ("LONGTAIL_TESTS" = "true")
+    Sys.setenv ("PEERREVIEW_TESTS" = "true")
     out <- suppressMessages (httptest2::with_mock_dir ("runiv_mock", {
-        longtail::build_runiv_table ("ropensci")
+        build_runiv_table ("ropensci")
     }))
 
     expect_gt (nrow (out), 0L)
-    expect_lte (nrow (out), 5L) # LONGTAIL_TESTS caps the query at 5 packages
+    expect_lte (nrow (out), 5L) # PEERREVIEW_TESTS caps the query at 5 packages
     expect_named (
         out,
         c ("package", "repo_url", "downloads", "stars", "reviewed", "review_id")
