@@ -1,4 +1,4 @@
-REPORT = docs/README
+VIGNETTE = vignettes/review-dividend
 
 all: help
 
@@ -14,14 +14,8 @@ pkgdown: ## Build entire pkgdown site
 pkgdowncheck: ## Check 'pkgdown' site structure
 	echo "pkgdown::check_pkgdown()" | R --no-save -q
 
-knith: $(REPORT).Rmd ## Render README as HTML, with external image files
-	echo "rmarkdown::render('$(REPORT).Rmd',output_format='html_document',output_file='$(notdir $(REPORT)).html')" | R --no-save -q
-
-knitr: $(REPORT).Rmd ## Render README as markdown, with external image files
-	echo "rmarkdown::render('$(REPORT).Rmd',output_format='github_document',output_file='$(notdir $(REPORT)).md')" | R --no-save -q
-
-open: ## Open main HTML vignette in browser
-	xdg-open $(REPORT).html &
+vignette: $(VIGNETTE).Rmd.orig ## Precompile the review-dividend vignette from live source (requires repo-data-out/)
+	cd vignettes && Rscript -e "devtools::load_all ('..', quiet = TRUE); knitr::knit ('review-dividend.Rmd.orig', output = 'review-dividend.Rmd')"
 
 check: ## Run `rcmdcheck`
 	Rscript -e 'rcmdcheck::rcmdcheck()'

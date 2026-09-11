@@ -1,0 +1,433 @@
+---
+title: "The Review Dividend"
+subtitle: "Community engagement with open-source software has been declining for years across five major ecosystems — except among rOpenSci's least-visible packages, where formal peer review is the one thing still generating outside interest"
+author: "Mark Padgham"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The Review Dividend}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+<!--
+This is the LIVE source for the "review-dividend" vignette. It is not built
+directly by R CMD build/check - it requires repo-data-out/, which is far too
+large to ship with the package (see the data-access note in the vignette
+itself). Instead it's precompiled once, on a machine that has that data,
+into the static vignettes/review-dividend.Rmd that actually ships:
+
+    knitr::knit ("vignettes/review-dividend.Rmd.orig", output = "vignettes/review-dividend.Rmd")
+
+run with the working directory set to vignettes/, so relative paths below
+resolve correctly. That committed .Rmd has every chunk already evaluated
+(text and figures baked in as static markdown/images), so re-building it
+via the usual vignette machinery never needs the data again.
+-->
+
+```{r chunk-setup, echo = FALSE}
+knitr::opts_chunk$set (
+    echo = FALSE, message = FALSE, warning = FALSE,
+    fig.align = "center", fig.width = 9, fig.height = 4, dpi = 150,
+    fig.path = "review-dividend-figures/"
+)
+```
+
+```{r load-package}
+library (longtail)
+```
+
+<div class="callout">
+This vignette draws on a large, locally-fetched dataset
+(`repo-data-out/`: every GitHub issue ever opened on ~50,000 repositories
+across CRAN, npm, PyPI, JOSS and rOpenSci) that is far too large to ship
+with the package itself. The vignette you're reading is precompiled from
+that data - see `vignettes/review-dividend.Rmd.orig` in the package
+source if you want to re-run the analysis yourself once the underlying
+data is available (via Git LFS) from the package repository.
+</div>
+
+```{r initial-data-load}
+out_dir <- "../repo-data-out"
+repo_tbl <- build_repo_tbl (out_dir)
+issue_authors_tbl <- readr::read_csv (
+    file.path (out_dir, "issue-authors.csv"),
+    show_col_types = FALSE, progress = FALSE
+)
+ropensci_raw <- readr::read_csv (
+    file.path (out_dir, "ropensci.csv"),
+    show_col_types = FALSE, progress = FALSE
+)
+
+primary_sources <- c ("cran", "joss", "npm", "pypi", "ropensci")
+n_repos_primary <- length (unique (
+    repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
+))
+n_noncore <- nrow (dplyr::filter (issue_authors_tbl, contribution <= 0.01))
+date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
+```
+
+
+
+```{r generate-data, include=FALSE}
+# Cross-source fold-change (rate now vs. Jan 2021), both metrics
+fc_issues <- fold_change_tbl (issue_authors_tbl, repo_tbl, primary_sources, metric = "issues") |>
+    dplyr::mutate (metric = "Issues")
+fc_comments <- fold_change_tbl (issue_authors_tbl, repo_tbl, primary_sources, metric = "comments") |>
+    dplyr::mutate (metric = "Comments")
+fc_all <- dplyr::bind_rows (fc_issues, fc_comments)
+fc_all$metric <- factor (fc_all$metric, levels = c ("Issues", "Comments"))
+
+# Matched-cohort age-vs-calendar-time analysis
+cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
+
+# rOpenSci: reviewed vs. non-reviewed, both metrics
+ros_issues <- ropensci_reviewed_activity_tbl (
+    issue_authors_tbl, repo_tbl, ropensci_raw, metric = "issues"
+)
+ros_comments <- ropensci_reviewed_activity_tbl (
+    issue_authors_tbl, repo_tbl, ropensci_raw, metric = "comments"
+)
+ros_trend_all <- dplyr::bind_rows (
+    dplyr::mutate (ros_issues, metric = "Issues"),
+    dplyr::mutate (ros_comments, metric = "Comments")
+)
+ros_trend_all$metric <- factor (ros_trend_all$metric, levels = c ("Issues", "Comments"))
+
+ros_fc_issues <- ropensci_reviewed_fold_change_tbl (ros_issues) |> dplyr::mutate (metric = "Issues")
+ros_fc_comments <- ropensci_reviewed_fold_change_tbl (ros_comments) |> dplyr::mutate (metric = "Comments")
+ros_fc_all <- dplyr::bind_rows (ros_fc_issues, ros_fc_comments)
+ros_fc_all$metric <- factor (ros_fc_all$metric, levels = c ("Issues", "Comments"))
+
+# Repo counts by review status, for prose below
+ropensci_repo_created <- issue_authors_tbl |>
+    dplyr::filter (!is.na (repo_created_at)) |>
+    dplyr::distinct (repo_url, repo_created_at)
+ropensci_repos <- repo_tbl |>
+    dplyr::filter (source == "ropensci") |>
+    dplyr::distinct (repo_url, .keep_all = TRUE) |>
+    dplyr::inner_join (ropensci_repo_created, by = "repo_url") |>
+    dplyr::filter (!is.na (stars)) |>
+    dplyr::left_join (dplyr::select (ropensci_raw, repo_url, reviewed), by = "repo_url") |>
+    dplyr::filter (!is.na (reviewed))
+n_reviewed <- sum (ropensci_repos$reviewed)
+n_not_reviewed <- sum (!ropensci_repos$reviewed)
+n_reviewed_q1 <- sum (ropensci_repos$reviewed & popularity_strata (ropensci_repos$stars, 4L) == "Q1")
+n_not_reviewed_q1 <- sum (!ropensci_repos$reviewed & popularity_strata (ropensci_repos$stars, 4L) == "Q1")
+```
+
+<style>
+.callout {
+    border-left: 4px solid #2c3e50;
+    background: #f7f9fa;
+    padding: 0.8em 1.2em;
+    margin: 1.2em 0;
+    border-radius: 2px;
+}
+.callout p:first-child { margin-top: 0; }
+.callout p:last-child { margin-bottom: 0; }
+</style>
+
+## The pattern, and the one exception
+
+Open-source contribution has always been unequal — a small number of
+contributors account for the overwhelming majority of activity on most
+projects, a pattern documented well before any of what follows
+[@chelkowski2016inequalities; @louridas2008powerlaws]. This analysis isn't
+about that inequality directly. It's about a narrower, more specific
+quantity: how much a repository hears from people who *aren't* its
+regular contributors — outsiders filing issues or leaving comments, the
+closest available proxy for organic, community-sourced interest in a
+piece of software, as opposed to its maintainers talking to themselves or
+to each other.
+
+Across five major open-source ecosystems — CRAN, npm and PyPI (general
+package registries) and JOSS and rOpenSci (two GitHub-based software
+*review* organisations) — that quantity has been falling for years, and
+falling further for already-popular software than for obscure software.
+That second part runs against the naive expectation that popular projects,
+with more users and more visibility, would be comparatively insulated. One
+exception to the whole pattern stands out: among rOpenSci's *least*
+popular packages, non-core engagement hasn't been falling at all — but
+only for the subset of those packages that went through rOpenSci's
+structured public peer-review process. Split rOpenSci's obscure packages
+into reviewed and non-reviewed, and the "exception" turns out to belong
+entirely to one of those two groups. That split, and what it does and
+doesn't extend to, is what this document builds toward.
+
+## What was measured
+
+The dataset combines the five sources above, matched to their GitHub
+repositories, with every issue ever opened on each one fetched via the
+GitHub API: `r scales::comma (nrow (issue_authors_tbl))` issues across
+`r scales::comma (n_repos_primary)` repositories, spanning
+`r format (date_range [1], "%Y")`–`r format (date_range [2], "%Y")`.
+
+Two quantities are tracked per issue, for two different reasons. **Issues**
+— new threads opened against a repository — are the primary metric
+throughout: opening an issue is an active, initiating act, the clearest
+available signal that someone outside the project bothered to show up.
+**Comments** — replies added to already-open issues — are used
+throughout as a secondary, confirmatory metric: they capture a different
+kind of engagement (continuing a conversation rather than starting one),
+so agreement between the two is a check that a pattern isn't an artifact
+of how one particular metric happens to be counted.
+
+For both metrics, **non-core** issues/comments — those from an author
+whose cumulative commit history on that repository is at most 1% of all
+commits ever made to it (`contrib_threshold = 0.01`) — are counted per
+calendar month, divided by the number of months the repository has
+existed, giving a **rate per repo-month**, reported throughout as a
+12-month trailing average to smooth short-term noise. Each source's
+repositories are split into four **popularity strata** (Q1 = least
+popular quartile, Q4 = most popular) by log-scaled downloads (CRAN, npm,
+PyPI) or GitHub stars (JOSS, rOpenSci) — necessarily relative to each
+source's own distribution, since a top-quartile CRAN package and a
+top-quartile npm package don't represent the same absolute popularity.
+
+rOpenSci carries one further piece of information the other four sources
+don't: whether a package went through rOpenSci's structured, public
+software review process before or shortly after joining the organisation.
+Of the `r scales::comma (nrow (ropensci_repos))` rOpenSci repositories
+used here, `r scales::comma (n_reviewed)` were formally reviewed and
+`r scales::comma (n_not_reviewed)` were not — including, within the
+least-popular quartile alone, `r n_reviewed_q1` reviewed against
+`r n_not_reviewed_q1` non-reviewed. That comparison is what the second
+half of this document turns on.
+
+## Finding 1: a shared decline, five ecosystems
+
+Plotting each source's non-core issue rate since 2016, split by popularity
+stratum, a common shape recurs: a rise or roughly flat period through the
+late 2010s, a peak somewhere in the 2017–2020 window depending on source,
+and a decline since that is still ongoing in the most recent data.
+
+```{r trend-plots, fig.height=10}
+rt_cran <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "cran", metric = "issues")
+rt_joss <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "joss", metric = "issues")
+rt_npm <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "npm", metric = "issues")
+rt_pypi <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi", metric = "issues")
+rt_ropensci <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "ropensci", metric = "issues")
+
+p1 <- plot_activity (rt_cran, start_year = 2016) + ggplot2::theme (legend.position = "none")
+p2 <- plot_activity (rt_joss, start_year = 2016) + ggplot2::theme (legend.position = "none")
+p3 <- plot_activity (rt_npm, start_year = 2016) + ggplot2::theme (legend.position = "none")
+p4 <- plot_activity (rt_pypi, start_year = 2016) + ggplot2::theme (legend.position = "none")
+p5 <- plot_activity (rt_ropensci, start_year = 2016)
+
+patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
+    patchwork::plot_annotation (
+        title = "Non-core issues opened per repo-month, by popularity stratum",
+        subtitle = "12-month trailing average, contrib_threshold = 0.01"
+    )
+```
+
+Shown here as issues, the primary metric; the fold-change comparison in
+[Finding 3](#finding-3-the-decline-favours-the-obscure) below confirms
+comments follow the same trajectory.
+
+Nothing in this dataset directly measures *why*. The decline's timing
+loosely coincides with two independently documented external shifts over
+the same window: GitHub Copilot's move from limited preview to general
+availability in mid-2022 [@wikipedia2026copilot], and a well-documented
+collapse in Stack Overflow's own new-question volume beginning around the
+same time [@orosz2025stackoverflow; @holscher2025stackoverflow] — the
+other major venue for the same kind of peer-to-peer technical exchange.
+That coincidence is worth noting, but this dataset can't adjudicate
+between "AI assistants substituting for asking a human", "a broader
+retreat from social coding platforms in general", or some third
+explanation. What it *can* do is establish some things the decline is
+*not*, and identify where — if anywhere — it doesn't hold. Both of those
+are more tractable questions, and the rest of this document is organised
+around them.
+
+## Finding 2: not simply repositories getting older
+
+One obvious alternative explanation for a falling issue rate is that it
+has nothing to do with any shared moment in time: repositories might
+simply generate less non-core interest as they themselves age —
+documentation accumulates, FAQs settle into closed issues, rough edges
+get sanded down — and every repository's age and calendar time move in
+the same direction, so the two are easy to confound in a plot against
+calendar time alone.
+
+The fix is a standard age/period/cohort trick: fix a repository's *age*
+(e.g. its first or second year of life) and let *cohort* — the calendar
+year that age happened to fall in — vary instead. Pure maturation
+predicts a repository's own first year of life should look much the same
+regardless of which calendar year that first year happened to be. A
+shared, calendar-time-specific effect instead predicts later cohorts
+showing a *lower* rate at that same fixed age than earlier cohorts did,
+even though both are equally young when measured.
+
+```{r cohort-age-plot, fig.height=6.5}
+plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
+```
+
+CRAN, JOSS and npm all show the calendar-time signature: at a fixed
+early age, non-core issue rates decline fairly steadily as the cohort
+year increases, roughly halving or more between repositories born in the
+mid-2010s and those born in the early 2020s. That's not compatible with
+pure maturation, which predicts flat lines across cohorts at a fixed age.
+PyPI and rOpenSci are the two exceptions here too: neither shows a
+comparable cohort-driven decline at fixed age — PyPI's fixed-age rate is,
+if anything, no lower for its most recent cohorts than its oldest ones,
+and rOpenSci's is noisy but shows no clear trend in either direction. The
+same two sources that will turn out to have the least straightforward
+relationship with the "most popular falls furthest" pattern below already
+look different in this maturation check — a hint, followed up on next,
+that something else is going on in at least one of them.
+
+## Finding 3: the decline favours the obscure {#finding-3-the-decline-favours-the-obscure}
+
+If the decline above were simply a story about outsiders losing interest
+in open source generally, it should hit popular and obscure software
+alike. Comparing each stratum's rate today against a fixed reference
+point — January 2021, chosen to sit after each source's initial ramp-up
+but before the steepest part of the decline, avoiding cherry-picking each
+stratum's own noisier peak — shows it doesn't:
+
+```{r fold-change-plot, fig.height=6, fig.width=10}
+plot_fold_change (fc_all, SOURCE_DISPLAY_NAME)
+```
+
+In CRAN, JOSS, npm and rOpenSci, the *most* popular quartile has fallen
+furthest, not the least popular one. CRAN's Q4 sits at
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+of its January-2021 rate versus Q1's
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
+JOSS's Q4 is at
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+versus Q1's
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
+and rOpenSci's Q4 is at
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+while its Q1 has, on net, *risen* to
+`r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`
+of its 2021 level. Comments (bottom row) show the same ordering within
+every source, generally with a larger drop at every stratum — comments
+are the more discretionary of the two metrics, so a bigger fall there is
+consistent with, rather than contradicting, the issues-based picture.
+PyPI is the one source that doesn't fit this stratum ordering: its most
+popular quartile has fallen *less* than its least popular one, the
+reverse of the other four sources. This dataset doesn't explain why PyPI
+runs the other way; it's reported here as a genuine cross-source
+divergence rather than folded into the general pattern.
+
+rOpenSci's rising Q1 is the sharpest anomaly in the whole figure — the
+only cell, across five sources, two metrics and four strata, that
+increased rather than fell. The rest of this document is about that one
+cell.
+
+## Finding 4: peer review, and where its effect stops
+
+<div class="callout">
+rOpenSci runs (almost all of) its packages through a structured, public
+peer-review process, on top of or independent from the version control
+and organisational structure any GitHub-hosted project already has —
+a distinction with no real counterpart in CRAN, npm, or (in the same
+form) JOSS. Whether a given rOpenSci repository was formally reviewed is
+recorded per-repository in this dataset, which makes it possible to test
+directly whether Q1's rise is a property of rOpenSci's least-popular
+packages generally, or of a specific subset of them.
+</div>
+
+Splitting rOpenSci's non-core rate by review status, separately within
+each popularity stratum, answers it:
+
+```{r ropensci-reviewed-trend, fig.height=6, fig.width=10}
+plot_ropensci_reviewed_trend (ros_trend_all, start_year = 2016)
+```
+
+```{r ropensci-reviewed-foldchange, fig.height=6, fig.width=10}
+plot_ropensci_reviewed_fold_change (ros_fc_all)
+```
+
+In Q1, the two groups move in opposite directions. Formally reviewed Q1
+packages' non-core issue rate rose to
+`r scales::percent (ros_fc_issues$fold_change [ros_fc_issues$popularity_stratum == "Q1" & ros_fc_issues$reviewed], accuracy = 1)`
+of its January-2021 level, while non-reviewed Q1 packages fell to
+`r scales::percent (ros_fc_issues$fold_change [ros_fc_issues$popularity_stratum == "Q1" & !ros_fc_issues$reviewed], accuracy = 1)`
+— back in line with the broad decline seen everywhere else in this
+dataset. Comments show an even sharper version of the same split:
+reviewed Q1 packages rose to
+`r scales::percent (ros_fc_comments$fold_change [ros_fc_comments$popularity_stratum == "Q1" & ros_fc_comments$reviewed], accuracy = 1)`
+of their 2021 comment rate, while non-reviewed Q1 packages collapsed to
+just
+`r scales::percent (ros_fc_comments$fold_change [ros_fc_comments$popularity_stratum == "Q1" & !ros_fc_comments$reviewed], accuracy = 1)`.
+Q1's "exception" isn't a property of rOpenSci's obscure packages in
+general — it belongs specifically to the ones that went through formal
+review.
+
+That doesn't extend to the rest of the popularity distribution, and it's
+worth being direct about that rather than quietly narrowing the claim
+after the fact. In Q2, Q3 and Q4, reviewed packages don't show a
+protective effect at all — if anything they fell by as much or more than
+their non-reviewed counterparts in the same stratum, for both issues and
+comments. Whatever review is doing in Q1, it isn't a general "reviewed
+packages hold up better" effect across rOpenSci as a whole; it's confined
+to the tier of packages with essentially no organic visibility of their
+own to begin with.
+
+That confinement is also the most plausible reading of the mechanism.
+rOpenSci's review pipeline puts a brand-new, still-obscure package in
+front of reviewers and, via rOpenSci's public directory, blog, and
+community channels, a wider audience than its own download or star count
+would otherwise attract — a standing source of outside attention that an
+equally obscure CRAN or npm package simply has no equivalent of. For a
+package that's already popular, that additional visibility channel adds
+comparatively little, since popularity itself is already doing that job.
+For a package with hardly any visibility of its own, the review pipeline
+may be close to the *only* channel generating any outside attention at
+all — which would explain both why the effect appears, and why it appears
+exactly where it does.
+
+## Caveats
+
+<div class="callout">
+- **Review status isn't randomly assigned.** Packages that go through
+  rOpenSci's review process may differ systematically from those that
+  don't, in ways unrelated to the review process itself — authors willing
+  to submit to public review may already be more embedded in the
+  rOpenSci community, more responsive to issues, or more actively
+  promoting their own package, independent of anything review itself
+  does. This dataset can establish that the Q1 split lines up with
+  review status; it can't fully rule out that some of what's attributed
+  to review is really a selection effect among the people who seek it
+  out.
+- **`contribution` is a lifetime measure, not a point-in-time one.** An
+  issue filed by someone who later became a core maintainer is excluded
+  from "non-core" counts even for that earlier issue, because
+  `contribution` is computed from an author's *total* commit history at
+  fetch time rather than their history as of that issue's date.
+- **Popularity strata reflect current downloads/stars, not historical
+  popularity.** Some of today's most-popular repositories weren't always
+  that popular; stratification here doesn't track a repository's
+  popularity trajectory over time, only its current standing.
+- **No direct measure of AI usage, or of any other candidate cause of the
+  broad decline in Finding 1.** Nothing in this dataset records whether
+  any specific user, issue, or repository involved AI assistance, and the
+  timing-based context offered there is exactly that — context, not a
+  measurement.
+</div>
+
+## Where this leaves things
+
+Most of open source's recent history of non-core, community-sourced
+engagement, across five different ecosystems and two different ways of
+measuring it, points the same direction: down, for years, and further
+down for already-popular software than for obscure software. Repository
+aging doesn't account for it in the three sources where it's cleanest.
+One specific, identifiable mechanism — rOpenSci's formal peer-review
+process — is the only thing in this entire dataset that measurably
+counteracts it, and it does so in exactly the place organic visibility is
+thinnest to begin with, not across the board. That's a narrower claim
+than "peer review sustains open source," but it's also a sharper and more
+useful one: a structural intervention that manufactures outside attention
+can apparently substitute for the attention obscure software doesn't
+generate on its own — while for software that already gets that attention
+some other way, the same intervention doesn't obviously do anything at
+all.
+
+## References
