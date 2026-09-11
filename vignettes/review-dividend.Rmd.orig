@@ -79,18 +79,14 @@ fc_issues <- fold_change_tbl (
     primary_sources,
     metric = "issues",
     contrib_threshold = contrib_threshold
-) |>
-    dplyr::mutate (metric = "Issues")
+)
 fc_comments <- fold_change_tbl (
     issue_authors_tbl,
     repo_tbl,
     primary_sources,
     metric = "comments",
     contrib_threshold = contrib_threshold
-) |>
-    dplyr::mutate (metric = "Comments")
-fc_all <- dplyr::bind_rows (fc_issues, fc_comments)
-fc_all$metric <- factor (fc_all$metric, levels = c ("Issues", "Comments"))
+)
 
 # Matched-cohort age-vs-calendar-time analysis
 cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
@@ -108,10 +104,8 @@ ros_trend_all <- dplyr::bind_rows (
 )
 ros_trend_all$metric <- factor (ros_trend_all$metric, levels = c ("Issues", "Comments"))
 
-ros_fc_issues <- ropensci_reviewed_fold_change_tbl (ros_issues) |> dplyr::mutate (metric = "Issues")
-ros_fc_comments <- ropensci_reviewed_fold_change_tbl (ros_comments) |> dplyr::mutate (metric = "Comments")
-ros_fc_all <- dplyr::bind_rows (ros_fc_issues, ros_fc_comments)
-ros_fc_all$metric <- factor (ros_fc_all$metric, levels = c ("Issues", "Comments"))
+ros_fc_issues <- ropensci_reviewed_fold_change_tbl (ros_issues)
+ros_fc_comments <- ropensci_reviewed_fold_change_tbl (ros_comments)
 
 # Repo counts by review status, for prose below
 ropensci_repo_created <- issue_authors_tbl |>
@@ -302,11 +296,11 @@ but before the steepest part of the decline, avoiding cherry-picking each
 stratum's own noisier peak — shows it doesn't:
 
 ```{r fold-change-plot-issues, fig.height=3.5, fig.width=10}
-plot_fold_change (fc_all, SOURCE_DISPLAY_NAME, metric = "issues")
+plot_fold_change (fc_issues, SOURCE_DISPLAY_NAME, metric = "issues")
 ```
 
 ```{r fold-change-plot-comments, fig.height=3.5, fig.width=10}
-plot_fold_change (fc_all, SOURCE_DISPLAY_NAME, metric = "comments")
+plot_fold_change (fc_comments, SOURCE_DISPLAY_NAME, metric = "comments")
 ```
 
 In CRAN, JOSS, npm and rOpenSci, the *most* popular quartile has fallen
@@ -358,11 +352,11 @@ plot_ropensci_reviewed_trend (ros_trend_all, start_year = 2016)
 ```
 
 ```{r ropensci-reviewed-foldchange-issues, fig.height=3.5}
-plot_ropensci_reviewed_fold_change (ros_fc_all, metric = "issues")
+plot_ropensci_reviewed_fold_change (ros_fc_issues, metric = "issues")
 ```
 
 ```{r ropensci-reviewed-foldchange-comments, fig.height=3.5}
-plot_ropensci_reviewed_fold_change (ros_fc_all, metric = "comments")
+plot_ropensci_reviewed_fold_change (ros_fc_comments, metric = "comments")
 ```
 
 In Q1, the two groups move in opposite directions. Formally reviewed Q1
