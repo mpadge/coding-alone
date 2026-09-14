@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Effect of Peer Review on Open-Source Community Engagement • peerreview</title>
+<title>The Effect of Peer Review on Open-Source Community Engagement • codingAlone</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,8 +32,8 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.017</span>
+        <a class="navbar-link" href="index.html">codingAlone</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -63,7 +63,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mpadge/peerreview/" class="external-link">
+  <a href="https://github.com/mpadge/coding-alone/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
 
   </a>
@@ -81,25 +81,27 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="peerreview">peerreview<a class="anchor" aria-label="anchor" href="#peerreview"></a>
+<div class="page-header"><h1 id="codingalone">codingAlone<a class="anchor" aria-label="anchor" href="#codingalone"></a>
 </h1></div>
 <p>Code to analyse GitHub issue activity across open-source ecosystems (CRAN, npm, PyPI, JOSS, rOpenSci) in relation to repository popularity and, for rOpenSci, formal peer-review status.</p>
-<p>Go straight to <a href="https://mpadge.github.io/peerreview/articles/review-dividend.html" class="external-link">review-dividend vignette</a>.</p>
+<p>Go straight to <a href="https://mpadge.github.io/coding-alone/articles/coding-alone.html" class="external-link">coding-alone</a> or <a href="https://mpadge.github.io/coding-alone/articles/review-dividend.html" class="external-link">review-dividend</a> vignettes.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages ("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span> <span class="op">(</span><span class="st">"mpadge/peerreview"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span> <span class="op">(</span><span class="st">"mpadge/coding-alone"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
 </h2>
 <ul>
 <li>
-<code><a href="articles/data-generation.html">vignette ("data-generation", package = "peerreview")</a></code> - the pipeline used to fetch and assemble the underlying repository and GitHub issue data.</li>
+<code><a href="articles/coding-alone.html">vignette ("coding-alone", package = "codingAlone")</a></code> - the main analysis on the demise of code communities.</li>
 <li>
-<code><a href="articles/review-dividend.html">vignette ("review-dividend", package = "peerreview")</a></code> - the main analysis: does formal peer review sustain open-source community engagement?</li>
+<code><a href="articles/review-dividend.html">vignette ("review-dividend", package = "codingAlone")</a></code> - additional analyses of the effect of software peer review on sustaining open-source community engagement.</li>
+<li>
+<code><a href="articles/data-generation.html">vignette ("data-generation", package = "codingAlone")</a></code> - the pipeline used to fetch and assemble the underlying repository and GitHub issue data.</li>
 </ul>
 </div>
 </div>
@@ -109,8 +111,8 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/mpadge/peerreview/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/mpadge/peerreview/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/mpadge/coding-alone/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/mpadge/coding-alone/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -125,7 +127,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing peerreview</a></li>
+<li><a href="authors.html#citation">Citing codingAlone</a></li>
 </ul>
 </div>
 
