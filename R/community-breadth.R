@@ -311,3 +311,170 @@ solo_repo_share_tbl <- function (issue_authors_tbl, repo_tbl, sources,
         )
     })
 }
+
+# ---- community expansion: new (non-founding) author arrival rate -----------
+
+#' New (non-founding) authors first appearing per repo-month, by source and
+#' popularity stratum
+#'
+#' Community-expansion analogue of `author_density_tbl()`: rather than "how
+#' many distinct authors are active this month", counts how many people are
+#' showing up in a repository's issue tracker *for the first time ever* -
+#' a direct measure of whether a repo's community of interlocutors is still
+#' growing, or has stalled to the same recurring faces. Each repo's very
+#' first-ever issue author (typically the maintainer opening the repo's own
+#' first issue) is excluded as a "founding" event rather than a new
+#' arrival, since it isn't itself community growth. As with
+#' `issue_rate_tbl()`/`author_density_tbl()`, the result is normalised by
+#' repo-months of exposure and reported as a `window`-month trailing sum,
+#' so a single burst of new signups doesn't read as a permanent step
+#' change.
+#'
+#' Author identity here isn't split by `contribution`/`contrib_threshold`
+#' as most of this package's other rate tables are - someone who goes on to
+#' become a heavy contributor is still a new arrival the month they first
+#' show up, so every first-time author counts, core and non-core alike,
+#' matching `solo_repo_share_tbl()`'s treatment of contribution rather than
+#' `issue_rate_tbl()`'s.
+#'
+#' @inheritParams issue_rate_tbl
+#' @return A tibble with one row per (popularity stratum, month):
+#' `popularity_stratum`, `month`, `n_metric` (trailing sum of new,
+#' non-founding first-time authors), `n_repo_months`, `rate`. Carries
+#' `metric = "issues"`, `window`, and `source_name` as attributes (no
+#' `contrib_threshold`, since none applies here) so `plot_activity()`/
+#' `plot_new_author_rate()` don't need to be told them again.
+#'
+#' @examples
+#' \dontrun{
+#' na <- new_author_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' plot_activity (na) + ggplot2::labs (y = "New (non-founding) authors")
+#' }
+#' @export
+new_author_rate_tbl <- function (issue_authors_tbl,
+                                 repo_tbl,
+                                 source_name,
+                                 n_strata = 4L,
+                                 window = 12L,
+                                 date_start = as.Date ("2015-01-01"),
+                                 date_end = NULL) {
+
+    # rm no visible binding notes
+    source <- repo_url <- .data <- month <- metric_val <-
+        popularity_stratum <- n_metric <- n_repo_months <-
+        created_at <- repo_created_at <- author <- NULL
+
+    if (is.null (date_end)) {
+        date_end <- floor_month (Sys.Date ())
+    }
+
+    metric_col <- unname (POPULARITY_METRIC [source_name])
+    if (is.na (metric_col)) {
+        stop ("Unknown source: ", source_name, call. = FALSE)
+    }
+
+    repo_created_tbl <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at)
+
+    repos <- repo_tbl |>
+        dplyr::filter (source == source_name) |>
+        dplyr::distinct (repo_url, .keep_all = TRUE) |>
+        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
+        dplyr::mutate (
+            repo_created_at = floor_month (repo_created_at),
+            metric_val = .data [[metric_col]]
+        ) |>
+        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
+
+    if (nrow (repos) == 0) {
+        empty <- tibble::tibble (
+            popularity_stratum = factor (ordered = TRUE),
+            month = as.Date (character ()),
+            n_metric = double (),
+            n_repo_months = integer (),
+            rate = double ()
+        )
+        attr (empty, "metric") <- "issues"
+        attr (empty, "window") <- window
+        attr (empty, "source_name") <- source_name
+        return (empty)
+    }
+
+    repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
+    stratum_levels <- levels (repos$popularity_stratum)
+
+    months <- seq (date_start, date_end, by = "month")
+
+    exposure <- dplyr::cross_join (
+        tibble::tibble (repo_url = repos$repo_url),
+        tibble::tibble (month = months)
+    ) |>
+        dplyr::inner_join (
+            dplyr::select (repos, repo_url, repo_created_at, popularity_stratum),
+            by = "repo_url"
+        ) |>
+        dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
+        dplyr::count (popularity_stratum, month, name = "n_repo_months")
+
+    # Each repo's first-ever appearance of each author, ordered
+    # chronologically within the repo (sorted ascending before `distinct()`
+    # so the row it keeps per author is their *earliest*, not latest,
+    # issue) - so the first row per repo is that repo's founding author,
+    # excluded below as not itself a "new arrival".
+    first_appearances <- issue_authors_tbl |>
+        dplyr::filter (repo_url %in% repos$repo_url) |>
+        dplyr::arrange (repo_url, created_at) |>
+        dplyr::distinct (repo_url, author, .keep_all = TRUE)
+
+    repo_grp <- dplyr::consecutive_id (first_appearances$repo_url)
+    is_founder <- !duplicated (repo_grp)
+    new_arrivals <- first_appearances [!is_founder, ] |>
+        dplyr::mutate (month = floor_month (created_at)) |>
+        dplyr::filter (month >= date_start, month <= date_end) |>
+        dplyr::inner_join (
+            dplyr::select (repos, repo_url, popularity_stratum),
+            by = "repo_url"
+        )
+
+    new_counts <- dplyr::count (
+        new_arrivals, popularity_stratum, month,
+        name = "n_metric"
+    )
+
+    grid <- dplyr::cross_join (
+        tibble::tibble (
+            popularity_stratum = factor (
+                stratum_levels,
+                levels = stratum_levels, ordered = TRUE
+            )
+        ),
+        tibble::tibble (month = months)
+    )
+
+    result <- grid |>
+        dplyr::left_join (exposure, by = c ("popularity_stratum", "month")) |>
+        dplyr::left_join (new_counts, by = c ("popularity_stratum", "month")) |>
+        dplyr::mutate (
+            n_metric = dplyr::coalesce (n_metric, 0L),
+            n_repo_months = dplyr::coalesce (n_repo_months, 0L)
+        ) |>
+        dplyr::arrange (popularity_stratum, month) |>
+        dplyr::group_by (popularity_stratum) |>
+        dplyr::mutate (
+            n_metric = trailing_roll_sum (n_metric, window),
+            n_repo_months = trailing_roll_sum (n_repo_months, window)
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::mutate (
+            rate = dplyr::if_else (
+                n_repo_months > 0, n_metric / n_repo_months, NA_real_
+            )
+        )
+
+    attr (result, "metric") <- "issues"
+    attr (result, "window") <- window
+    attr (result, "source_name") <- source_name
+
+    result
+}

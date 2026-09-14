@@ -273,3 +273,85 @@ plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comm
         ggplot2::theme (legend.position = "none") +
         ggplot2::facet_wrap (~popularity_stratum, nrow = 1)
 }
+
+# ---- community expansion: new (non-founding) author arrival rate -----------
+
+#' Plot new (non-founding) author arrival rate, across sources and strata
+#'
+#' Calls `new_author_rate_tbl()` for every source in `POPULARITY_METRIC` and
+#' row-binds the results, then plots each source's trailing-window rate
+#' over calendar time, one line per popularity stratum, faceted by source
+#' with a free y-scale per facet (sources sit on very different absolute
+#' rates, as in `plot_cohort_age()`). Unlike `plot_fold_change()`/
+#' `plot_activity_by_source()`, this builds its own multi-source table
+#' internally rather than taking one as `tbl` - `new_author_rate_tbl()`
+#' itself is single-source, matching `issue_rate_tbl()`/
+#' `author_density_tbl()`.
+#'
+#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
+#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param n_strata,window,date_start,date_end Passed to each source's
+#' `new_author_rate_tbl()` call.
+#' @param start_year Optional year to crop the plotted window to, as in
+#' `plot_activity()` - display-only, doesn't affect the underlying
+#' repo-months/rate calculations.
+#' @return A ggplot object.
+#'
+#' @examples
+#' \dontrun{
+#' plot_new_author_rate (issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME)
+#' }
+#' @export
+plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
+                                  source_display = NULL,
+                                  n_strata = 4L,
+                                  window = 12L,
+                                  date_start = as.Date ("2015-01-01"),
+                                  date_end = NULL,
+                                  start_year = NULL) {
+
+    month <- rate <- source <- popularity_stratum <- NULL
+
+    sources <- names (POPULARITY_METRIC)
+
+    rate_tbl <- purrr::map_dfr (sources, \ (src) {
+        new_author_rate_tbl (
+            issue_authors_tbl, repo_tbl, src,
+            n_strata = n_strata, window = window,
+            date_start = date_start, date_end = date_end
+        ) |>
+            dplyr::mutate (source = src)
+    })
+
+    if (!is.null (start_year)) {
+        start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
+        rate_tbl <- dplyr::filter (rate_tbl, month >= start_date)
+    }
+
+    if (!is.null (source_display)) {
+        lab <- unname (source_display [rate_tbl$source])
+        rate_tbl$source <- ifelse (is.na (lab), rate_tbl$source, lab)
+    }
+    rate_tbl$source <- factor (rate_tbl$source, levels = unique (rate_tbl$source))
+    rate_tbl$popularity_stratum <- label_stratum_extremes (rate_tbl$popularity_stratum)
+
+    ggplot2::ggplot (
+        dplyr::filter (rate_tbl, !is.na (rate)),
+        ggplot2::aes (month, rate, colour = popularity_stratum)
+    ) +
+        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
+        ggplot2::facet_wrap (~source, scales = "free_y") +
+        ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
+        ggplot2::labs (
+            x = NULL,
+            y = stringr::str_glue (
+                "New (non-founding) authors per repo-month ",
+                "({window}-month trailing avg)"
+            ),
+            colour = "Popularity\nstratum"
+        ) +
+        ggplot2::theme_minimal () +
+        ggplot2::theme (legend.position = "top") +
+        ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
+}
