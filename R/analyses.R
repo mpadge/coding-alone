@@ -262,3 +262,132 @@ join_repo_metadata <- function (issue_authors_tbl, repo_tbl) {
     repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
     dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
 }
+
+# ---- commit counts ----------------------------------------------------------
+
+# GitHub's GraphQL API has no endpoint that hands back a pre-binned
+# month-by-month commit histogram in one call. What it does have is
+# `history(since:, until:)` on a `Commit` object (reached via a branch ref's
+# `target`), whose `totalCount` field counts commits reachable from that
+# target within the window - without ever paging through or returning the
+# commits themselves. That makes it cheap to call once per month of a
+# repo's history, even though it can't be done in a single request.
+
+#' GraphQL query for a repo's own creation timestamp only - used to bound
+#' the monthly loop in `github_commit_counts_by_month()` below to months the
+#' repo actually existed in, without wasting a query on months before it was
+#' created.
+#' @noRd
+build_repo_created_at_query <- function (owner, repo) {
+    stringr::str_glue (
+        'query {{
+            repository(owner: "{owner}", name: "{repo}") {{
+                createdAt
+            }}
+        }}'
+    )
+}
+
+#' GraphQL query for the number of commits landed on a repo's default
+#' branch within `[since, until)`. `since`/`until` are GitTimestamp strings
+#' (ISO-8601, e.g. `"2020-01-01T00:00:00Z"`).
+#' @noRd
+build_commit_count_query <- function (owner, repo, since, until) {
+    stringr::str_glue (
+        'query {{
+            repository(owner: "{owner}", name: "{repo}") {{
+                defaultBranchRef {{
+                    target {{
+                        ... on Commit {{
+                            history(since: "{since}", until: "{until}") {{
+                                totalCount
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}'
+    )
+}
+
+#' Number of commits on a single repo's default branch within `[since,
+#' until)`. Returns 0 for a repo with no default branch at all (an empty
+#' repo), rather than erroring.
+#' @noRd
+github_repo_commit_count <- function (owner, repo, since, until) {
+
+    body <- gh::gh_gql (build_commit_count_query (owner, repo, since, until))
+    history <- purrr::pluck (
+        body, "data", "repository", "defaultBranchRef", "target", "history"
+    )
+    if (is.null (history)) {
+        return (0L)
+    }
+    as.integer (history$totalCount)
+}
+
+#' Monthly commit counts on a single GitHub repo's default branch, as a
+#' direct measure of code-activity to sit alongside the issue-based measures
+#' elsewhere in this package. One GraphQL query per calendar month in range
+#' (bounded below by the repo's own creation date, capped above by
+#' `date_end`) - there's no way to ask for all months in a single request,
+#' but each query only ever asks for a `totalCount`, so the cost per query
+#' stays low regardless of how many commits actually landed that month.
+#'
+#' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
+#' @param date_start,date_end Date bounds on the monthly sequence;
+#' `date_end` defaults to the start of the current month. Months before the
+#' repo's own creation date are skipped rather than queried and discarded.
+#'
+#' @return A tibble with one row per month: `repo_url`, `month`,
+#' `n_commits`. Zero rows if the repo has no commits in range (including a
+#' repo created after `date_end`).
+#'
+#' @examples
+#' \dontrun{
+#' commits <- github_commit_counts_by_month ("https://github.com/ropensci/targets")
+#' }
+#' @export
+github_commit_counts_by_month <- function (repo_url = NULL,
+                                           date_start = as.Date ("2015-01-01"),
+                                           date_end = NULL) {
+
+    if (is.null (date_end)) date_end <- floor_month (Sys.Date ())
+
+    empty <- tibble::tibble (
+        repo_url = character (), month = as.Date (character ()),
+        n_commits = integer ()
+    )
+
+    repo <- parse_github_repo_url (repo_url)
+
+    created_at_body <- gh::gh_gql (
+        build_repo_created_at_query (repo$owner, repo$repo)
+    )
+    repo_created_at <- created_at_body$data$repository$createdAt
+    if (is.null (repo_created_at)) {
+        return (empty)
+    }
+
+    start <- max (date_start, floor_month (repo_created_at))
+    if (start > date_end) {
+        return (empty)
+    }
+
+    n_months <- length (seq (start, date_end, by = "month"))
+    bounds <- seq (start, by = "month", length.out = n_months + 1)
+    months <- utils::head (bounds, -1)
+    month_ends <- utils::tail (bounds, -1)
+
+    to_git_timestamp <- \ (d) strftime (d, "%Y-%m-%dT00:00:00Z", tz = "UTC")
+
+    n_commits <- purrr::map2_int (months, month_ends, \ (since, until) {
+        github_repo_commit_count (
+            repo$owner, repo$repo,
+            since = to_git_timestamp (since),
+            until = to_git_timestamp (until)
+        )
+    })
+
+    tibble::tibble (repo_url = repo_url, month = months, n_commits = n_commits)
+}
