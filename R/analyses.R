@@ -367,8 +367,9 @@ github_repo_commit_dates <- function (owner, repo, since, until) {
 #' the repo's creation month if `repo_created_at` is later; `date_end`
 #' defaults to the start of the current month.
 #'
-#' @return A tibble with one row per month: `repo_url`, `month`,
-#' `n_commits`. Zero rows if the repo's creation month is after `date_end`.
+#' @return A tibble with one row per month: `repo_url`, `month`, `n_commits`,
+#' trimmed of any leading/trailing zero-commit months. Zero rows if the repo's
+#' creation month is after `date_end`, or it has no commits at all in range.
 #'
 #' @examples
 #' \dontrun{
@@ -412,9 +413,15 @@ github_commit_counts_by_month <- function (repo_url = NULL,
     counts_tbl <- tibble::tibble (month = floor_month (commit_dates)) |>
         dplyr::count (month, name = "n_commits")
 
-    tibble::tibble (repo_url = repo_url, month = months) |>
+    out <- tibble::tibble (repo_url = repo_url, month = months) |>
         dplyr::left_join (counts_tbl, by = "month") |>
         dplyr::mutate (n_commits = as.integer (dplyr::coalesce (n_commits, 0)))
+
+    nonzero <- which (out$n_commits > 0)
+    if (length (nonzero) == 0) {
+        return (out [0, ])
+    }
+    out [seq (min (nonzero), max (nonzero)), ]
 }
 
 COMMIT_COUNTS_COL_TYPES <- readr::cols (

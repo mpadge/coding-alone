@@ -32,8 +32,9 @@ the repo's creation month if \code{repo_created_at} is later; \code{date_end}
 defaults to the start of the current month.}
 }
 \value{
-A tibble with one row per month: \code{repo_url}, \code{month},
-\code{n_commits}. Zero rows if the repo's creation month is after \code{date_end}.
+A tibble with one row per month: \code{repo_url}, \code{month}, \code{n_commits},
+trimmed of any leading/trailing zero-commit months. Zero rows if the repo's
+creation month is after \code{date_end}, or it has no commits at all in range.
 }
 \description{
 Monthly commit counts on a single GitHub repo's default branch, as a
