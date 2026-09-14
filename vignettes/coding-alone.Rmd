@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Robert Putnam found Americans bowling as much as ever but increasingly outside the leagues that once turned it into a shared civic habit; across five open-source ecosystems, the same shift shows up in who writes code - not less of it, but more of it happening to just one person where several used to overlap"
 author: "Mark Padgham"
-date: "11 September 2026"
+date: "14 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
@@ -180,6 +180,32 @@ identically: in 15 of the 20 cells,
 the distinct-author count has fallen by *more* than the issue count has,
 meaning the average non-core author isn't opening noticeably more issues
 to compensate for fewer of them showing up - if anything, the opposite.
+
+Distinct-author density, though, still blends two different populations
+together: people who've been showing up for years and just keep at it,
+and people interacting with a repository for the very first time.
+Separating the two needs identifying each author's first-ever appearance
+in a repository's issue tracker, and setting aside the very first such
+appearance for each repo - its founding author, typically the maintainer
+opening the repo's own first issue - as not itself community growth.
+What's left is the closest thing this dataset offers to new members
+joining a bowling league, tracked the same way as every rate above:
+normalised by repo-months of exposure and reported as a 12-month trailing
+average.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="plot of chunk new-author-rate-plot"  />
+<p class="caption">plot of chunk new-author-rate-plot</p>
+</div>
+
+The new-arrival rate has fallen in
+20 of 20 (source, stratum) cells since
+January 2021 - the same near-universal decline Finding 1 found in overall
+density. In 17 of those 20 cells, the
+new-arrival rate has fallen by *more* than overall density has, meaning
+the decline documented above isn't simply existing regulars posting a
+little less often; it's disproportionately a shrinking supply of people
+showing up for the first time at all.
 
 ## Finding 2: the core is thinning too
 

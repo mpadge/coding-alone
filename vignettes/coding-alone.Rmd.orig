@@ -149,6 +149,32 @@ n_solo_sources_risen <- solo_by_source |>
     dplyr::pull (rose) |>
     sum ()
 
+# New (non-founding) author arrival-rate fold-change, computed the same
+# way as fc_authors above but for new_author_rate_tbl() - lets Finding 1
+# separate "existing regulars posting a bit less" from "fewer people
+# showing up for the very first time".
+new_arrival_fc <- purrr::map_dfr (primary_sources, \ (src) {
+    na_tbl <- new_author_rate_tbl (issue_authors_tbl, repo_tbl, src)
+    na_tbl <- dplyr::filter (na_tbl, !is.na (rate))
+    ref <- dplyr::filter (na_tbl, month == as.Date ("2021-01-01"))
+    latest_month <- max (na_tbl$month)
+    latest <- dplyr::filter (na_tbl, month == latest_month)
+    dplyr::inner_join (
+        dplyr::select (ref, popularity_stratum, rate_ref = rate),
+        dplyr::select (latest, popularity_stratum, rate_latest = rate),
+        by = "popularity_stratum"
+    ) |>
+        dplyr::mutate (source = src, fold_change = rate_latest / rate_ref)
+})
+n_new_declined <- sum (new_arrival_fc$fold_change < 1)
+n_new_cells <- nrow (new_arrival_fc)
+new_vs_density <- dplyr::inner_join (
+    new_arrival_fc, fc_authors,
+    by = c ("source", "popularity_stratum"),
+    suffix = c ("_new", "_density")
+)
+n_new_fell_more <- sum (new_vs_density$fold_change_new < new_vs_density$fold_change_density)
+
 # Matched-cohort age-vs-calendar-time analysis (same construction as in
 # review-dividend, re-run here so this document stands on its own).
 cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
@@ -353,6 +379,34 @@ identically: in `r n_authors_fell_more` of the `r n_authors_cells` cells,
 the distinct-author count has fallen by *more* than the issue count has,
 meaning the average non-core author isn't opening noticeably more issues
 to compensate for fewer of them showing up - if anything, the opposite.
+
+Distinct-author density, though, still blends two different populations
+together: people who've been showing up for years and just keep at it,
+and people interacting with a repository for the very first time.
+Separating the two needs identifying each author's first-ever appearance
+in a repository's issue tracker, and setting aside the very first such
+appearance for each repo - its founding author, typically the maintainer
+opening the repo's own first issue - as not itself community growth.
+What's left is the closest thing this dataset offers to new members
+joining a bowling league, tracked the same way as every rate above:
+normalised by repo-months of exposure and reported as a 12-month trailing
+average.
+
+```{r new-author-rate-plot, fig.height=6}
+plot_new_author_rate (
+    issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
+    start_year = 2016
+)
+```
+
+The new-arrival rate has fallen in
+`r n_new_declined` of `r n_new_cells` (source, stratum) cells since
+January 2021 - the same near-universal decline Finding 1 found in overall
+density. In `r n_new_fell_more` of those `r n_new_cells` cells, the
+new-arrival rate has fallen by *more* than overall density has, meaning
+the decline documented above isn't simply existing regulars posting a
+little less often; it's disproportionately a shrinking supply of people
+showing up for the first time at all.
 
 ## Finding 2: the core is thinning too
 
