@@ -4,10 +4,17 @@
 \alias{github_commit_counts_by_month}
 \title{Monthly commit counts on a single GitHub repo's default branch, as a
 direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package.}
+elsewhere in this package. This is meant to run after issue-author data
+has already been fetched (\code{fetch_issue_authors()}), which records each
+repo's own creation timestamp for free (\code{repo_created_at}, on every row)
+\itemize{
+\item so rather than spend a separate GraphQL call re-discovering that here,
+\code{fetch_repo_commits()} passes it straight through as \code{repo_created_at}.
+}}
 \usage{
 github_commit_counts_by_month(
   repo_url = NULL,
+  repo_created_at = NULL,
   date_start = as.Date("2015-01-01"),
   date_end = NULL
 )
@@ -15,20 +22,29 @@ github_commit_counts_by_month(
 \arguments{
 \item{repo_url}{A GitHub repo URL, e.g. \code{"https://github.com/owner/repo"}.}
 
-\item{date_start, date_end}{Date bounds on the monthly sequence;
-\code{date_end} defaults to the start of the current month. Months before the
-repo's own creation date come back with \code{n_commits = 0} rather than being
-dropped, since fetching \code{createdAt} separately just to skip them would
-cost a request for no benefit here.}
+\item{repo_created_at}{The repo's own creation timestamp (as recorded in
+\code{issue-authors.csv}'s \code{repo_created_at} column), used to raise
+\code{date_start} up to the month the repo actually came into existence.
+\code{NULL} (the default) leaves \code{date_start} untouched.}
+
+\item{date_start, date_end}{Date bounds on the monthly sequence, raised to
+the repo's creation month if \code{repo_created_at} is later; \code{date_end}
+defaults to the start of the current month.}
 }
 \value{
 A tibble with one row per month: \code{repo_url}, \code{month},
-\code{n_commits}.
+\code{n_commits}. Zero rows if the repo's creation month is after \code{date_end}.
 }
 \description{
 Monthly commit counts on a single GitHub repo's default branch, as a
 direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package.
+elsewhere in this package. This is meant to run after issue-author data
+has already been fetched (\code{fetch_issue_authors()}), which records each
+repo's own creation timestamp for free (\code{repo_created_at}, on every row)
+\itemize{
+\item so rather than spend a separate GraphQL call re-discovering that here,
+\code{fetch_repo_commits()} passes it straight through as \code{repo_created_at}.
+}
 }
 \examples{
 \dontrun{

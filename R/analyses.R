@@ -352,17 +352,23 @@ github_repo_commit_dates <- function (owner, repo, since, until) {
 
 #' Monthly commit counts on a single GitHub repo's default branch, as a
 #' direct measure of code-activity to sit alongside the issue-based measures
-#' elsewhere in this package.
+#' elsewhere in this package. This is meant to run after issue-author data
+#' has already been fetched (`fetch_issue_authors()`), which records each
+#' repo's own creation timestamp for free (`repo_created_at`, on every row)
+#' - so rather than spend a separate GraphQL call re-discovering that here,
+#' `fetch_repo_commits()` passes it straight through as `repo_created_at`.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
-#' @param date_start,date_end Date bounds on the monthly sequence;
-#' `date_end` defaults to the start of the current month. Months before the
-#' repo's own creation date come back with `n_commits = 0` rather than being
-#' dropped, since fetching `createdAt` separately just to skip them would
-#' cost a request for no benefit here.
+#' @param repo_created_at The repo's own creation timestamp (as recorded in
+#' `issue-authors.csv`'s `repo_created_at` column), used to raise
+#' `date_start` up to the month the repo actually came into existence.
+#' `NULL` (the default) leaves `date_start` untouched.
+#' @param date_start,date_end Date bounds on the monthly sequence, raised to
+#' the repo's creation month if `repo_created_at` is later; `date_end`
+#' defaults to the start of the current month.
 #'
 #' @return A tibble with one row per month: `repo_url`, `month`,
-#' `n_commits`.
+#' `n_commits`. Zero rows if the repo's creation month is after `date_end`.
 #'
 #' @examples
 #' \dontrun{
@@ -370,12 +376,25 @@ github_repo_commit_dates <- function (owner, repo, since, until) {
 #' }
 #' @export
 github_commit_counts_by_month <- function (repo_url = NULL,
+                                           repo_created_at = NULL,
                                            date_start = as.Date ("2015-01-01"),
                                            date_end = NULL) {
 
     month <- n_commits <- NULL # rm no visible binding notes
 
     if (is.null (date_end)) date_end <- floor_month (Sys.Date ())
+
+    start <- date_start
+    if (!is.null (repo_created_at) && !is.na (repo_created_at)) {
+        start <- max (date_start, floor_month (repo_created_at))
+    }
+
+    if (start > date_end) {
+        return (tibble::tibble (
+            repo_url = character (), month = as.Date (character ()),
+            n_commits = integer ()
+        ))
+    }
 
     repo <- parse_github_repo_url (repo_url)
 
@@ -384,11 +403,11 @@ github_commit_counts_by_month <- function (repo_url = NULL,
 
     commit_dates <- github_repo_commit_dates (
         repo$owner, repo$repo,
-        since = to_git_timestamp (date_start),
+        since = to_git_timestamp (start),
         until = to_git_timestamp (until)
     )
 
-    months <- seq (date_start, date_end, by = "month")
+    months <- seq (start, date_end, by = "month")
 
     counts_tbl <- tibble::tibble (month = floor_month (commit_dates)) |>
         dplyr::count (month, name = "n_commits")
@@ -411,6 +430,13 @@ COMMIT_COUNTS_COL_TYPES <- readr::cols (
 #' reason: GitHub's hourly rate limit is a cumulative budget, so the risk is
 #' running through it too fast overall, not concurrency within one batch.
 #'
+#' Assumes `fetch_issue_authors()` has already been run against `out_dir`,
+#' so each repo's creation timestamp can be read straight out of its
+#' `issue-authors.csv` rather than fetched again here (see
+#' `github_commit_counts_by_month()`'s `repo_created_at` argument); a repo
+#' missing from that file (e.g. it has never had any issues) just falls
+#' back to `date_start`.
+#'
 #' @inheritParams fetch_issue_authors
 #' @param date_start,date_end Passed to `github_commit_counts_by_month()`.
 #' @return A tibble with columns `repo_url`, `month`, `n_commits` - the full
@@ -429,12 +455,24 @@ fetch_repo_commits <- function (repo_urls, out_dir, batch_size = 50L,
                                 date_start = as.Date ("2015-01-01"),
                                 date_end = NULL) {
 
+    # rm no visible binding notes:
+    repo_url <- repo_created_at <- NULL
+
     is_test_env <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
 
     if (!is_test_env) {
         requireNamespace ("progressify", quietly = TRUE)
         requireNamespace ("futurize", quietly = TRUE)
         progressr::handlers (global = TRUE)
+    }
+
+    issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
+    repo_created_at_lookup <- if (file.exists (issue_authors_csv)) {
+        readr::read_csv (issue_authors_csv, col_types = ISSUE_AUTHORS_COL_TYPES) |>
+            dplyr::distinct (repo_url, repo_created_at) |>
+            tibble::deframe ()
+    } else {
+        character ()
     }
 
     commit_counts_csv <- file.path (out_dir, "commit-counts.csv")
@@ -473,6 +511,7 @@ fetch_repo_commits <- function (repo_urls, out_dir, batch_size = 50L,
         tryCatch (
             github_commit_counts_by_month (
                 repo_url,
+                repo_created_at = unname (repo_created_at_lookup [repo_url]),
                 date_start = date_start,
                 date_end = date_end
             ),

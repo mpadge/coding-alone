@@ -33,12 +33,12 @@ A tibble with columns \code{repo_url}, \code{month}, \code{n_commits} - the full
 accumulated result, including rows from any previous run(s).
 }
 \description{
-Fetch monthly commit counts (\code{github_commit_counts_by_month()}) for many
-repos, batched and checkpointed to disk exactly like
-\code{fetch_issue_authors()} above - same checkpoint/resume logic and the same
-concurrent-batch execution via \code{progressify}/\code{futurize}, for the same
-reason: GitHub's hourly rate limit is a cumulative budget, so the risk is
-running through it too fast overall, not concurrency within one batch.
+Assumes \code{fetch_issue_authors()} has already been run against \code{out_dir},
+so each repo's creation timestamp can be read straight out of its
+\code{issue-authors.csv} rather than fetched again here (see
+\code{github_commit_counts_by_month()}'s \code{repo_created_at} argument); a repo
+missing from that file (e.g. it has never had any issues) just falls
+back to \code{date_start}.
 }
 \examples{
 repo_urls <- c (
