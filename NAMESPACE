@@ -3,6 +3,7 @@
 export(author_density_fold_change_tbl)
 export(author_density_tbl)
 export(author_interval_tbl)
+export(author_interval_trend_tbl)
 export(build_joss_table)
 export(build_repo_tbl)
 export(build_runiv_table)

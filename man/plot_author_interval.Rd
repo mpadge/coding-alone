@@ -23,14 +23,8 @@ plot_author_interval(
 
 \item{source_display}{Named character vector as in \code{plot_fold_change()}.}
 
-\item{n_strata}{Passed to each source's \code{author_interval_tbl()} call.}
-
-\item{window}{Trailing aggregation window, in months, for the rolling
-geometric mean. Default 12, matching every other trailing-window metric
-in this package.}
-
-\item{date_start, date_end}{Passed to each source's
-\code{author_interval_tbl()} call.}
+\item{n_strata, window, date_start, date_end}{Passed to each source's
+\code{author_interval_trend_tbl()} call.}
 
 \item{start_year}{Optional year to crop the plotted window to, as in
 \code{plot_activity()} - display-only, doesn't affect the underlying
@@ -40,19 +34,12 @@ interval calculations.}
 A ggplot object.
 }
 \description{
-Calls \code{author_interval_tbl()} for every source in \code{POPULARITY_METRIC},
-bins each interval by the calendar month of its \code{event_time}, and plots
-a \code{window}-month trailing geometric mean of \code{interval_days} over time,
-one line per popularity stratum, faceted by source with a free y-scale
-per facet (sources sit on very different absolute wait times, as in
-\code{plot_cohort_age()}). A geometric (not arithmetic) mean is used because
-wait times between authors are heavily right-skewed - in a sparse
-stratum-month cell, a single repo that went quiet for years would
-otherwise dominate an arithmetic mean of just a handful of intervals.
-The binning and trailing-window smoothing happen here, not in
-\code{author_interval_tbl()} itself, which stays at the event level (one row
-per contributor arrival) so it composes with other uses that want the
-raw intervals rather than a smoothed trend.
+Calls \code{author_interval_trend_tbl()} for every source in
+\code{POPULARITY_METRIC} and row-binds the results, then plots each source's
+\code{window}-month trailing geometric mean of \code{interval_days} over time, one
+line per popularity stratum, faceted by source with a free y-scale per
+facet (sources sit on very different absolute wait times, as in
+\code{plot_cohort_age()}).
 }
 \examples{
 \dontrun{

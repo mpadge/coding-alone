@@ -610,3 +610,105 @@ author_interval_tbl <- function (issue_authors_tbl,
 
     result
 }
+
+#' Rolling geometric-mean wait time between consecutive first-time authors,
+#' by source and popularity stratum
+#'
+#' Aggregates `author_interval_tbl()`'s event-level intervals into a
+#' (popularity stratum x month) grid: each interval is binned by the
+#' calendar month of its `event_time`, and reported as a `window`-month
+#' trailing geometric mean of `interval_days`. A geometric (not arithmetic)
+#' mean is used because wait times between authors are heavily
+#' right-skewed - in a sparse stratum-month cell, a single repo that went
+#' quiet for years would otherwise dominate an arithmetic mean of just a
+#' handful of intervals. A handful of near-simultaneous arrivals
+#' (`interval_days` at or near 0) are floored at one minute before logging,
+#' since `log(0) = -Inf` would otherwise wreck that whole cell's geometric
+#' mean rather than just pulling it down.
+#'
+#' @inheritParams issue_rate_tbl
+#' @return A tibble with one row per (popularity stratum, month):
+#' `popularity_stratum`, `month`, `n_events` (trailing sum of author
+#' arrivals contributing an interval that month), `geo_mean_days` (the
+#' `window`-month trailing geometric mean of `interval_days`, `NA` where
+#' `n_events` is 0). Carries `window` and `source_name` as attributes.
+#'
+#' @examples
+#' \dontrun{
+#' it <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' }
+#' @export
+author_interval_trend_tbl <- function (issue_authors_tbl,
+                                       repo_tbl,
+                                       source_name,
+                                       n_strata = 4L,
+                                       window = 12L,
+                                       date_start = as.Date ("2015-01-01"),
+                                       date_end = NULL) {
+
+    popularity_stratum <- month <- event_time <- interval_days <-
+        sum_log_days <- n_events <- geo_mean_days <- NULL
+
+    iv <- author_interval_tbl (
+        issue_authors_tbl, repo_tbl, source_name,
+        n_strata = n_strata, date_start = date_start, date_end = date_end
+    )
+
+    empty <- tibble::tibble (
+        popularity_stratum = factor (ordered = TRUE),
+        month = as.Date (character ()),
+        n_events = integer (),
+        geo_mean_days = double ()
+    )
+
+    if (nrow (iv) == 0) {
+        attr (empty, "window") <- window
+        attr (empty, "source_name") <- source_name
+        return (empty)
+    }
+
+    monthly <- iv |>
+        dplyr::mutate (month = floor_month (event_time)) |>
+        dplyr::group_by (popularity_stratum, month) |>
+        dplyr::summarise (
+            sum_log_days = sum (log (pmax (interval_days, 1 / 1440))),
+            n_events = dplyr::n (),
+            .groups = "drop"
+        )
+
+    stratum_levels <- levels (iv$popularity_stratum)
+    months <- seq (min (monthly$month), max (monthly$month), by = "month")
+
+    grid <- tidyr::expand_grid (
+        popularity_stratum = factor (
+            stratum_levels,
+            levels = stratum_levels, ordered = TRUE
+        ),
+        month = months
+    )
+
+    result <- grid |>
+        dplyr::left_join (monthly, by = c ("popularity_stratum", "month")) |>
+        dplyr::mutate (
+            sum_log_days = dplyr::coalesce (sum_log_days, 0),
+            n_events = dplyr::coalesce (n_events, 0L)
+        ) |>
+        dplyr::arrange (popularity_stratum, month) |>
+        dplyr::group_by (popularity_stratum) |>
+        dplyr::mutate (
+            sum_log_days = trailing_roll_sum (sum_log_days, window),
+            n_events = trailing_roll_sum (n_events, window)
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::mutate (
+            geo_mean_days = dplyr::if_else (
+                n_events > 0, exp (sum_log_days / n_events), NA_real_
+            )
+        ) |>
+        dplyr::select (popularity_stratum, month, n_events, geo_mean_days)
+
+    attr (result, "window") <- window
+    attr (result, "source_name") <- source_name
+
+    result
+}
