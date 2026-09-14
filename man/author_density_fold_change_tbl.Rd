@@ -23,6 +23,8 @@ author_density_fold_change_tbl(
 \item{sources}{Character vector of \code{source_name} values to include (see
 \code{issue_rate_tbl()}).}
 
+\item{contrib_threshold, window}{Passed to \code{author_density_tbl()}.}
+
 \item{contrib_min}{As in \code{author_density_tbl()}.}
 
 \item{ref_date}{Reference \code{Date} (first-of-month) to compare against the

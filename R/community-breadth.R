@@ -190,6 +190,7 @@ author_density_tbl <- function (issue_authors_tbl,
 #'     ggplot2::labs (title = "Distinct authors")
 #' }
 #' @param contrib_min As in `author_density_tbl()`.
+#' @param contrib_threshold,window Passed to `author_density_tbl()`.
 #' @export
 author_density_fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
                                             contrib_threshold = 0.01,
@@ -279,7 +280,7 @@ solo_repo_share_tbl <- function (issue_authors_tbl, repo_tbl, sources,
                                  date_start = as.Date ("2015-01-01"),
                                  date_end = NULL) {
 
-    source <- repo_url <- month <- author <- n_people <- NULL
+    source <- repo_url <- created_at <- month <- author <- n_people <- NULL
 
     if (is.null (date_end)) date_end <- floor_month (Sys.Date ())
     if (is.null (months)) months <- seq (date_start, date_end, by = "month")
