@@ -532,7 +532,8 @@ author_interval_tbl <- function (issue_authors_tbl,
 
     # rm no visible binding notes
     source <- repo_url <- .data <- metric_val <- popularity_stratum <-
-        created_at <- repo_created_at <- author <- arrival_index <- NULL
+        created_at <- repo_created_at <- interval_days <-
+        author <- arrival_index <- NULL
 
     if (is.null (date_end)) {
         date_end <- Sys.Date ()
