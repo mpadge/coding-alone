@@ -355,3 +355,146 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
         ggplot2::theme (legend.position = "top") +
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 }
+
+# ---- community expansion: time between consecutive first-time authors -----
+
+#' Plot rolling geometric-mean wait time between consecutive first-time
+#' authors, across sources and strata
+#'
+#' Calls `author_interval_tbl()` for every source in `POPULARITY_METRIC`,
+#' bins each interval by the calendar month of its `event_time`, and plots
+#' a `window`-month trailing geometric mean of `interval_days` over time,
+#' one line per popularity stratum, faceted by source with a free y-scale
+#' per facet (sources sit on very different absolute wait times, as in
+#' `plot_cohort_age()`). A geometric (not arithmetic) mean is used because
+#' wait times between authors are heavily right-skewed - in a sparse
+#' stratum-month cell, a single repo that went quiet for years would
+#' otherwise dominate an arithmetic mean of just a handful of intervals.
+#' The binning and trailing-window smoothing happen here, not in
+#' `author_interval_tbl()` itself, which stays at the event level (one row
+#' per contributor arrival) so it composes with other uses that want the
+#' raw intervals rather than a smoothed trend.
+#'
+#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
+#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param n_strata Passed to each source's `author_interval_tbl()` call.
+#' @param window Trailing aggregation window, in months, for the rolling
+#' geometric mean. Default 12, matching every other trailing-window metric
+#' in this package.
+#' @param date_start,date_end Passed to each source's
+#' `author_interval_tbl()` call.
+#' @param start_year Optional year to crop the plotted window to, as in
+#' `plot_activity()` - display-only, doesn't affect the underlying
+#' interval calculations.
+#' @return A ggplot object.
+#'
+#' @examples
+#' \dontrun{
+#' plot_author_interval (issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME)
+#' }
+#' @export
+plot_author_interval <- function (issue_authors_tbl, repo_tbl,
+                                  source_display = NULL,
+                                  n_strata = 4L,
+                                  window = 12L,
+                                  date_start = as.Date ("2015-01-01"),
+                                  date_end = NULL,
+                                  start_year = NULL) {
+
+    month <- popularity_stratum <- source <- interval_days <-
+        event_time <- sum_log_days <- n_events <- geo_mean_days <- NULL
+
+    sources <- names (POPULARITY_METRIC)
+
+    monthly <- purrr::map_dfr (sources, \ (src) {
+        iv <- author_interval_tbl (
+            issue_authors_tbl, repo_tbl, src,
+            n_strata = n_strata, date_start = date_start, date_end = date_end
+        )
+        if (nrow (iv) == 0) {
+            return (tibble::tibble (
+                source = character (), popularity_stratum = factor (),
+                month = as.Date (character ()),
+                sum_log_days = double (), n_events = integer ()
+            ))
+        }
+
+        iv |>
+            dplyr::mutate (month = floor_month (event_time), source = src) |>
+            dplyr::group_by (source, popularity_stratum, month) |>
+            dplyr::summarise (
+                # A handful of intervals land at essentially 0 days (two
+                # first-time authors posting within the same minute) -
+                # `log(0) = -Inf` would otherwise wreck that whole
+                # stratum-month cell's geometric mean rather than just
+                # pulling it down, so floor at 1 minute before logging.
+                sum_log_days = sum (log (pmax (interval_days, 1 / 1440))),
+                n_events = dplyr::n (),
+                .groups = "drop"
+            )
+    })
+
+    # Full (source x stratum x month) grid, so the trailing rolling sum
+    # below has no gaps to silently skip over - mirrors `issue_rate_tbl()`'s
+    # own grid-then-left_join construction.
+    grid <- tidyr::expand_grid (
+        source = sources,
+        popularity_stratum = sort (unique (monthly$popularity_stratum)),
+        month = seq (min (monthly$month), max (monthly$month), by = "month")
+    )
+
+    result <- grid |>
+        dplyr::left_join (
+            monthly,
+            by = c ("source", "popularity_stratum", "month")
+        ) |>
+        dplyr::mutate (
+            sum_log_days = dplyr::coalesce (sum_log_days, 0),
+            n_events = dplyr::coalesce (n_events, 0L)
+        ) |>
+        dplyr::arrange (source, popularity_stratum, month) |>
+        dplyr::group_by (source, popularity_stratum) |>
+        dplyr::mutate (
+            sum_log_days = trailing_roll_sum (sum_log_days, window),
+            n_events = trailing_roll_sum (n_events, window)
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::mutate (
+            geo_mean_days = dplyr::if_else (
+                n_events > 0, exp (sum_log_days / n_events), NA_real_
+            )
+        )
+
+    if (!is.null (start_year)) {
+        start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
+        result <- dplyr::filter (result, month >= start_date)
+    }
+
+    if (!is.null (source_display)) {
+        lab <- unname (source_display [result$source])
+        result$source <- ifelse (is.na (lab), result$source, lab)
+    }
+    result$source <- factor (result$source, levels = unique (result$source))
+    result$popularity_stratum <- label_stratum_extremes (result$popularity_stratum)
+
+    ggplot2::ggplot (
+        dplyr::filter (result, !is.na (geo_mean_days)),
+        ggplot2::aes (month, geo_mean_days, colour = popularity_stratum)
+    ) +
+        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
+        ggplot2::facet_wrap (~source, scales = "free_y") +
+        ggplot2::scale_y_log10 () +
+        ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
+        ggplot2::labs (
+            x = NULL,
+            y = stringr::str_glue (
+                "Days between consecutive first-time authors ",
+                "(geometric mean, {window}-month trailing window)"
+            ),
+            colour = "Popularity\nstratum"
+        ) +
+        ggplot2::theme_minimal () +
+        ggplot2::theme (legend.position = "top") +
+        ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
+}

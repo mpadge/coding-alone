@@ -479,3 +479,134 @@ new_author_rate_tbl <- function (issue_authors_tbl,
 
     result
 }
+
+# ---- community expansion: time between consecutive first-time authors -----
+
+#' Time elapsed between consecutive first-time authors, by source and
+#' popularity stratum
+#'
+#' Event-level alternative to `new_author_rate_tbl()`'s repo-month rate:
+#' instead of asking "how many new arrivals landed this month, normalised
+#' by repo-months of exposure", this asks "how long does a repository wait
+#' between one first-time author and the next". For one source, orders
+#' each repository's distinct issue authors by their own first-ever
+#' appearance in that repo's issue tracker (its founding author first, as
+#' identified in `new_author_rate_tbl()` - but *kept* here rather than
+#' excluded, since it anchors the very first interval) and computes, for
+#' every author after the founder, the elapsed time since the previous
+#' first-time author's own first appearance. Each interval is time-stamped
+#' at the *arriving* author's own issue, not at the interval's start or
+#' midpoint, so a repository that goes quiet for two years and then gains a
+#' new contributor logs one long interval dated to the day that contributor
+#' actually showed up, not smeared backward across the quiet period. Needs
+#' no repo-months exposure denominator at all - a repository with only one
+#' author so far simply contributes no interval, rather than a zero.
+#'
+#' @inheritParams issue_rate_tbl
+#' @param date_start,date_end Date bounds on which authors' first
+#' appearances are considered; unlike the repo-month rate tables, these
+#' bound the raw event timestamps directly rather than a floored calendar
+#' month, and `date_end` defaults to `Sys.Date()` (today), not the start of
+#' the current month, since there is no partial-month repo-months exposure
+#' to worry about truncating here.
+#' @return A tibble with one row per (repository, author arrival after the
+#' founder): `repo_url`, `popularity_stratum`, `arrival_index` (2 = the
+#' first author after the founder, 3 = the second, and so on), `event_time`
+#' (the arriving author's own first-issue timestamp - when this interval is
+#' "logged"), `interval_days` (elapsed time, in days, since the previous
+#' first-time author's own first appearance). Carries `source_name` as an
+#' attribute.
+#'
+#' @examples
+#' \dontrun{
+#' iv <- author_interval_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' plot_author_interval (issue_authors_tbl, repo_tbl)
+#' }
+#' @export
+author_interval_tbl <- function (issue_authors_tbl,
+                                 repo_tbl,
+                                 source_name,
+                                 n_strata = 4L,
+                                 date_start = as.Date ("2015-01-01"),
+                                 date_end = NULL) {
+
+    # rm no visible binding notes
+    source <- repo_url <- .data <- metric_val <- popularity_stratum <-
+        created_at <- repo_created_at <- author <- arrival_index <- NULL
+
+    if (is.null (date_end)) {
+        date_end <- Sys.Date ()
+    }
+
+    metric_col <- unname (POPULARITY_METRIC [source_name])
+    if (is.na (metric_col)) {
+        stop ("Unknown source: ", source_name, call. = FALSE)
+    }
+
+    repo_created_tbl <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at)
+
+    repos <- repo_tbl |>
+        dplyr::filter (source == source_name) |>
+        dplyr::distinct (repo_url, .keep_all = TRUE) |>
+        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
+        dplyr::mutate (metric_val = .data [[metric_col]]) |>
+        dplyr::filter (!is.na (metric_val))
+
+    empty <- tibble::tibble (
+        repo_url = character (),
+        popularity_stratum = factor (ordered = TRUE),
+        arrival_index = integer (),
+        event_time = as.Date (character ()),
+        interval_days = double ()
+    )
+
+    if (nrow (repos) == 0) {
+        attr (empty, "source_name") <- source_name
+        return (empty)
+    }
+
+    repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
+
+    # Each repo's distinct authors, ordered by their own first-ever
+    # appearance - ascending sort before `distinct()` keeps each author's
+    # earliest, not latest, issue.
+    first_appearances <- issue_authors_tbl |>
+        dplyr::filter (
+            repo_url %in% repos$repo_url,
+            as.Date (created_at) >= date_start, as.Date (created_at) <= date_end
+        ) |>
+        dplyr::arrange (repo_url, created_at) |>
+        dplyr::distinct (repo_url, author, .keep_all = TRUE) |>
+        dplyr::select (repo_url, author, created_at) |>
+        dplyr::inner_join (
+            dplyr::select (repos, repo_url, popularity_stratum),
+            by = "repo_url"
+        )
+
+    if (nrow (first_appearances) == 0) {
+        attr (empty, "source_name") <- source_name
+        return (empty)
+    }
+
+    result <- first_appearances |>
+        dplyr::arrange (repo_url, created_at) |>
+        dplyr::group_by (repo_url) |>
+        dplyr::mutate (
+            arrival_index = dplyr::row_number (),
+            interval_days = as.numeric (
+                difftime (created_at, dplyr::lag (created_at), units = "days")
+            )
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::filter (arrival_index >= 2) |>
+        dplyr::transmute (
+            repo_url, popularity_stratum, arrival_index,
+            event_time = created_at, interval_days
+        )
+
+    attr (result, "source_name") <- source_name
+
+    result
+}
