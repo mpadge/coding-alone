@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.002</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.003</span>
       </span>
     </div>
 
@@ -106,7 +106,7 @@
       </tr><tr><td>
           <p><code><a href="commit_rate_tbl.html">commit_rate_tbl()</a></code> </p>
         </td>
-        <td><p>Monthly commit rate per repo-month, by source and popularity stratum</p></td>
+        <td><p>Monthly commit rate per repo-month, by source</p></td>
       </tr><tr><td>
           <p><code><a href="fetch_issue_authors.html">fetch_issue_authors()</a></code> </p>
         </td>
@@ -166,7 +166,7 @@
       </tr><tr><td>
           <p><code><a href="plot_commit_rate.html">plot_commit_rate()</a></code> </p>
         </td>
-        <td><p>Plot commit rate, across sources and strata</p></td>
+        <td><p>Plot commit rate and repo-creation rate, across sources</p></td>
       </tr><tr><td>
           <p><code><a href="plot_fold_change.html">plot_fold_change()</a></code> </p>
         </td>
@@ -187,6 +187,10 @@
           <p><code><a href="pypi_downloads_full.html">pypi_downloads_full()</a></code> </p>
         </td>
         <td><p>Full PyPI download-count population (~870k packages, last complete calendar month), paginated in chunks of CLICKHOUSE_PAGE_SIZE. Typically ~9 requests, well under a minute, no rate limiting encountered.</p></td>
+      </tr><tr><td>
+          <p><code><a href="repo_creation_tbl.html">repo_creation_tbl()</a></code> </p>
+        </td>
+        <td><p>Monthly repo-creation rate, by source</p></td>
       </tr><tr><td>
           <p><code><a href="resolve_repo_urls.html">resolve_repo_urls()</a></code> </p>
         </td>
