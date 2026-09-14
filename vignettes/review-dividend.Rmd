@@ -2,7 +2,7 @@
 title: "The Review Dividend"
 subtitle: "Community engagement with open-source software has been declining for years across five major ecosystems — except among rOpenSci's least-visible packages, where formal peer review is the one thing still generating outside interest"
 author: "Mark Padgham"
-date: "11 September 2026"
+date: "14 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{The Review Dividend}

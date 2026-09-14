@@ -1,4 +1,4 @@
-VIGNETTE = vignettes/review-dividend
+VIGNETTE = vignettes/coding-alone
 README = README
 
 all: help

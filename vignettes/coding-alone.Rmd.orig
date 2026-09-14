@@ -175,6 +175,30 @@ new_vs_density <- dplyr::inner_join (
 )
 n_new_fell_more <- sum (new_vs_density$fold_change_new < new_vs_density$fold_change_density)
 
+# Wait-time (interval) fold-change: geometric-mean days between
+# consecutive first-time authors, now vs. Jan 2021 - the interval-based
+# analogue of new_arrival_fc above, expressing the same shrinking-pipeline
+# finding as elapsed time rather than a monthly rate.
+interval_fc <- purrr::map_dfr (primary_sources, \ (src) {
+    ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src)
+    ir <- dplyr::filter (ir, !is.na (geo_mean_days))
+    ref <- dplyr::filter (ir, month == as.Date ("2021-01-01"))
+    latest_month <- max (ir$month)
+    latest <- dplyr::filter (ir, month == latest_month)
+    dplyr::inner_join (
+        dplyr::select (ref, popularity_stratum, days_ref = geo_mean_days),
+        dplyr::select (latest, popularity_stratum, days_latest = geo_mean_days),
+        by = "popularity_stratum"
+    ) |>
+        dplyr::mutate (source = src, fold_change = days_latest / days_ref)
+})
+n_interval_cells <- nrow (interval_fc)
+n_interval_lengthened <- sum (interval_fc$fold_change > 1)
+interval_q1 <- interval_fc |>
+    dplyr::filter (popularity_stratum == "Q1") |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    dplyr::arrange (dplyr::desc (fold_change))
+
 # Matched-cohort age-vs-calendar-time analysis (same construction as in
 # review-dividend, re-run here so this document stands on its own).
 cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
@@ -407,6 +431,35 @@ new-arrival rate has fallen by *more* than overall density has, meaning
 the decline documented above isn't simply existing regulars posting a
 little less often; it's disproportionately a shrinking supply of people
 showing up for the first time at all.
+
+A monthly rate is still an average over a whole population of
+repositories, though, which can make a slow-moving shift feel abstract.
+The same underlying events - each repository's authors, ordered by their
+own first-ever appearance - support a more direct, and more visceral,
+reframing: not "how many new arrivals per month" but "how many days does
+a repository actually wait between one new arrival and the next".
+Measuring the gap between each first-time author and the one before them,
+time-stamped at the moment the *later* one shows up, turns the same
+decline into units of elapsed time rather than frequency.
+
+```{r author-interval-plot, fig.height=6}
+plot_author_interval (
+    issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
+    start_year = 2016
+)
+```
+
+The wait has lengthened in `r n_interval_lengthened` of
+`r n_interval_cells` (source, stratum) cells since January 2021 - the same
+near-universal direction as the rate-based measures above, just expressed
+as time instead of frequency. The least-popular quartile shows this most
+starkly, since it's the one with the fewest events to begin with:
+`r interval_q1$source [1]`'s bottom quartile now waits
+`r sprintf ("%.1f", interval_q1$fold_change [1])`x as long between
+first-time authors as it did in January 2021, the largest lengthening of
+any source in that quartile. A repository's least visible corner isn't
+just accumulating new outsiders more slowly - it's going measurably
+longer stretches of calendar time hearing from no one new at all.
 
 ## Finding 2: the core is thinning too
 

@@ -207,6 +207,33 @@ the decline documented above isn't simply existing regulars posting a
 little less often; it's disproportionately a shrinking supply of people
 showing up for the first time at all.
 
+A monthly rate is still an average over a whole population of
+repositories, though, which can make a slow-moving shift feel abstract.
+The same underlying events - each repository's authors, ordered by their
+own first-ever appearance - support a more direct, and more visceral,
+reframing: not "how many new arrivals per month" but "how many days does
+a repository actually wait between one new arrival and the next".
+Measuring the gap between each first-time author and the one before them,
+time-stamped at the moment the *later* one shows up, turns the same
+decline into units of elapsed time rather than frequency.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/author-interval-plot-1.png" alt="plot of chunk author-interval-plot"  />
+<p class="caption">plot of chunk author-interval-plot</p>
+</div>
+
+The wait has lengthened in 17 of
+20 (source, stratum) cells since January 2021 - the same
+near-universal direction as the rate-based measures above, just expressed
+as time instead of frequency. The least-popular quartile shows this most
+starkly, since it's the one with the fewest events to begin with:
+CRAN's bottom quartile now waits
+2.9x as long between
+first-time authors as it did in January 2021, the largest lengthening of
+any source in that quartile. A repository's least visible corner isn't
+just accumulating new outsiders more slowly - it's going measurably
+longer stretches of calendar time hearing from no one new at all.
+
 ## Finding 2: the core is thinning too
 
 Everything so far is about the outer circle - the people a project's own
