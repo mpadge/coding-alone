@@ -716,7 +716,7 @@ author_interval_trend_tbl <- function (issue_authors_tbl,
 
 # ---- commit-based activity: a direct, non-issue-tracker measure ------------
 
-#' Monthly commit rate per repo-month, by source and popularity stratum
+#' Monthly commit rate per repo-month, by source
 #'
 #' Direct, commit-history-based analogue of `issue_rate_tbl()`/
 #' `author_density_tbl()`: rather than counting issue-tracker events or
@@ -729,6 +729,11 @@ author_interval_trend_tbl <- function (issue_authors_tbl,
 #' commit and never file an issue, which `author_density_tbl()`'s "all
 #' contributors" reading can't (see that function's doc).
 #'
+#' Unlike every other rate table in this package, this one isn't split by
+#' popularity stratum: commit rate shows no material difference between
+#' popularity strata, so pooling all of a source's repos into one line
+#' loses nothing a stratified version would show and is simpler to read.
+#'
 #' As in `author_density_tbl()`/`new_author_rate_tbl()`, `repo_created_at`
 #' is read off `issue_authors_tbl` (not `commit_counts_tbl`, which has no
 #' such column) to compute repo-months exposure, so a repo only
@@ -738,32 +743,28 @@ author_interval_trend_tbl <- function (issue_authors_tbl,
 #' @param commit_counts_tbl As returned by `fetch_repo_commits()` (or read
 #' straight from `commit-counts.csv`): one row per (repo, month) with
 #' `n_commits`.
-#' @inheritParams author_density_tbl
-#' @return A tibble with one row per (popularity stratum, month):
-#' `popularity_stratum`, `month`, `n_metric` (trailing sum of commits),
-#' `n_repo_months`, `rate`. Carries `window` and `source_name` as
-#' attributes.
+#' @inheritParams issue_rate_tbl
+#' @return A tibble with one row per month: `month`, `n_metric` (trailing
+#' sum of commits), `n_repo_months`, `rate`. Carries `window` and
+#' `source_name` as attributes.
 #'
 #' @examples
 #' \dontrun{
 #' commit_counts_tbl <- readr::read_csv ("repo-data-out/commit-counts.csv")
 #' cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, "pypi")
-#' plot_activity (cr) + ggplot2::labs (y = "Commits per repo-month")
 #' }
 #' @export
 commit_rate_tbl <- function (commit_counts_tbl,
                              issue_authors_tbl,
                              repo_tbl,
                              source_name,
-                             n_strata = 4L,
                              window = 12L,
                              date_start = as.Date ("2015-01-01"),
                              date_end = NULL) {
 
     # rm no visible binding notes
     source <- repo_url <- .data <- month <- metric_val <-
-        popularity_stratum <- n_metric <- n_repo_months <-
-        repo_created_at <- n_commits <- NULL
+        n_metric <- n_repo_months <- repo_created_at <- n_commits <- NULL
 
     if (is.null (date_end)) {
         date_end <- floor_month (Sys.Date ())
@@ -773,6 +774,8 @@ commit_rate_tbl <- function (commit_counts_tbl,
     if (is.na (metric_col)) {
         stop ("Unknown source: ", source_name, call. = FALSE)
     }
+
+    months <- seq (date_start, date_end, by = "month")
 
     repo_created_tbl <- issue_authors_tbl |>
         dplyr::filter (!is.na (repo_created_at)) |>
@@ -789,71 +792,43 @@ commit_rate_tbl <- function (commit_counts_tbl,
         dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
 
     if (nrow (repos) == 0) {
-        empty <- tibble::tibble (
-            popularity_stratum = factor (ordered = TRUE),
-            month = as.Date (character ()),
-            n_metric = double (),
-            n_repo_months = integer (),
-            rate = double ()
+        result <- tibble::tibble (
+            month = months, n_metric = 0, n_repo_months = 0L, rate = NA_real_
         )
-        attr (empty, "window") <- window
-        attr (empty, "source_name") <- source_name
-        return (empty)
+        attr (result, "window") <- window
+        attr (result, "source_name") <- source_name
+        return (result)
     }
-
-    repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
-    stratum_levels <- levels (repos$popularity_stratum)
-
-    months <- seq (date_start, date_end, by = "month")
 
     exposure <- dplyr::cross_join (
         tibble::tibble (repo_url = repos$repo_url),
         tibble::tibble (month = months)
     ) |>
         dplyr::inner_join (
-            dplyr::select (repos, repo_url, repo_created_at, popularity_stratum),
-            by = "repo_url"
+            dplyr::select (repos, repo_url, repo_created_at), by = "repo_url"
         ) |>
         dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
-        dplyr::count (popularity_stratum, month, name = "n_repo_months")
+        dplyr::count (month, name = "n_repo_months")
 
     commits <- commit_counts_tbl |>
         dplyr::filter (
             repo_url %in% repos$repo_url,
             month >= date_start, month <= date_end
         ) |>
-        dplyr::inner_join (
-            dplyr::select (repos, repo_url, popularity_stratum),
-            by = "repo_url"
-        ) |>
-        dplyr::group_by (popularity_stratum, month) |>
+        dplyr::group_by (month) |>
         dplyr::summarise (n_metric = sum (n_commits), .groups = "drop")
 
-    grid <- dplyr::cross_join (
-        tibble::tibble (
-            popularity_stratum = factor (
-                stratum_levels,
-                levels = stratum_levels, ordered = TRUE
-            )
-        ),
-        tibble::tibble (month = months)
-    )
-
-    result <- grid |>
-        dplyr::left_join (exposure, by = c ("popularity_stratum", "month")) |>
-        dplyr::left_join (commits, by = c ("popularity_stratum", "month")) |>
+    result <- tibble::tibble (month = months) |>
+        dplyr::left_join (exposure, by = "month") |>
+        dplyr::left_join (commits, by = "month") |>
         dplyr::mutate (
             n_metric = dplyr::coalesce (n_metric, 0),
             n_repo_months = dplyr::coalesce (n_repo_months, 0L)
         ) |>
-        dplyr::arrange (popularity_stratum, month) |>
-        dplyr::group_by (popularity_stratum) |>
+        dplyr::arrange (month) |>
         dplyr::mutate (
             n_metric = trailing_roll_sum (n_metric, window),
-            n_repo_months = trailing_roll_sum (n_repo_months, window)
-        ) |>
-        dplyr::ungroup () |>
-        dplyr::mutate (
+            n_repo_months = trailing_roll_sum (n_repo_months, window),
             rate = dplyr::if_else (
                 n_repo_months > 0, n_metric / n_repo_months, NA_real_
             )
@@ -865,24 +840,106 @@ commit_rate_tbl <- function (commit_counts_tbl,
     result
 }
 
-#' Plot commit rate, across sources and strata
+#' Monthly repo-creation rate, by source
 #'
-#' Calls `commit_rate_tbl()` for every source in `POPULARITY_METRIC` and
-#' row-binds the results, then plots each source's trailing-window commit
-#' rate over calendar time, one line per popularity stratum, faceted by
-#' source with a free y-scale per facet (sources sit on very different
-#' absolute commit volumes, as in `plot_new_author_rate()`).
+#' Counts how many repositories were created (per GitHub's own
+#' `repo_created_at` timestamp, as recorded on `issue_authors_tbl`) each
+#' calendar month, for one source, reported as a `window`-month trailing
+#' sum in the same way every other rate in this package is - the
+#' ecosystem's own raw growth in repo count over time, meant to be read
+#' alongside `commit_rate_tbl()`'s per-repo-month commit rate (see
+#' `plot_commit_rate()`) so a reader can judge how much of any shift in
+#' commit rate reflects more repos existing now rather than a change in
+#' per-repo behaviour. Restricted to the same repo population as
+#' `commit_rate_tbl()` (repos with a non-`NA` popularity metric and a
+#' known creation date), so the two panels describe the same set of
+#' repositories.
+#'
+#' @inheritParams issue_rate_tbl
+#' @return A tibble with one row per month: `month`, `n_created`
+#' (`window`-month trailing sum of repos created that month). Carries
+#' `window` and `source_name` as attributes.
+#'
+#' @examples
+#' \dontrun{
+#' rc <- repo_creation_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' }
+#' @export
+repo_creation_tbl <- function (issue_authors_tbl,
+                               repo_tbl,
+                               source_name,
+                               window = 12L,
+                               date_start = as.Date ("2015-01-01"),
+                               date_end = NULL) {
+
+    # rm no visible binding notes
+    source <- repo_url <- .data <- month <- metric_val <-
+        repo_created_at <- n_created <- NULL
+
+    if (is.null (date_end)) {
+        date_end <- floor_month (Sys.Date ())
+    }
+
+    metric_col <- unname (POPULARITY_METRIC [source_name])
+    if (is.na (metric_col)) {
+        stop ("Unknown source: ", source_name, call. = FALSE)
+    }
+
+    months <- seq (date_start, date_end, by = "month")
+
+    repo_created_tbl <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at)
+
+    repos <- repo_tbl |>
+        dplyr::filter (source == source_name) |>
+        dplyr::distinct (repo_url, .keep_all = TRUE) |>
+        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
+        dplyr::mutate (
+            repo_created_at = floor_month (repo_created_at),
+            metric_val = .data [[metric_col]]
+        ) |>
+        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
+
+    created_counts <- repos |>
+        dplyr::filter (
+            repo_created_at >= date_start, repo_created_at <= date_end
+        ) |>
+        dplyr::count (month = repo_created_at, name = "n_created")
+
+    result <- tibble::tibble (month = months) |>
+        dplyr::left_join (created_counts, by = "month") |>
+        dplyr::mutate (n_created = dplyr::coalesce (n_created, 0L)) |>
+        dplyr::arrange (month) |>
+        dplyr::mutate (n_created = trailing_roll_sum (n_created, window))
+
+    attr (result, "window") <- window
+    attr (result, "source_name") <- source_name
+
+    result
+}
+
+#' Plot commit rate and repo-creation rate, across sources
+#'
+#' Two-panel figure: commits per repo-month (top, from `commit_rate_tbl()`)
+#' and repos created per month (bottom, from `repo_creation_tbl()`), both
+#' `window`-month trailing sums/averages, one line per source. Unlike
+#' `plot_new_author_rate()`/`plot_author_interval()`, sources aren't
+#' faceted apart and lines aren't split by popularity stratum - all five
+#' sources are overlaid on the same axes in each panel, since
+#' `commit_rate_tbl()` no longer has a stratum dimension to facet or
+#' colour by.
 #'
 #' @param commit_counts_tbl As returned by `fetch_repo_commits()`.
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
 #' @param source_display Named character vector as in `plot_fold_change()`.
-#' @param n_strata,window,date_start,date_end Passed to each source's
-#' `commit_rate_tbl()` call.
+#' @param window,date_start,date_end Passed to each source's
+#' `commit_rate_tbl()`/`repo_creation_tbl()` call.
 #' @param start_year Optional year to crop the plotted window to, as in
 #' `plot_activity()` - display-only, doesn't affect the underlying
 #' repo-months/rate calculations.
-#' @return A ggplot object.
+#' @return A `patchwork` object (two stacked ggplot panels).
 #'
 #' @examples
 #' \dontrun{
@@ -891,52 +948,79 @@ commit_rate_tbl <- function (commit_counts_tbl,
 #' @export
 plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
                               source_display = NULL,
-                              n_strata = 4L,
                               window = 12L,
                               date_start = as.Date ("2015-01-01"),
                               date_end = NULL,
                               start_year = NULL) {
 
-    month <- rate <- source <- popularity_stratum <- NULL
+    month <- rate <- source <- n_created <- NULL
 
     sources <- names (POPULARITY_METRIC)
 
-    rate_tbl <- purrr::map_dfr (sources, \ (src) {
+    relabel_source <- function (tbl) {
+        if (!is.null (source_display)) {
+            lab <- unname (source_display [tbl$source])
+            tbl$source <- ifelse (is.na (lab), tbl$source, lab)
+        }
+        tbl$source <- factor (tbl$source, levels = unique (tbl$source))
+        tbl
+    }
+
+    commit_tbl <- purrr::map_dfr (sources, \ (src) {
         commit_rate_tbl (
             commit_counts_tbl, issue_authors_tbl, repo_tbl, src,
-            n_strata = n_strata, window = window,
-            date_start = date_start, date_end = date_end
+            window = window, date_start = date_start, date_end = date_end
+        ) |>
+            dplyr::mutate (source = src)
+    })
+    creation_tbl <- purrr::map_dfr (sources, \ (src) {
+        repo_creation_tbl (
+            issue_authors_tbl, repo_tbl, src,
+            window = window, date_start = date_start, date_end = date_end
         ) |>
             dplyr::mutate (source = src)
     })
 
     if (!is.null (start_year)) {
         start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
-        rate_tbl <- dplyr::filter (rate_tbl, month >= start_date)
+        commit_tbl <- dplyr::filter (commit_tbl, month >= start_date)
+        creation_tbl <- dplyr::filter (creation_tbl, month >= start_date)
     }
 
-    if (!is.null (source_display)) {
-        lab <- unname (source_display [rate_tbl$source])
-        rate_tbl$source <- ifelse (is.na (lab), rate_tbl$source, lab)
-    }
-    rate_tbl$source <- factor (rate_tbl$source, levels = unique (rate_tbl$source))
-    rate_tbl$popularity_stratum <- label_stratum_extremes (rate_tbl$popularity_stratum)
+    commit_tbl <- relabel_source (commit_tbl)
+    creation_tbl <- relabel_source (creation_tbl)
 
-    ggplot2::ggplot (
-        dplyr::filter (rate_tbl, !is.na (rate)),
-        ggplot2::aes (month, rate, colour = popularity_stratum)
+    p1 <- ggplot2::ggplot (
+        dplyr::filter (commit_tbl, !is.na (rate)),
+        ggplot2::aes (month, rate, colour = source)
     ) +
         ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::facet_wrap (~source, scales = "free_y") +
-        ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
+        ggplot2::scale_colour_brewer (palette = "Set2") +
         ggplot2::labs (
             x = NULL,
             y = stringr::str_glue (
                 "Commits per repo-month ({window}-month trailing avg)"
             ),
-            colour = "Popularity\nstratum"
+            colour = "Source"
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top") +
-        ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
+        ggplot2::theme (legend.position = "top")
+
+    p2 <- ggplot2::ggplot (
+        creation_tbl,
+        ggplot2::aes (month, n_created, colour = source)
+    ) +
+        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
+        ggplot2::scale_colour_brewer (palette = "Set2") +
+        ggplot2::labs (
+            x = NULL,
+            y = stringr::str_glue (
+                "Repos created per month ({window}-month trailing sum)"
+            ),
+            colour = "Source"
+        ) +
+        ggplot2::theme_minimal () +
+        ggplot2::theme (legend.position = "none")
+
+    patchwork::wrap_plots (p1, p2, ncol = 1)
 }

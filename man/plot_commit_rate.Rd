@@ -2,14 +2,13 @@
 % Please edit documentation in R/community-breadth.R
 \name{plot_commit_rate}
 \alias{plot_commit_rate}
-\title{Plot commit rate, across sources and strata}
+\title{Plot commit rate and repo-creation rate, across sources}
 \usage{
 plot_commit_rate(
   commit_counts_tbl,
   issue_authors_tbl,
   repo_tbl,
   source_display = NULL,
-  n_strata = 4L,
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL,
@@ -25,22 +24,25 @@ plot_commit_rate(
 
 \item{source_display}{Named character vector as in \code{plot_fold_change()}.}
 
-\item{n_strata, window, date_start, date_end}{Passed to each source's
-\code{commit_rate_tbl()} call.}
+\item{window, date_start, date_end}{Passed to each source's
+\code{commit_rate_tbl()}/\code{repo_creation_tbl()} call.}
 
 \item{start_year}{Optional year to crop the plotted window to, as in
 \code{plot_activity()} - display-only, doesn't affect the underlying
 repo-months/rate calculations.}
 }
 \value{
-A ggplot object.
+A \code{patchwork} object (two stacked ggplot panels).
 }
 \description{
-Calls \code{commit_rate_tbl()} for every source in \code{POPULARITY_METRIC} and
-row-binds the results, then plots each source's trailing-window commit
-rate over calendar time, one line per popularity stratum, faceted by
-source with a free y-scale per facet (sources sit on very different
-absolute commit volumes, as in \code{plot_new_author_rate()}).
+Two-panel figure: commits per repo-month (top, from \code{commit_rate_tbl()})
+and repos created per month (bottom, from \code{repo_creation_tbl()}), both
+\code{window}-month trailing sums/averages, one line per source. Unlike
+\code{plot_new_author_rate()}/\code{plot_author_interval()}, sources aren't
+faceted apart and lines aren't split by popularity stratum - all five
+sources are overlaid on the same axes in each panel, since
+\code{commit_rate_tbl()} no longer has a stratum dimension to facet or
+colour by.
 }
 \examples{
 \dontrun{

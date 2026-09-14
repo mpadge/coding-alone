@@ -2,14 +2,13 @@
 % Please edit documentation in R/community-breadth.R
 \name{commit_rate_tbl}
 \alias{commit_rate_tbl}
-\title{Monthly commit rate per repo-month, by source and popularity stratum}
+\title{Monthly commit rate per repo-month, by source}
 \usage{
 commit_rate_tbl(
   commit_counts_tbl,
   issue_authors_tbl,
   repo_tbl,
   source_name,
-  n_strata = 4L,
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL
@@ -27,8 +26,6 @@ straight from \code{commit-counts.csv}): one row per (repo, month) with
 \item{source_name}{One of \code{repo_tbl$source} (\code{"pypi"}, \code{"npm"}, \code{"joss"},
 \code{"ropensci"}).}
 
-\item{n_strata}{Number of popularity strata.}
-
 \item{window}{Trailing aggregation window, in months. Default 12: each
 reported month's \code{n_metric}/\code{n_repo_months} sum that month and the
 preceding 11.}
@@ -37,10 +34,9 @@ preceding 11.}
 \code{date_end} defaults to the start of the current month.}
 }
 \value{
-A tibble with one row per (popularity stratum, month):
-\code{popularity_stratum}, \code{month}, \code{n_metric} (trailing sum of commits),
-\code{n_repo_months}, \code{rate}. Carries \code{window} and \code{source_name} as
-attributes.
+A tibble with one row per month: \code{month}, \code{n_metric} (trailing
+sum of commits), \code{n_repo_months}, \code{rate}. Carries \code{window} and
+\code{source_name} as attributes.
 }
 \description{
 Direct, commit-history-based analogue of \code{issue_rate_tbl()}/
@@ -55,6 +51,11 @@ commit and never file an issue, which \code{author_density_tbl()}'s "all
 contributors" reading can't (see that function's doc).
 }
 \details{
+Unlike every other rate table in this package, this one isn't split by
+popularity stratum: commit rate shows no material difference between
+popularity strata, so pooling all of a source's repos into one line
+loses nothing a stratified version would show and is simpler to read.
+
 As in \code{author_density_tbl()}/\code{new_author_rate_tbl()}, \code{repo_created_at}
 is read off \code{issue_authors_tbl} (not \code{commit_counts_tbl}, which has no
 such column) to compute repo-months exposure, so a repo only
@@ -65,6 +66,5 @@ contributes exposure once it's been fetched at least once by
 \dontrun{
 commit_counts_tbl <- readr::read_csv ("repo-data-out/commit-counts.csv")
 cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, "pypi")
-plot_activity (cr) + ggplot2::labs (y = "Commits per repo-month")
 }
 }
