@@ -55,6 +55,10 @@ issue_authors_tbl <- readr::read_csv (
     file.path (out_dir, "issue-authors.csv"),
     show_col_types = FALSE, progress = FALSE
 )
+commit_counts_tbl <- readr::read_csv (
+    file.path (out_dir, "commit-counts.csv"),
+    show_col_types = FALSE, progress = FALSE
+)
 
 primary_sources <- c ("cran", "joss", "npm", "pypi", "ropensci")
 n_repos_primary <- length (unique (
@@ -198,6 +202,27 @@ interval_q1 <- interval_fc |>
     dplyr::filter (popularity_stratum == "Q1") |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (dplyr::desc (fold_change))
+
+# Commit-rate fold-change (rate now vs. Jan 2021), pooled across popularity
+# strata per source - the direct, commit-history-based check on everything
+# above, which counts code landed on the default branch rather than issues
+# filed against it.
+commit_fc <- purrr::map_dfr (primary_sources, \ (src) {
+    cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, src, n_strata = 1L)
+    cr <- dplyr::filter (cr, !is.na (rate))
+    ref <- dplyr::filter (cr, month == as.Date ("2021-01-01"))$rate
+    latest_month <- max (cr$month)
+    latest <- dplyr::filter (cr, month == latest_month)$rate
+    tibble::tibble (
+        source = src, rate_ref = ref, rate_latest = latest,
+        fold_change = latest / ref, latest_month = latest_month
+    )
+})
+n_commit_declined <- sum (commit_fc$fold_change < 1)
+n_commit_risen <- sum (commit_fc$fold_change >= 1)
+commit_fc_display <- commit_fc |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    dplyr::arrange (fold_change)
 
 # Matched-cohort age-vs-calendar-time analysis (same construction as in
 # review-dividend, re-run here so this document stands on its own).
@@ -629,6 +654,46 @@ Popularity buys a project more absolute traffic, but it hasn't bought
 insulation from this trend; the software with the most outside visibility
 to lose is losing proportionally more of it than the software that barely
 had any to begin with.
+
+## Finding 6: a direct check against commit history
+
+Everything above is built on issue-filing, which, as noted at the outset,
+misses anyone who contributes code without ever opening an issue. Commit
+history sidesteps that gap directly: it's a record of code actually
+landed on a repository's default branch, independent of whether whoever
+landed it ever filed an issue at all.
+
+```{r commit-rate-plot, fig.height=6}
+plot_commit_rate (
+    commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
+    start_year = 2016
+)
+```
+
+```{r commit-rate-table}
+commit_fc_display |>
+    dplyr::transmute (
+        Source = source,
+        `Jan 2021` = round (rate_ref, 2),
+        Latest = round (rate_latest, 2),
+        `Fold-change` = scales::percent (fold_change, accuracy = 1)
+    ) |>
+    knitr::kable (
+        align = c ("l", "r", "r", "r"),
+        caption = "Commits per repo-month, pooled across popularity strata, now vs. Jan 2021"
+    )
+```
+
+The commit-based picture is more mixed than the issue-based one. CRAN,
+JOSS and rOpenSci all show a commit rate below their January-2021 level,
+in the same direction as every issue-based measure above. npm and PyPI
+don't: PyPI's pooled commit rate now sits above its January-2021 level,
+and npm's sits close to flat. Three of the five primary sources point the
+same direction as Findings 1-5; two of them - both general-purpose
+package registries rather than the GitHub-review-oriented JOSS/rOpenSci -
+don't. A pattern built entirely on who files an issue and a pattern built
+entirely on who lands a commit aren't measuring the same thing, and here
+they don't agree everywhere.
 
 ## What this looks like from outside this dataset
 

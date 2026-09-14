@@ -364,6 +364,41 @@ insulation from this trend; the software with the most outside visibility
 to lose is losing proportionally more of it than the software that barely
 had any to begin with.
 
+## Finding 6: a direct check against commit history
+
+Everything above is built on issue-filing, which, as noted at the outset,
+misses anyone who contributes code without ever opening an issue. Commit
+history sidesteps that gap directly: it's a record of code actually
+landed on a repository's default branch, independent of whether whoever
+landed it ever filed an issue at all.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"  />
+<p class="caption">plot of chunk commit-rate-plot</p>
+</div>
+
+
+Table: Commits per repo-month, pooled across popularity strata, now vs. Jan 2021
+
+|Source   | Jan 2021| Latest| Fold-change|
+|:--------|--------:|------:|-----------:|
+|JOSS     |     1.07|   0.37|         34%|
+|CRAN     |     0.26|   0.12|         48%|
+|rOpenSci |     0.17|   0.10|         60%|
+|npm      |     1.31|   1.34|        103%|
+|PyPI     |     0.40|   0.56|        141%|
+
+The commit-based picture is more mixed than the issue-based one. CRAN,
+JOSS and rOpenSci all show a commit rate below their January-2021 level,
+in the same direction as every issue-based measure above. npm and PyPI
+don't: PyPI's pooled commit rate now sits above its January-2021 level,
+and npm's sits close to flat. Three of the five primary sources point the
+same direction as Findings 1-5; two of them - both general-purpose
+package registries rather than the GitHub-review-oriented JOSS/rOpenSci -
+don't. A pattern built entirely on who files an issue and a pattern built
+entirely on who lands a commit aren't measuring the same thing, and here
+they don't agree everywhere.
+
 ## What this looks like from outside this dataset
 
 Nothing in this dataset says why. But the pattern - a shrinking, and

@@ -11,11 +11,13 @@ POPULARITY_METRIC <- c (
     cran = "downloads"
 )
 
-# Proper-cased display forms of each source's internal (lowercase)
-# `POPULARITY_METRIC`/`repo_tbl$source` key, for anywhere a source name is
-# shown to a reader rather than matched against data (e.g. plot
-# annotations). "npm" is genuinely lowercase as a name, not an
-# abbreviation, so it's left as-is.
+#' Proper-cased display forms of each source's internal (lowercase)
+#' `POPULARITY_METRIC`/`repo_tbl$source` key, for anywhere a source name is
+#' shown to a reader rather than matched against data (e.g. plot
+#' annotations). "npm" is genuinely lowercase as a name, not an
+#' abbreviation, so it's left as-is.
+#' @format A named character vector, one entry per source.
+#' @export
 SOURCE_DISPLAY_NAME <- c (
     pypi = "PyPI",
     npm = "npm",
