@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.002</span>
       </span>
     </div>
 
@@ -480,6 +480,73 @@ other way. Popularity buys a project more absolute traffic, but it
 hasn’t bought insulation from this trend; the software with the most
 outside visibility to lose is losing proportionally more of it than the
 software that barely had any to begin with.</p>
+</div>
+<div class="section level2">
+<h2 id="finding-6-a-direct-check-against-commit-history">Finding 6: a direct check against commit history<a class="anchor" aria-label="anchor" href="#finding-6-a-direct-check-against-commit-history"></a>
+</h2>
+<p>Everything above is built on issue-filing, which, as noted at the
+outset, misses anyone who contributes code without ever opening an
+issue. Commit history sidesteps that gap directly: it’s a record of code
+actually landed on a repository’s default branch, independent of whether
+whoever landed it ever filed an issue at all.</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"><p class="caption">
+plot of chunk commit-rate-plot
+</p>
+</div>
+<table class="table">
+<caption>Commits per repo-month, pooled across popularity strata, now
+vs. Jan 2021</caption>
+<thead><tr class="header">
+<th align="left">Source</th>
+<th align="right">Jan 2021</th>
+<th align="right">Latest</th>
+<th align="right">Fold-change</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOSS</td>
+<td align="right">1.07</td>
+<td align="right">0.37</td>
+<td align="right">34%</td>
+</tr>
+<tr class="even">
+<td align="left">CRAN</td>
+<td align="right">0.26</td>
+<td align="right">0.12</td>
+<td align="right">48%</td>
+</tr>
+<tr class="odd">
+<td align="left">rOpenSci</td>
+<td align="right">0.17</td>
+<td align="right">0.10</td>
+<td align="right">60%</td>
+</tr>
+<tr class="even">
+<td align="left">npm</td>
+<td align="right">1.31</td>
+<td align="right">1.34</td>
+<td align="right">103%</td>
+</tr>
+<tr class="odd">
+<td align="left">PyPI</td>
+<td align="right">0.40</td>
+<td align="right">0.56</td>
+<td align="right">141%</td>
+</tr>
+</tbody>
+</table>
+<p>The commit-based picture is more mixed than the issue-based one.
+CRAN, JOSS and rOpenSci all show a commit rate below their January-2021
+level, in the same direction as every issue-based measure above. npm and
+PyPI don’t: PyPI’s pooled commit rate now sits above its January-2021
+level, and npm’s sits close to flat. Three of the five primary sources
+point the same direction as Findings 1-5; two of them - both
+general-purpose package registries rather than the
+GitHub-review-oriented JOSS/rOpenSci - don’t. A pattern built entirely
+on who files an issue and a pattern built entirely on who lands a commit
+aren’t measuring the same thing, and here they don’t agree
+everywhere.</p>
 </div>
 <div class="section level2">
 <h2 id="what-this-looks-like-from-outside-this-dataset">What this looks like from outside this dataset<a class="anchor" aria-label="anchor" href="#what-this-looks-like-from-outside-this-dataset"></a>

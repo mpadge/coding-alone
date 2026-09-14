@@ -6,6 +6,7 @@
 <url><loc>/articles/review-dividend.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/reference/SOURCE_DISPLAY_NAME.html</loc></url>
 <url><loc>/reference/author_density_fold_change_tbl.html</loc></url>
 <url><loc>/reference/author_density_tbl.html</loc></url>
 <url><loc>/reference/author_interval_tbl.html</loc></url>
@@ -15,6 +16,7 @@
 <url><loc>/reference/build_runiv_table.html</loc></url>
 <url><loc>/reference/build_working_sample.html</loc></url>
 <url><loc>/reference/cohort_age_rate_tbl.html</loc></url>
+<url><loc>/reference/commit_rate_tbl.html</loc></url>
 <url><loc>/reference/fetch_issue_authors.html</loc></url>
 <url><loc>/reference/fetch_repo_commits.html</loc></url>
 <url><loc>/reference/fit_activity_model.html</loc></url>
@@ -30,6 +32,7 @@
 <url><loc>/reference/plot_activity_by_source.html</loc></url>
 <url><loc>/reference/plot_author_interval.html</loc></url>
 <url><loc>/reference/plot_cohort_age.html</loc></url>
+<url><loc>/reference/plot_commit_rate.html</loc></url>
 <url><loc>/reference/plot_fold_change.html</loc></url>
 <url><loc>/reference/plot_new_author_rate.html</loc></url>
 <url><loc>/reference/plot_ropensci_reviewed_fold_change.html</loc></url>

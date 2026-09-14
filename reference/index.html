@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.002</span>
       </span>
     </div>
 
@@ -64,6 +64,10 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="SOURCE_DISPLAY_NAME.html">SOURCE_DISPLAY_NAME</a></code> </p>
+        </td>
+        <td><p>Proper-cased display forms of each source's internal (lowercase) <code>POPULARITY_METRIC</code>/<code>repo_tbl$source</code> key, for anywhere a source name is shown to a reader rather than matched against data (e.g. plot annotations). "npm" is genuinely lowercase as a name, not an abbreviation, so it's left as-is.</p></td>
+      </tr><tr><td>
           <p><code><a href="author_density_fold_change_tbl.html">author_density_fold_change_tbl()</a></code> </p>
         </td>
         <td><p>Fold-change in distinct non-core author density, from a reference month to now</p></td>
@@ -99,6 +103,10 @@
           <p><code><a href="cohort_age_rate_tbl.html">cohort_age_rate_tbl()</a></code> </p>
         </td>
         <td><p>Non-core rate by creation-year cohort and fixed repo age</p></td>
+      </tr><tr><td>
+          <p><code><a href="commit_rate_tbl.html">commit_rate_tbl()</a></code> </p>
+        </td>
+        <td><p>Monthly commit rate per repo-month, by source and popularity stratum</p></td>
       </tr><tr><td>
           <p><code><a href="fetch_issue_authors.html">fetch_issue_authors()</a></code> </p>
         </td>
@@ -155,6 +163,10 @@
           <p><code><a href="plot_cohort_age.html">plot_cohort_age()</a></code> </p>
         </td>
         <td><p>Plot non-core rate by creation-year cohort and fixed repo age</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_commit_rate.html">plot_commit_rate()</a></code> </p>
+        </td>
+        <td><p>Plot commit rate, across sources and strata</p></td>
       </tr><tr><td>
           <p><code><a href="plot_fold_change.html">plot_fold_change()</a></code> </p>
         </td>
