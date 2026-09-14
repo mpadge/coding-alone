@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.015</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.017</span>
       </span>
     </div>
 
@@ -118,7 +118,7 @@
       </tr><tr><td>
           <p><code><a href="github_commit_counts_by_month.html">github_commit_counts_by_month()</a></code> </p>
         </td>
-        <td><p>Monthly commit counts on a single GitHub repo's default branch, as a direct measure of code-activity to sit alongside the issue-based measures elsewhere in this package.</p></td>
+        <td><p>Monthly commit counts on a single GitHub repo's default branch, as a direct measure of code-activity to sit alongside the issue-based measures elsewhere in this package. This is meant to run after issue-author data has already been fetched (<code><a href="../reference/fetch_issue_authors.html">fetch_issue_authors()</a></code>), which records each repo's own creation timestamp for free (<code>repo_created_at</code>, on every row) </p><ul><li><p>so rather than spend a separate GraphQL call re-discovering that here, <code><a href="../reference/fetch_repo_commits.html">fetch_repo_commits()</a></code> passes it straight through as <code>repo_created_at</code>.</p></li> </ul></td>
       </tr><tr><td>
           <p><code><a href="github_issue_authors.html">github_issue_authors()</a></code> </p>
         </td>
