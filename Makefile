@@ -16,7 +16,7 @@ pkgdowncheck: ## Check 'pkgdown' site structure
 	echo "pkgdown::check_pkgdown()" | R --no-save -q
 
 vignette: $(VIGNETTE).Rmd.orig ## Precompile the review-dividend vignette from live source (requires repo-data-out/)
-	Rscript -e "knitr::knit ('$(VIGNETTE).Rmd.orig', output = '$(VIGNETTE).Rmd')"
+	cd $(dir $(VIGNETTE)) && Rscript -e "knitr::knit ('$(notdir $(VIGNETTE)).Rmd.orig', output = '$(notdir $(VIGNETTE)).Rmd')"
 
 vignetteOld: $(VIGNETTE).Rmd.orig ## OLD: Precompile the review-dividend vignette from live source (requires repo-data-out/)
 	cd vignettes && Rscript -e "devtools::load_all ('..', quiet = TRUE); knitr::knit ('$(VIGNETTE).Rmd.orig', output = '$(VIGNETTE).Rmd')"
