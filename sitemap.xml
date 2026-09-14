@@ -16,8 +16,10 @@
 <url><loc>/reference/build_working_sample.html</loc></url>
 <url><loc>/reference/cohort_age_rate_tbl.html</loc></url>
 <url><loc>/reference/fetch_issue_authors.html</loc></url>
+<url><loc>/reference/fetch_repo_commits.html</loc></url>
 <url><loc>/reference/fit_activity_model.html</loc></url>
 <url><loc>/reference/fold_change_tbl.html</loc></url>
+<url><loc>/reference/github_commit_counts_by_month.html</loc></url>
 <url><loc>/reference/github_issue_authors.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/issue_rate_tbl.html</loc></url>
