@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.012</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@ overlap</h3>
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">11 September 2026</h4>
+            <h4 data-toc-skip class="date">14 September 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mpadge/peerreview/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
       <div class="hidden name"><code>coding-alone.Rmd</code></div>
@@ -250,6 +250,53 @@ identically: in 15 of the 20 cells, the distinct-author count has fallen
 by <em>more</em> than the issue count has, meaning the average non-core
 author isn’t opening noticeably more issues to compensate for fewer of
 them showing up - if anything, the opposite.</p>
+<p>Distinct-author density, though, still blends two different
+populations together: people who’ve been showing up for years and just
+keep at it, and people interacting with a repository for the very first
+time. Separating the two needs identifying each author’s first-ever
+appearance in a repository’s issue tracker, and setting aside the very
+first such appearance for each repo - its founding author, typically the
+maintainer opening the repo’s own first issue - as not itself community
+growth. What’s left is the closest thing this dataset offers to new
+members joining a bowling league, tracked the same way as every rate
+above: normalised by repo-months of exposure and reported as a 12-month
+trailing average.</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="plot of chunk new-author-rate-plot"><p class="caption">
+plot of chunk new-author-rate-plot
+</p>
+</div>
+<p>The new-arrival rate has fallen in 20 of 20 (source, stratum) cells
+since January 2021 - the same near-universal decline Finding 1 found in
+overall density. In 17 of those 20 cells, the new-arrival rate has
+fallen by <em>more</em> than overall density has, meaning the decline
+documented above isn’t simply existing regulars posting a little less
+often; it’s disproportionately a shrinking supply of people showing up
+for the first time at all.</p>
+<p>A monthly rate is still an average over a whole population of
+repositories, though, which can make a slow-moving shift feel abstract.
+The same underlying events - each repository’s authors, ordered by their
+own first-ever appearance - support a more direct, and more visceral,
+reframing: not “how many new arrivals per month” but “how many days does
+a repository actually wait between one new arrival and the next”.
+Measuring the gap between each first-time author and the one before
+them, time-stamped at the moment the <em>later</em> one shows up, turns
+the same decline into units of elapsed time rather than frequency.</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/author-interval-plot-1.png" alt="plot of chunk author-interval-plot"><p class="caption">
+plot of chunk author-interval-plot
+</p>
+</div>
+<p>The wait has lengthened in 17 of 20 (source, stratum) cells since
+January 2021 - the same near-universal direction as the rate-based
+measures above, just expressed as time instead of frequency. The
+least-popular quartile shows this most starkly, since it’s the one with
+the fewest events to begin with: CRAN’s bottom quartile now waits 2.9x
+as long between first-time authors as it did in January 2021, the
+largest lengthening of any source in that quartile. A repository’s least
+visible corner isn’t just accumulating new outsiders more slowly - it’s
+going measurably longer stretches of calendar time hearing from no one
+new at all.</p>
 </div>
 <div class="section level2">
 <h2 id="finding-2-the-core-is-thinning-too">Finding 2: the core is thinning too<a class="anchor" aria-label="anchor" href="#finding-2-the-core-is-thinning-too"></a>

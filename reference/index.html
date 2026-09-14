@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">peerreview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.012</span>
       </span>
     </div>
 
@@ -72,6 +72,14 @@
         </td>
         <td><p>Distinct non-core authors per repo-month, by source and popularity stratum</p></td>
       </tr><tr><td>
+          <p><code><a href="author_interval_tbl.html">author_interval_tbl()</a></code> </p>
+        </td>
+        <td><p>Time elapsed between consecutive first-time authors, by source and popularity stratum</p></td>
+      </tr><tr><td>
+          <p><code><a href="author_interval_trend_tbl.html">author_interval_trend_tbl()</a></code> </p>
+        </td>
+        <td><p>Rolling geometric-mean wait time between consecutive first-time authors, by source and popularity stratum</p></td>
+      </tr><tr><td>
           <p><code><a href="build_joss_table.html">build_joss_table()</a></code> </p>
         </td>
         <td><p>Build a (issue_number, title, issue_url, repo_url, language, stars, downloads) table for every JOSS submission whose review issue carries the "accepted" label.</p></td>
@@ -116,6 +124,10 @@
         </td>
         <td><p>Left-join <code>repo_tbl</code>'s per-repo metadata (name, downloads, stars, source) onto an issue-authors table by <code>repo_url</code>, after deduplicating <code>repo_tbl</code> on <code>repo_url</code> so a repo appearing under multiple sources doesn't fan out the join.</p></td>
       </tr><tr><td>
+          <p><code><a href="new_author_rate_tbl.html">new_author_rate_tbl()</a></code> </p>
+        </td>
+        <td><p>New (non-founding) authors first appearing per repo-month, by source and popularity stratum</p></td>
+      </tr><tr><td>
           <p><code><a href="npm_downloads_full.html">npm_downloads_full()</a></code> </p>
         </td>
         <td><p>Full npm monthly download-count population (~3.77M packages), via the <code>download-counts</code> npm package: https://www.npmjs.com/package/download-counts — a single static JSON object, republished monthly, mapping package name to last-month download count. This is npm's practical equivalent of PyPI's ClickHouse/BigQuery dataset: there is no direct npm counterpart of BigQuery's public PyPI download-log dataset.</p></td>
@@ -128,6 +140,10 @@
         </td>
         <td><p>Compare monthly issue rate across all four sources (<code>pypi</code>, <code>npm</code>, <code>joss</code>, <code>ropensci</code>), for one popularity stratum. Note that "stratum" is relative to each source's own distribution (see <code><a href="../reference/issue_rate_tbl.html">issue_rate_tbl()</a></code>/ <code>popularity_strata()</code>) - e.g. pypi's Q4 download count and joss's Q4 star count aren't the same absolute popularity, just each source's own top quarter. A source with no data yet for the requested window (e.g. not fully fetched - see <code>analysis-plan.md</code>) just contributes no line, rather than erroring.</p></td>
       </tr><tr><td>
+          <p><code><a href="plot_author_interval.html">plot_author_interval()</a></code> </p>
+        </td>
+        <td><p>Plot rolling geometric-mean wait time between consecutive first-time authors, across sources and strata</p></td>
+      </tr><tr><td>
           <p><code><a href="plot_cohort_age.html">plot_cohort_age()</a></code> </p>
         </td>
         <td><p>Plot non-core rate by creation-year cohort and fixed repo age</p></td>
@@ -135,6 +151,10 @@
           <p><code><a href="plot_fold_change.html">plot_fold_change()</a></code> </p>
         </td>
         <td><p>Plot fold-change in non-core rate across sources and strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_new_author_rate.html">plot_new_author_rate()</a></code> </p>
+        </td>
+        <td><p>Plot new (non-founding) author arrival rate, across sources and strata</p></td>
       </tr><tr><td>
           <p><code><a href="plot_ropensci_reviewed_fold_change.html">plot_ropensci_reviewed_fold_change()</a></code> </p>
         </td>

@@ -8,6 +8,8 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/author_density_fold_change_tbl.html</loc></url>
 <url><loc>/reference/author_density_tbl.html</loc></url>
+<url><loc>/reference/author_interval_tbl.html</loc></url>
+<url><loc>/reference/author_interval_trend_tbl.html</loc></url>
 <url><loc>/reference/build_joss_table.html</loc></url>
 <url><loc>/reference/build_repo_tbl.html</loc></url>
 <url><loc>/reference/build_runiv_table.html</loc></url>
@@ -20,11 +22,14 @@
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/issue_rate_tbl.html</loc></url>
 <url><loc>/reference/join_repo_metadata.html</loc></url>
+<url><loc>/reference/new_author_rate_tbl.html</loc></url>
 <url><loc>/reference/npm_downloads_full.html</loc></url>
 <url><loc>/reference/plot_activity.html</loc></url>
 <url><loc>/reference/plot_activity_by_source.html</loc></url>
+<url><loc>/reference/plot_author_interval.html</loc></url>
 <url><loc>/reference/plot_cohort_age.html</loc></url>
 <url><loc>/reference/plot_fold_change.html</loc></url>
+<url><loc>/reference/plot_new_author_rate.html</loc></url>
 <url><loc>/reference/plot_ropensci_reviewed_fold_change.html</loc></url>
 <url><loc>/reference/plot_ropensci_reviewed_trend.html</loc></url>
 <url><loc>/reference/pypi_downloads_full.html</loc></url>
