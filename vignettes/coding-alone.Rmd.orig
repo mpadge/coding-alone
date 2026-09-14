@@ -35,7 +35,7 @@ knitr::opts_chunk$set (
 ```
 
 ```{r load-package}
-library (peerreview)
+library (codingAlone)
 ```
 
 <div class="callout">
@@ -220,7 +220,7 @@ q1q4_tbl <- fc_authors |>
 repo_created <- issue_authors_tbl |>
     dplyr::filter (!is.na (repo_created_at)) |>
     dplyr::distinct (repo_url, repo_created_at) |>
-    dplyr::mutate (repo_created_at = peerreview:::floor_month (repo_created_at))
+    dplyr::mutate (repo_created_at = codingAlone:::floor_month (repo_created_at))
 repos_primary <- repo_tbl |>
     dplyr::filter (source %in% primary_sources) |>
     dplyr::distinct (repo_url, .keep_all = TRUE) |>
@@ -233,12 +233,12 @@ raw_monthly <- issue_authors_tbl |>
     dplyr::filter (
         repo_url %in% repos_primary$repo_url, contribution <= contrib_threshold
     ) |>
-    dplyr::mutate (month = peerreview:::floor_month (created_at)) |>
+    dplyr::mutate (month = codingAlone:::floor_month (created_at)) |>
     dplyr::filter (month >= as.Date ("2016-01-01")) |>
     dplyr::distinct (month, repo_url, author) |>
     dplyr::count (month, name = "n_authors") |>
     dplyr::arrange (month) |>
-    dplyr::mutate (roll = peerreview:::trailing_roll_sum (n_authors, 12L))
+    dplyr::mutate (roll = codingAlone:::trailing_roll_sum (n_authors, 12L))
 raw_fold_change <- dplyr::filter (raw_monthly, month == max (month))$roll /
     dplyr::filter (raw_monthly, month == as.Date ("2021-01-01"))$roll
 ```

@@ -1,4 +1,4 @@
 library (testthat)
-library (peerreview)
+library (codingAlone)
 
-test_check ("peerreview")
+test_check ("codingAlone")

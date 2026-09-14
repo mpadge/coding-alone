@@ -2,27 +2,32 @@
 output: github_document
 ---
 
-# peerreview
+# codingAlone
 
 Code to analyse GitHub issue activity across open-source ecosystems (CRAN,
 npm, PyPI, JOSS, rOpenSci) in relation to repository popularity and, for
 rOpenSci, formal peer-review status.
 
-Go straight to [review-dividend
-vignette](https://mpadge.github.io/peerreview/articles/review-dividend.html).
+Go straight to
+[coding-alone](https://mpadge.github.io/coding-alone/articles/coding-alone.html)
+or
+[review-dividend](https://mpadge.github.io/coding-alone/articles/review-dividend.html)
+vignettes.
 
 ## Installation
 
 ```r
 # install.packages ("remotes")
-remotes::install_github ("mpadge/peerreview")
+remotes::install_github ("mpadge/coding-alone")
 ```
 
 ## Vignettes
 
-- `vignette ("data-generation", package = "peerreview")` - the pipeline
+- `vignette ("coding-alone", package = "codingAlone")` - the main analysis on
+the demise of code communities.
+- `vignette ("review-dividend", package = "codingAlone")` - additional analyses
+  of the effect of software peer review on sustaining open-source community
+  engagement.
+- `vignette ("data-generation", package = "codingAlone")` - the pipeline
   used to fetch and assemble the underlying repository and GitHub issue
   data.
-- `vignette ("review-dividend", package = "peerreview")` - the main
-  analysis: does formal peer review sustain open-source community
-  engagement?

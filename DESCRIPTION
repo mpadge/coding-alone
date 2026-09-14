@@ -1,6 +1,6 @@
-Package: peerreview
+Package: codingAlone
 Title: The Effect of Peer Review on Open-Source Community Engagement
-Version: 0.1.0.017
+Version: 0.2.0
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265"))
@@ -10,8 +10,8 @@ Description: Code to analyse GitHub issue activity across open-source
     repository "popularity" metrics and, for rOpenSci, formal
     peer-review status.
 License: GPL-3
-URL: https://github.com/mpadge/peerreview
-BugReports: https://github.com/mpadge/peerreview/issues
+URL: https://github.com/mpadge/coding-alone
+BugReports: https://github.com/mpadge/coding-alone/issues
 Depends: R (>= 4.1.0)
 Imports:
     cli,

@@ -109,7 +109,7 @@ github_api_get_all <- function (path,
         ) |>
             httr2::req_headers (
                 Accept = "application/vnd.github+json",
-                `User-Agent` = "peerreview-R-package"
+                `User-Agent` = "codingAlone-R-package"
             ) |>
             httr2::req_retry (max_tries = 5, backoff = \ (i) 2^i)
         req <- do.call (

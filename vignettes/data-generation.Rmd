@@ -15,7 +15,7 @@ knitr::opts_chunk$set (
 ```
 
 ```{r setup}
-library (peerreview)
+library (codingAlone)
 ```
 
 This vignette walks through the full pipeline used to generate the

@@ -51,7 +51,7 @@ test_that ("fetch_issue_authors writes both checkpoint files on a fresh run", {
     out_dir <- withr::local_tempdir ()
     testthat::local_mocked_bindings (
         github_issue_authors = fake_issue_authors_row,
-        .package = "peerreview"
+        .package = "codingAlone"
     )
 
     res <- fetch_issue_authors (
@@ -72,7 +72,7 @@ test_that ("fetch_issue_authors resumes, skipping repos already marked done", {
             calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
             fake_issue_authors_row (repo_url)
         },
-        .package = "peerreview"
+        .package = "codingAlone"
     )
 
     fetch_issue_authors (
@@ -101,7 +101,7 @@ test_that ("fetch_issue_authors isolates error without abort", {
             if (grepl ("bad", repo_url, fixed = TRUE)) stop ("boom")
             fake_issue_authors_row (repo_url)
         },
-        .package = "peerreview"
+        .package = "codingAlone"
     )
 
     expect_message (
@@ -124,7 +124,7 @@ test_that ("fetch_issue_authors samples evenly across repo_urls, not sequentiall
             calls <<- c (calls, repo_url) # nolint: undesirable_operator_linter.
             fake_issue_authors_row (repo_url)
         },
-        .package = "peerreview"
+        .package = "codingAlone"
     )
 
     # ordered as if by descending popularity, most-popular first:
