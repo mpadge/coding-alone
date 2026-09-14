@@ -4,11 +4,7 @@
 \alias{github_commit_counts_by_month}
 \title{Monthly commit counts on a single GitHub repo's default branch, as a
 direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package. One GraphQL query per calendar month in range
-(bounded below by the repo's own creation date, capped above by
-\code{date_end}) - there's no way to ask for all months in a single request,
-but each query only ever asks for a \code{totalCount}, so the cost per query
-stays low regardless of how many commits actually landed that month.}
+elsewhere in this package.}
 \usage{
 github_commit_counts_by_month(
   repo_url = NULL,
@@ -21,21 +17,18 @@ github_commit_counts_by_month(
 
 \item{date_start, date_end}{Date bounds on the monthly sequence;
 \code{date_end} defaults to the start of the current month. Months before the
-repo's own creation date are skipped rather than queried and discarded.}
+repo's own creation date come back with \code{n_commits = 0} rather than being
+dropped, since fetching \code{createdAt} separately just to skip them would
+cost a request for no benefit here.}
 }
 \value{
 A tibble with one row per month: \code{repo_url}, \code{month},
-\code{n_commits}. Zero rows if the repo has no commits in range (including a
-repo created after \code{date_end}).
+\code{n_commits}.
 }
 \description{
 Monthly commit counts on a single GitHub repo's default branch, as a
 direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package. One GraphQL query per calendar month in range
-(bounded below by the repo's own creation date, capped above by
-\code{date_end}) - there's no way to ask for all months in a single request,
-but each query only ever asks for a \code{totalCount}, so the cost per query
-stays low regardless of how many commits actually landed that month.
+elsewhere in this package.
 }
 \examples{
 \dontrun{

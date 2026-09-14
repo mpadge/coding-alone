@@ -266,41 +266,43 @@ join_repo_metadata <- function (issue_authors_tbl, repo_tbl) {
 # ---- commit counts ----------------------------------------------------------
 
 # GitHub's GraphQL API has no endpoint that hands back a pre-binned
-# month-by-month commit histogram in one call. What it does have is
-# `history(since:, until:)` on a `Commit` object (reached via a branch ref's
-# `target`), whose `totalCount` field counts commits reachable from that
-# target within the window - without ever paging through or returning the
-# commits themselves. That makes it cheap to call once per month of a
-# repo's history, even though it can't be done in a single request.
+# month-by-month commit histogram in one call, but `history(since:, until:)`
+# on a `Commit` object (reached via a branch ref's `target`) can be paged
+# with a cursor exactly like `github_repo_issues_graphql()` already does for
+# issues (see github-issues.R). Fetching just the `committedDate` of every
+# commit in `[since, until)` and binning locally is far cheaper than one
+# `totalCount`-only query per calendar month: it costs `ceil(n_commits /
+# page_size)` requests for the whole range, which for a typical low/medium
+# activity repo (tens of commits/month) undercuts the number of months by a
+# wide margin, especially over a repo's early, quiet years.
 
-#' GraphQL query for a repo's own creation timestamp only - used to bound
-#' the monthly loop in `github_commit_counts_by_month()` below to months the
-#' repo actually existed in, without wasting a query on months before it was
-#' created.
+#' GraphQL query for one page of a repo's default-branch commit history
+#' within `[since, until)`, asking only for each commit's `committedDate` -
+#' cheap because it never requests diffs, messages, or authors. Pages via a
+#' cursor exactly like `build_issues_query()` in github-issues.R.
+#' `since`/`until` are GitTimestamp strings (ISO-8601, e.g.
+#' `"2020-01-01T00:00:00Z"`).
 #' @noRd
-build_repo_created_at_query <- function (owner, repo) {
-    stringr::str_glue (
-        'query {{
-            repository(owner: "{owner}", name: "{repo}") {{
-                createdAt
-            }}
-        }}'
-    )
-}
+build_commit_history_query <- function (owner, repo, since, until,
+                                        cursor = NULL) {
 
-#' GraphQL query for the number of commits landed on a repo's default
-#' branch within `[since, until)`. `since`/`until` are GitTimestamp strings
-#' (ISO-8601, e.g. `"2020-01-01T00:00:00Z"`).
-#' @noRd
-build_commit_count_query <- function (owner, repo, since, until) {
+    after <- if (is.null (cursor)) {
+        ""
+    } else {
+        stringr::str_glue (', after: "{cursor}"')
+    }
+
+    first <- github_issues_page_size ()
+
     stringr::str_glue (
         'query {{
             repository(owner: "{owner}", name: "{repo}") {{
                 defaultBranchRef {{
                     target {{
                         ... on Commit {{
-                            history(since: "{since}", until: "{until}") {{
-                                totalCount
+                            history(since: "{since}", until: "{until}", first: {first}{after}) {{
+                                pageInfo {{ hasNextPage endCursor }}
+                                nodes {{ committedDate }}
                             }}
                         }}
                     }}
@@ -310,38 +312,57 @@ build_commit_count_query <- function (owner, repo, since, until) {
     )
 }
 
-#' Number of commits on a single repo's default branch within `[since,
-#' until)`. Returns 0 for a repo with no default branch at all (an empty
-#' repo), rather than erroring.
+#' Timestamps of every commit landed on a repo's default branch within
+#' `[since, until)`. Returns `character(0)` for a repo with no default
+#' branch at all (an empty repo), rather than erroring.
 #' @noRd
-github_repo_commit_count <- function (owner, repo, since, until) {
+github_repo_commit_dates <- function (owner, repo, since, until) {
 
-    body <- gh::gh_gql (build_commit_count_query (owner, repo, since, until))
-    history <- purrr::pluck (
-        body, "data", "repository", "defaultBranchRef", "target", "history"
-    )
-    if (is.null (history)) {
-        return (0L)
+    cursor <- NULL
+    pages <- list ()
+    single_page_only <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
+
+    repeat {
+
+        body <- gh::gh_gql (
+            build_commit_history_query (owner, repo, since, until, cursor)
+        )
+        history <- purrr::pluck (
+            body, "data", "repository", "defaultBranchRef", "target", "history"
+        )
+        if (is.null (history)) {
+            return (character ())
+        }
+
+        nodes <- history$nodes
+        if (length (nodes) > 0) {
+            pages [[length (pages) + 1]] <- purrr::map_chr (
+                nodes, "committedDate"
+            )
+        }
+
+        if (single_page_only || !isTRUE (history$pageInfo$hasNextPage)) {
+            break
+        }
+        cursor <- history$pageInfo$endCursor
     }
-    as.integer (history$totalCount)
+
+    unlist (pages, use.names = FALSE)
 }
 
 #' Monthly commit counts on a single GitHub repo's default branch, as a
 #' direct measure of code-activity to sit alongside the issue-based measures
-#' elsewhere in this package. One GraphQL query per calendar month in range
-#' (bounded below by the repo's own creation date, capped above by
-#' `date_end`) - there's no way to ask for all months in a single request,
-#' but each query only ever asks for a `totalCount`, so the cost per query
-#' stays low regardless of how many commits actually landed that month.
+#' elsewhere in this package.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
 #' @param date_start,date_end Date bounds on the monthly sequence;
 #' `date_end` defaults to the start of the current month. Months before the
-#' repo's own creation date are skipped rather than queried and discarded.
+#' repo's own creation date come back with `n_commits = 0` rather than being
+#' dropped, since fetching `createdAt` separately just to skip them would
+#' cost a request for no benefit here.
 #'
 #' @return A tibble with one row per month: `repo_url`, `month`,
-#' `n_commits`. Zero rows if the repo has no commits in range (including a
-#' repo created after `date_end`).
+#' `n_commits`.
 #'
 #' @examples
 #' \dontrun{
@@ -352,42 +373,150 @@ github_commit_counts_by_month <- function (repo_url = NULL,
                                            date_start = as.Date ("2015-01-01"),
                                            date_end = NULL) {
 
-    if (is.null (date_end)) date_end <- floor_month (Sys.Date ())
+    month <- n_commits <- NULL # rm no visible binding notes
 
-    empty <- tibble::tibble (
-        repo_url = character (), month = as.Date (character ()),
-        n_commits = integer ()
-    )
+    if (is.null (date_end)) date_end <- floor_month (Sys.Date ())
 
     repo <- parse_github_repo_url (repo_url)
 
-    created_at_body <- gh::gh_gql (
-        build_repo_created_at_query (repo$owner, repo$repo)
-    )
-    repo_created_at <- created_at_body$data$repository$createdAt
-    if (is.null (repo_created_at)) {
-        return (empty)
-    }
-
-    start <- max (date_start, floor_month (repo_created_at))
-    if (start > date_end) {
-        return (empty)
-    }
-
-    n_months <- length (seq (start, date_end, by = "month"))
-    bounds <- seq (start, by = "month", length.out = n_months + 1)
-    months <- utils::head (bounds, -1)
-    month_ends <- utils::tail (bounds, -1)
-
     to_git_timestamp <- \ (d) strftime (d, "%Y-%m-%dT00:00:00Z", tz = "UTC")
+    until <- seq (date_end, by = "month", length.out = 2) [2]
 
-    n_commits <- purrr::map2_int (months, month_ends, \ (since, until) {
-        github_repo_commit_count (
-            repo$owner, repo$repo,
-            since = to_git_timestamp (since),
-            until = to_git_timestamp (until)
+    commit_dates <- github_repo_commit_dates (
+        repo$owner, repo$repo,
+        since = to_git_timestamp (date_start),
+        until = to_git_timestamp (until)
+    )
+
+    months <- seq (date_start, date_end, by = "month")
+
+    counts_tbl <- tibble::tibble (month = floor_month (commit_dates)) |>
+        dplyr::count (month, name = "n_commits")
+
+    tibble::tibble (repo_url = repo_url, month = months) |>
+        dplyr::left_join (counts_tbl, by = "month") |>
+        dplyr::mutate (n_commits = as.integer (dplyr::coalesce (n_commits, 0)))
+}
+
+COMMIT_COUNTS_COL_TYPES <- readr::cols (
+    repo_url = readr::col_character (),
+    month = readr::col_date (),
+    n_commits = readr::col_integer ()
+)
+
+#' Fetch monthly commit counts (`github_commit_counts_by_month()`) for many
+#' repos, batched and checkpointed to disk exactly like
+#' `fetch_issue_authors()` above - same checkpoint/resume logic and the same
+#' concurrent-batch execution via `progressify`/`futurize`, for the same
+#' reason: GitHub's hourly rate limit is a cumulative budget, so the risk is
+#' running through it too fast overall, not concurrency within one batch.
+#'
+#' @inheritParams fetch_issue_authors
+#' @param date_start,date_end Passed to `github_commit_counts_by_month()`.
+#' @return A tibble with columns `repo_url`, `month`, `n_commits` - the full
+#' accumulated result, including rows from any previous run(s).
+#'
+#' @examples
+#' repo_urls <- c (
+#'     "https://github.com/ropensci/targets",
+#'     "https://github.com/ropensci/drake"
+#' )
+#' \dontrun{
+#' commit_counts_tbl <- fetch_repo_commits (repo_urls, "path/to/repo-data-out")
+#' }
+#' @export
+fetch_repo_commits <- function (repo_urls, out_dir, batch_size = 50L,
+                                date_start = as.Date ("2015-01-01"),
+                                date_end = NULL) {
+
+    is_test_env <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
+
+    if (!is_test_env) {
+        requireNamespace ("progressify", quietly = TRUE)
+        requireNamespace ("futurize", quietly = TRUE)
+        progressr::handlers (global = TRUE)
+    }
+
+    commit_counts_csv <- file.path (out_dir, "commit-counts.csv")
+    commit_counts_done_rds <- file.path (out_dir, "commit-counts-done.rds")
+
+    commit_counts_tbl <- if (file.exists (commit_counts_csv)) {
+
+        readr::read_csv (commit_counts_csv, col_types = COMMIT_COUNTS_COL_TYPES)
+
+    } else {
+
+        tibble::tibble (
+            repo_url = character (), month = as.Date (character ()),
+            n_commits = integer ()
         )
-    })
+    }
 
-    tibble::tibble (repo_url = repo_url, month = months, n_commits = n_commits)
+    repo_urls_done <- if (file.exists (commit_counts_done_rds)) {
+        readRDS (commit_counts_done_rds)
+    } else {
+        character ()
+    }
+
+    repo_urls <- unique (repo_urls)
+    repo_urls_todo <- setdiff (repo_urls, repo_urls_done)
+    n_done <- length (repo_urls_done)
+    n_total <- length (repo_urls)
+    n_todo <- length (repo_urls_todo)
+    msg <- stringr::str_glue (
+        "Commit counts: {n_done} of {n_total} repos already done, ",
+        "{n_todo} remaining..."
+    )
+    cli::cli_alert_info (msg)
+
+    get_commit_counts_safe <- function (repo_url) {
+        tryCatch (
+            github_commit_counts_by_month (
+                repo_url,
+                date_start = date_start,
+                date_end = date_end
+            ),
+            error = function (e) {
+                cli::cli_alert_warning (
+                    "Commit counts: failed for {repo_url}: {conditionMessage (e)}"
+                )
+                tibble::tibble (repo_url = repo_url) [0, ]
+            }
+        )
+    }
+
+    n_batches <- ceiling (length (repo_urls_todo) / batch_size)
+    batches <- interlace_for_even_coverage (repo_urls_todo, n_batches)
+
+    for (b in seq_along (batches)) {
+
+        batch <- batches [[b]]
+        msg <- stringr::str_glue (
+            "Commit counts: batch {b}/{length (batches)} ",
+            "({length (batch)} repos)..."
+        )
+        cli::cli_alert_info (msg)
+
+        if (is_test_env) {
+            batch_tbl <- lapply (batch, get_commit_counts_safe)
+        } else {
+            batch_tbl <- lapply (batch, get_commit_counts_safe) |>
+                progressify::progressify () |>
+                futurize::futurize ()
+        }
+
+        commit_counts_tbl <- dplyr::bind_rows (commit_counts_tbl, batch_tbl)
+        repo_urls_done <- c (repo_urls_done, batch)
+
+        readr::write_csv (commit_counts_tbl, commit_counts_csv)
+        saveRDS (repo_urls_done, commit_counts_done_rds)
+    }
+
+    msg <- stringr::str_glue (
+        "Commit counts: wrote {nrow (commit_counts_tbl)} rows to ",
+        "{commit_counts_csv}"
+    )
+    cli::cli_alert_success (msg)
+
+    commit_counts_tbl
 }
