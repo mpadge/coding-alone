@@ -1,9 +1,8 @@
-# Plotting functions used by the "review-dividend" vignette, matched
-# one-to-one with the table-generation functions in R/tables.R: each of
-# these plots the tibble produced by one of that file's functions. Kept
-# separate from R/analyse-activity.R's `plot_activity()`/
-# `plot_activity_by_source()`, which plot `issue_rate_tbl()` output
-# directly rather than one of these higher-level comparison tables.
+# Plotting functions, matched one-to-one with the table-generation functions in
+# R/tables.R: each of these plots the tibble produced by one of that file's
+# functions. Kept separate from R/analyse-activity.R's `plot_activity()`/
+# `plot_activity_by_source()`, which plot `issue_rate_tbl()` output directly
+# rather than one of these higher-level comparison tables.
 
 # ---- cross-source fold-change -----------------------------------------------
 
