@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.007</span>
       </span>
     </div>
 
@@ -81,16 +81,13 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Coding Alone</h1>
-            <h3 data-toc-skip class="subtitle">Robert Putnam found
-Americans bowling as much as ever but increasingly outside the leagues
-that once turned it into a shared civic habit; across five open-source
-ecosystems, the same shift shows up in who writes code - not less of it,
-but more of it happening to just one person where several used to
-overlap</h3>
+            <h3 data-toc-skip class="subtitle">Analyses of coding
+activity across GitHub reveals a stark decline in collective coding in
+favour of coding alone.</h3>
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">14 September 2026</h4>
+            <h4 data-toc-skip class="date">15 September 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
       <div class="hidden name"><code>coding-alone.Rmd</code></div>
@@ -113,16 +110,6 @@ resolve correctly. That committed .Rmd has every chunk already evaluated
 (text and figures baked in as static markdown/images), so re-building it
 via the usual vignette machinery never needs the data again.
 -->
-<div class="callout">
-<p>This vignette draws on the same large, locally-fetched dataset as
-<code>vignettes/review-dividend.Rmd</code> (<code>repo-data-out/</code>:
-every GitHub issue ever opened on ~50,000 repositories across CRAN, npm,
-PyPI, JOSS and rOpenSci) that is far too large to ship with the package
-itself. The vignette you’re reading is precompiled from that data - see
-<code>vignettes/coding-alone.Rmd.orig</code> in the package source if
-you want to re-run the analysis yourself once the underlying data is
-available (via Git LFS) from the package repository.</p>
-</div>
 <style>
 .callout {
     border-left: 4px solid #2c3e50;
@@ -137,35 +124,28 @@ available (via Git LFS) from the package repository.</p>
 <div class="section level2">
 <h2 id="bowling-alone-coding-alone">Bowling alone, coding alone<a class="anchor" aria-label="anchor" href="#bowling-alone-coding-alone"></a>
 </h2>
-<p>In 1995, Robert Putnam noticed something odd in the numbers behind
-American leisure: more Americans were bowling than ever before, but
-league bowling - organised, recurring, collective - was collapsing, down
-by more than a third in a decade even as solo and casual bowling held
-steady or grew. He used it as the title image for a much broader
-argument: that many of the associational habits which used to knit
-Americans into overlapping local groups - clubs, unions, congregations,
-PTAs, bowling leagues - had been quietly hollowing out for a generation,
-not because people had lost interest in the underlying activity, but
-because they’d stopped doing it <em>together</em> <span class="citation">(Putnam 1995, 2000)</span>. The bowling itself wasn’t
-the point. The leagues were the point: the incidental, repeated contact
-with the same loose set of other people that turned a solitary pastime
-into a standing piece of a community’s own infrastructure.</p>
-<p>Open-source software has its own version of a league: a public
-repository, with a maintainer or two at its centre and a shifting cast
-of outsiders who file a bug, ask a question, or leave a comment, and in
-doing so become a little bit known to the project and to each other.
-People still write code, probably more of it than ever. What this
-document asks is a Putnam-shaped question about the collective structure
-built around that writing, not the writing itself: is a typical
-repository still a place where a handful of different people’s paths
-cross over the course of a year, or is it, increasingly, one person
-coding alone? A companion analysis in this package
-(<code>vignettes/review-dividend.Rmd</code>) found exactly one corner of
-one ecosystem bucking the general decline - rOpenSci’s least-visible
-packages, but only the ones that went through formal peer review. This
-document sets that single exception aside and asks the broader question
-directly, across five ecosystems and a decade of data, using every cut
-of “who’s actually there” this dataset can support.</p>
+<p>In 1995, Robert Putnam noticed that more Americans were bowling than
+ever before, but the growth was in solo or casual bowling at the expense
+of organised, collective blowing. He argued that this was reflective of
+a broader collapse of associational habits which used to knit Americans
+into overlapping local groups. Clubs, unions, congregations, leagues had
+been quietly hollowing out for a generation, not because people had lost
+interest in the underlying activity, but because they’d stopped doing it
+<em>together</em> <span class="citation">(Putnam 1995, 2000)</span>. The
+incidental organizational structure of bowling leagues facilitated
+repeated contact with the same loose sets of other people. And that was
+key to ensuring that a potentially solitary pastime was actually a key
+contributor to social infrastructure.</p>
+<p>Open-source software has its own version of a league: public
+repositories, with one or two maintainers at their centre and shifting
+casts of outsiders who file bugs, ask questions, or leave comments, and
+in doing so form part of a community that guides and nurtures ongoing
+software development.</p>
+<p>People still write code, probably more of it than ever. But this
+document shows that the collective structure built around that writing
+is changing dramtically. Public software repositories are changing from
+places of collective coherence and cohesion to more like mere mirrors of
+a single person’s work.</p>
 </div>
 <div class="section level2">
 <h2 id="what-was-measured">What was measured<a class="anchor" aria-label="anchor" href="#what-was-measured"></a>
@@ -510,124 +490,34 @@ plot of chunk commit-rate-plot
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">rOpenSci</td>
-<td align="right">0.02</td>
-<td align="right">0.00</td>
-<td align="right">0%</td>
+<td align="left">JOSS</td>
+<td align="right">1.43</td>
+<td align="right">0.52</td>
+<td align="right">36%</td>
 </tr>
 <tr class="even">
-<td align="left">rOpenSci</td>
-<td align="right">0.10</td>
-<td align="right">0.01</td>
-<td align="right">14%</td>
-</tr>
-<tr class="odd">
-<td align="left">JOSS</td>
-<td align="right">0.62</td>
-<td align="right">0.15</td>
-<td align="right">25%</td>
-</tr>
-<tr class="even">
-<td align="left">JOSS</td>
-<td align="right">0.86</td>
-<td align="right">0.25</td>
-<td align="right">30%</td>
-</tr>
-<tr class="odd">
-<td align="left">JOSS</td>
-<td align="right">0.54</td>
+<td align="left">CRAN</td>
+<td align="right">0.34</td>
 <td align="right">0.18</td>
-<td align="right">33%</td>
+<td align="right">51%</td>
 </tr>
-<tr class="even">
-<td align="left">CRAN</td>
-<td align="right">0.42</td>
+<tr class="odd">
+<td align="left">rOpenSci</td>
 <td align="right">0.18</td>
-<td align="right">44%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">0.19</td>
-<td align="right">0.10</td>
-<td align="right">52%</td>
-</tr>
-<tr class="even">
-<td align="left">JOSS</td>
-<td align="right">2.02</td>
-<td align="right">1.09</td>
-<td align="right">54%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">0.27</td>
-<td align="right">0.15</td>
-<td align="right">54%</td>
-</tr>
-<tr class="even">
-<td align="left">npm</td>
-<td align="right">3.46</td>
-<td align="right">2.02</td>
-<td align="right">58%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">0.24</td>
 <td align="right">0.14</td>
-<td align="right">60%</td>
-</tr>
-<tr class="even">
-<td align="left">rOpenSci</td>
-<td align="right">0.26</td>
-<td align="right">0.17</td>
-<td align="right">67%</td>
-</tr>
-<tr class="odd">
-<td align="left">npm</td>
-<td align="right">0.05</td>
-<td align="right">0.05</td>
-<td align="right">92%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">0.86</td>
-<td align="right">0.96</td>
-<td align="right">111%</td>
-</tr>
-<tr class="odd">
-<td align="left">rOpenSci</td>
-<td align="right">0.27</td>
-<td align="right">0.36</td>
-<td align="right">132%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">0.43</td>
-<td align="right">0.69</td>
-<td align="right">160%</td>
-</tr>
-<tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">0.32</td>
-<td align="right">0.58</td>
-<td align="right">183%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">0.15</td>
-<td align="right">0.29</td>
-<td align="right">187%</td>
-</tr>
-<tr class="odd">
-<td align="left">npm</td>
-<td align="right">1.49</td>
-<td align="right">3.37</td>
-<td align="right">227%</td>
+<td align="right">80%</td>
 </tr>
 <tr class="even">
 <td align="left">npm</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">NA</td>
+<td align="right">1.83</td>
+<td align="right">1.79</td>
+<td align="right">98%</td>
+</tr>
+<tr class="odd">
+<td align="left">PyPI</td>
+<td align="right">0.56</td>
+<td align="right">0.72</td>
+<td align="right">130%</td>
 </tr>
 </tbody>
 </table>
