@@ -53,26 +53,21 @@ In 1995, Robert Putnam noticed that more Americans were bowling than ever
 before, but the growth was in solo or casual bowling at the expense of
 organised, collective blowing. He argued that this was reflective of a broader
 collapse of associational habits which used to knit Americans into overlapping
-local groups. Clubs, unions, congregations, leagues had been quietly hollowing
-out for a generation, not because people had lost interest in the underlying
-activity, but because they'd stopped doing it *together*
+social groups. Local clubs, unions, congregations, leagues had been quietly
+hollowing out for a generation, not because people had lost interest in the
+underlying activity, but because they'd stopped doing it *together*
 [@putnam1995bowlingalone; @putnam2000bowlingalone]. The incidental
-organizational structure of bowling leagues facilitated repeated contact with
-the same loose sets of other people. And that was key to ensuring that a
-potentially solitary pastime was actually a key contributor to social
-infrastructure.
+organizational structure of bowling leagues turned out to have been key to the
+way a potentially solitary pastime contributed to social cohesion.
 
-Open-source software has its own version of a league: public
-repositories, with one or two maintainers at their centre and shifting casts of
-outsiders who file bugs, ask questions, or leave comments, and in
-doing so form part of a community that guides and nurtures ongoing software
-development.
-
-People still write code, probably more of it than ever. But this document shows
-that the collective structure built around that writing is changing
-dramtically. Public software repositories are changing from places of
-collective coherence and cohesion to more like mere mirrors of a single
-person's work.
+Open-source software has its own version of a league: public repositories, with
+one or two maintainers at their centre and shifting casts of outsiders who file
+bugs, ask questions, or leave comments. These communities of contributors guide
+and nurture ongoing software development. People still write code, but this
+document shows that the collective structures that have supported and sustained
+that writing are changing dramtically. Public software repositories are
+changing from places of social coherence and cohesion to become more like mere
+mirrors of a single person's work.
 
 ## What was measured
 
