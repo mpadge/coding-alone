@@ -107,6 +107,32 @@ qualitative impact of any of the results or conclusions drawn.
 A few additional statistics were also extracted, and are described alongside
 the main analysis.
 
+## Finding #1: People are still coding
+
+The most direct measures of coding activity are the creation of new
+repositories, and numbers of commits in each. Time series of these two
+statistics are shown in the following two panels.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"  />
+<p class="caption">plot of chunk commit-rate-plot</p>
+</div>
+
+Both of these panels manifest two distinct regimes, separated either side of
+late 2020, early 2021. The following table compares current values with those
+in Jan 2021, showing the percentage decrease in overall coding activity.
+
+Table: Commits per repo-month, by source, now vs. Jan 2021
+
+|Source   | Jan 2021| Latest| Relative change|
+|:--------|--------:|------:|-----------:|
+|JOSS     |     1.43|   0.52|         36%|
+|CRAN     |     0.34|   0.18|         51%|
+|rOpenSci |     0.18|   0.14|         80%|
+|npm      |     1.83|   1.79|         98%|
+|PyPI     |     0.56|   0.72|        130%|
+
+
 ## Finding 1: fewer outsiders, counted properly
 
 <div class="figure" style="text-align: center">
@@ -330,46 +356,6 @@ Popularity buys a project more absolute traffic, but it hasn't bought
 insulation from this trend; the software with the most outside visibility
 to lose is losing proportionally more of it than the software that barely
 had any to begin with.
-
-## Finding 6: a direct check against commit history
-
-Everything above is built on issue-filing, which, as noted at the outset,
-misses anyone who contributes code without ever opening an issue. Commit
-history sidesteps that gap directly: it's a record of code actually
-landed on a repository's default branch, independent of whether whoever
-landed it ever filed an issue at all. Unlike every rate above, commit
-rate shows no material difference across popularity strata, so the top
-panel below plots one line per source rather than splitting each source
-into quartiles. The bottom panel adds the raw context those per-repo-month
-rates are computed against: how many repositories of each source were
-themselves created per month, unnormalised, over the same window.
-
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"  />
-<p class="caption">plot of chunk commit-rate-plot</p>
-</div>
-
-
-Table: Commits per repo-month, by source, now vs. Jan 2021
-
-|Source   | Jan 2021| Latest| Fold-change|
-|:--------|--------:|------:|-----------:|
-|JOSS     |     1.43|   0.52|         36%|
-|CRAN     |     0.34|   0.18|         51%|
-|rOpenSci |     0.18|   0.14|         80%|
-|npm      |     1.83|   1.79|         98%|
-|PyPI     |     0.56|   0.72|        130%|
-
-The commit-based picture is more mixed than the issue-based one. CRAN,
-JOSS and rOpenSci all show a commit rate below their January-2021 level,
-in the same direction as every issue-based measure above. npm and PyPI
-don't: PyPI's commit rate now sits above its January-2021 level, and
-npm's sits close to flat. Three of the five primary sources point the
-same direction as Findings 1-5; two of them - both general-purpose
-package registries rather than the GitHub-review-oriented JOSS/rOpenSci -
-don't. A pattern built entirely on who files an issue and a pattern built
-entirely on who lands a commit aren't measuring the same thing, and here
-they don't agree everywhere.
 
 ## What this looks like from outside this dataset
 
