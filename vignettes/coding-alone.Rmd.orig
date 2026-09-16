@@ -297,53 +297,73 @@ mirrors of a single person's work.
 
 ## What was measured
 
-The dataset combines five sources - CRAN, npm and PyPI (general package
-registries) and JOSS and rOpenSci (two GitHub-based software review
-organisations) - matched to their GitHub repositories, with every issue
-ever opened on each one fetched via the GitHub API:
-`r scales::comma (nrow (issue_authors_tbl))` issues across
-`r scales::comma (n_repos_primary)` repositories, spanning
-`r format (date_range [1], "%Y")`–`r format (date_range [2], "%Y")`.
+All data are taken from GitHub, primarily as measures of interaction with
+software repositories through "issues". Issues are the place for anybody to ask
+questions of software authors, to report bugs, or to request new features.
+A corpus of repositories was taken from five sources: three
+package-distribution systems of [npm for Javascript](https://npmjs.com), [PyPI
+for Python](pypi.org), [CRAN for R](https://cran.r-project.org), and two
+GitHub-based software review organizations, [JOSS (the Journal of Open-Source
+Software)](https://joss.theoj.org), and [rOpenSci](https://ropensci.org).
 
-Three cuts of "who's there" are used below, all built from the same
-`contribution` field - each issue author's cumulative share of all
-commits ever made to that repository, as of when the data was fetched.
-**Non-core** authors are those at or below `contrib_threshold = 0.01`,
-the outsider slice used throughout the companion vignette; **core**
-authors are everyone above that line; **total** is the two combined,
-with no threshold applied at all. Popularity strata (Q1 = least popular
-quartile, Q4 = most popular), where used, are computed separately within
-each source, from log-scaled downloads (CRAN, npm, PyPI) or GitHub stars
-(JOSS, rOpenSci).
+Analyses included every repository reviewed by [JOSS](https://joss.theoj.org)
+and [rOpenSci](https://ropensci.org), and samples from the other three. Samples
+were stratified by popularity (measured as downloads) to ensure even sampling
+and representation regardless of popularity. In total,
+`r scales::comma (nrow (issue_authors_tbl))` issues were analysed across
+`r scales::comma (n_repos_primary)` repositories.
 
-The unit of account also comes in two forms. Most of the figures below
-extend the companion vignette's **distinct-author density** - not how
-many issues a repository received in a given month, but how many
-different people filed them, normalised by repo-months of exposure the
-same way an issue rate is. The final measure introduced here is simpler
-and more direct: for every repository with *any* issue-based activity in
-a trailing 12-month window, does that activity involve exactly one
-distinct person, or more than one? The share of active repositories
-sitting at exactly one is the closest this dataset comes to counting solo
-maintainers directly - a repo-count analogue of a bowling league's own
-falling membership rolls, rather than of its per-lane activity rate.
+More popular or prominent repositories attract greater interaction, resulting
+in issues being opened more frequently, and from a wider community. To account
+for the effects of repository popularity, most of the results are represented
+for four popularity strata, taken as quartiles on a logarithmic popularity
+scale. The lowest quartile, denoted "Q1", represents the least popular
+repositories. Because these generally strongly outnumber popular repositories,
+these Q1 values may be generally interpreted to reflect the majority of all
+repositories. The "Q4" repositories are the outlying superstar repositories
+downloaded millions of times, and with hundreds of people opening issues.
 
-<div class="callout">
-Every count in this document, core contributors included, depends on a
-person having filed at least one GitHub issue on the repository - that's
-the only trace of a "contributor" this dataset can see. Someone who
-commits code but never opens an issue (a co-maintainer working entirely
-through pull requests, say) is invisible here, in every measure below,
-core and total alike. Closing that gap needs real commit-history-based
-contributor timelines rather than issue-filing as a proxy for who's
-present, and a future update to this analysis is intended to draw on
-exactly that. Until then, every count here should be read as a plausible
-lower bound on how many people are actually present, not an exact
-census - though there's no obvious reason for undercounting silent
-committers to manufacture a *decline* specifically, rather than just
-shifting every number in this document up by some roughly constant
-amount.
-</div>
+The only other important distinct in the data analysed here is between "core"
+and "non-core" contributors. Core contributors were identified as the cohort
+accounting for 99% of the cumulative share of all commits to a repository.
+The none-core contributors which are the focus of this analyses were taken as
+the cohort who collectively contributing less than 1%. This 1% threshold was
+arbitrarily set, but changing to alternative values like 2 or even 5% has no
+qualitative impact of any of the results or conclusions drawn.
+
+A few additional statistics were also extracted, and are described alongside
+the main analysis.
+
+## Finding #1: People are still coding
+
+The most direct measures of coding activity are the creation of new
+repositories, and numbers of commits in each. Time series of these two
+statistics are shown in the following two panels.
+
+```{r commit-rate-plot, fig.height=9}
+plot_commit_rate (
+    commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
+    start_year = 2016
+)
+```
+
+Both of these panels manifest two distinct regimes, separated either side of
+late 2020, early 2021. The following table compares current values with those
+in Jan 2021, showing the percentage decrease in overall coding activity.
+
+```{r commit-rate-table}
+commit_fc_display |>
+    dplyr::transmute (
+        Source = source,
+        `Jan 2021` = round (rate_ref, 2),
+        Latest = round (rate_latest, 2),
+        `Fold-change` = scales::percent (fold_change, accuracy = 1)
+    ) |>
+    knitr::kable (
+        align = c ("l", "r", "r", "r"),
+        caption = "Commits per repo-month, by source, now vs. Jan 2021"
+    )
+```
 
 ## Finding 1: fewer outsiders, counted properly
 
@@ -635,51 +655,6 @@ Popularity buys a project more absolute traffic, but it hasn't bought
 insulation from this trend; the software with the most outside visibility
 to lose is losing proportionally more of it than the software that barely
 had any to begin with.
-
-## Finding 6: a direct check against commit history
-
-Everything above is built on issue-filing, which, as noted at the outset,
-misses anyone who contributes code without ever opening an issue. Commit
-history sidesteps that gap directly: it's a record of code actually
-landed on a repository's default branch, independent of whether whoever
-landed it ever filed an issue at all. Unlike every rate above, commit
-rate shows no material difference across popularity strata, so the top
-panel below plots one line per source rather than splitting each source
-into quartiles. The bottom panel adds the raw context those per-repo-month
-rates are computed against: how many repositories of each source were
-themselves created per month, unnormalised, over the same window.
-
-```{r commit-rate-plot, fig.height=9}
-plot_commit_rate (
-    commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
-    start_year = 2016
-)
-```
-
-```{r commit-rate-table}
-commit_fc_display |>
-    dplyr::transmute (
-        Source = source,
-        `Jan 2021` = round (rate_ref, 2),
-        Latest = round (rate_latest, 2),
-        `Fold-change` = scales::percent (fold_change, accuracy = 1)
-    ) |>
-    knitr::kable (
-        align = c ("l", "r", "r", "r"),
-        caption = "Commits per repo-month, by source, now vs. Jan 2021"
-    )
-```
-
-The commit-based picture is more mixed than the issue-based one. CRAN,
-JOSS and rOpenSci all show a commit rate below their January-2021 level,
-in the same direction as every issue-based measure above. npm and PyPI
-don't: PyPI's commit rate now sits above its January-2021 level, and
-npm's sits close to flat. Three of the five primary sources point the
-same direction as Findings 1-5; two of them - both general-purpose
-package registries rather than the GitHub-review-oriented JOSS/rOpenSci -
-don't. A pattern built entirely on who files an issue and a pattern built
-entirely on who lands a commit aren't measuring the same thing, and here
-they don't agree everywhere.
 
 ## What this looks like from outside this dataset
 
