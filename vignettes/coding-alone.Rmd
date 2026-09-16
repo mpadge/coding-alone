@@ -71,53 +71,41 @@ mirrors of a single person's work.
 
 ## What was measured
 
-The dataset combines five sources - CRAN, npm and PyPI (general package
-registries) and JOSS and rOpenSci (two GitHub-based software review
-organisations) - matched to their GitHub repositories, with every issue
-ever opened on each one fetched via the GitHub API:
-3,135,960 issues across
-52,461 repositories, spanning
-2003–2026.
+All data are taken from GitHub, primarily as measures of interaction with
+software repositories through "issues". Issues are the place for anybody to ask
+questions of software authors, to report bugs, or to request new features.
+A corpus of repositories was taken from five sources: three
+package-distribution systems of [npm for Javascript](https://npmjs.com), [PyPI
+for Python](pypi.org), [CRAN for R](https://cran.r-project.org), and two
+GitHub-based software review organizations, [JOSS (the Journal of Open-Source
+Software)](https://joss.theoj.org), and [rOpenSci](https://ropensci.org).
 
-Three cuts of "who's there" are used below, all built from the same
-`contribution` field - each issue author's cumulative share of all
-commits ever made to that repository, as of when the data was fetched.
-**Non-core** authors are those at or below `contrib_threshold = 0.01`,
-the outsider slice used throughout the companion vignette; **core**
-authors are everyone above that line; **total** is the two combined,
-with no threshold applied at all. Popularity strata (Q1 = least popular
-quartile, Q4 = most popular), where used, are computed separately within
-each source, from log-scaled downloads (CRAN, npm, PyPI) or GitHub stars
-(JOSS, rOpenSci).
+Analyses included every repository reviewed by [JOSS](https://joss.theoj.org)
+and [rOpenSci](https://ropensci.org), and samples from the other three. Samples
+were stratified by popularity (measured as downloads) to ensure even sampling
+and representation regardless of popularity. In total, 3,135,960 issues were
+analysed across 52,461 repositories.
 
-The unit of account also comes in two forms. Most of the figures below
-extend the companion vignette's **distinct-author density** - not how
-many issues a repository received in a given month, but how many
-different people filed them, normalised by repo-months of exposure the
-same way an issue rate is. The final measure introduced here is simpler
-and more direct: for every repository with *any* issue-based activity in
-a trailing 12-month window, does that activity involve exactly one
-distinct person, or more than one? The share of active repositories
-sitting at exactly one is the closest this dataset comes to counting solo
-maintainers directly - a repo-count analogue of a bowling league's own
-falling membership rolls, rather than of its per-lane activity rate.
+More popular or prominent repositories attract greater interaction, resulting
+in issues being opened more frequently, and from a wider community. To account
+for the effects of repository popularity, most of the results are represented
+for four popularity strata, taken as quartiles on a logarithmic popularity
+scale. The lowest quartile, denoted "Q1", represents the least popular
+repositories. Because these generally strongly outnumber popular repositories,
+these Q1 values may be generally interpreted to reflect the majority of all
+repositories. The "Q4" repositories are the outlying superstar repositories
+downloaded millions of times, and with hundreds of people opening issues.
 
-<div class="callout">
-Every count in this document, core contributors included, depends on a
-person having filed at least one GitHub issue on the repository - that's
-the only trace of a "contributor" this dataset can see. Someone who
-commits code but never opens an issue (a co-maintainer working entirely
-through pull requests, say) is invisible here, in every measure below,
-core and total alike. Closing that gap needs real commit-history-based
-contributor timelines rather than issue-filing as a proxy for who's
-present, and a future update to this analysis is intended to draw on
-exactly that. Until then, every count here should be read as a plausible
-lower bound on how many people are actually present, not an exact
-census - though there's no obvious reason for undercounting silent
-committers to manufacture a *decline* specifically, rather than just
-shifting every number in this document up by some roughly constant
-amount.
-</div>
+The only other important distinct in the data analysed here is between "core"
+and "non-core" contributors. Core contributors were identified as the cohort
+accounting for 99% of the cumulative share of all commits to a repository.
+The none-core contributors which are the focus of this analyses were taken as
+the cohort who collectively contributing less than 1%. This 1% threshold was
+arbitrarily set, but changing to alternative values like 2 or even 5% has no
+qualitative impact of any of the results or conclusions drawn.
+
+A few additional statistics were also extracted, and are described alongside
+the main analysis.
 
 ## Finding 1: fewer outsiders, counted properly
 
