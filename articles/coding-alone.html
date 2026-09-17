@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.019</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.020</span>
       </span>
     </div>
 
@@ -186,7 +186,12 @@ alongside the main analysis.</p>
 </h2>
 <p>The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels.</p>
+statistics are shown in the following two panels. Both of these show
+trends common to most results that follow, with variable development up
+until 2020-2021, followed by more progressive trends. For that reason,
+many of the results shown below only show time series from the January
+2021 onwards. Comparisons are also made as “step changes” between
+January 2021 and the present (Sep 2026)</p>
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/commit-rate-plot-1.png" alt="Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."><p class="caption">
 Rates of creation of new repos (top panel, as relative monthly
@@ -194,47 +199,40 @@ percentages) and of commits per month (bottom). All rates are 12-month
 trailing averages.
 </p>
 </div>
-<p>Both of these panels manifest two distinct regimes, separated either
-side of late 2020, early 2021. The following table compares current
-values with those in Jan 2021, showing the percentage decrease in
-overall coding activity.</p>
+<p>The following table shows the percentage change in both rates, for
+each of the five data sources, from Jan 2021 until Sep 2026.</p>
 <table class="table">
-<caption>Commits per repo-month, by source, now vs. Jan 2021</caption>
+<caption>Percentage change in repo-creation rate and commit rate, by
+source, now vs. Jan 2021</caption>
 <thead><tr class="header">
 <th align="left">Source</th>
-<th align="right">Jan 2021</th>
-<th align="right">Current</th>
-<th align="right">Relative change(%)</th>
+<th align="right">Repo creation (%)</th>
+<th align="right">Commits (%)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">JOSS</td>
-<td align="right">2.15</td>
-<td align="right">0.80</td>
+<td align="right">-98%</td>
 <td align="right">-63%</td>
 </tr>
 <tr class="even">
 <td align="left">CRAN</td>
-<td align="right">0.51</td>
-<td align="right">0.31</td>
+<td align="right">-56%</td>
 <td align="right">-39%</td>
 </tr>
 <tr class="odd">
 <td align="left">npm</td>
-<td align="right">2.01</td>
-<td align="right">2.00</td>
+<td align="right">-93%</td>
 <td align="right">-1%</td>
 </tr>
 <tr class="even">
 <td align="left">PyPI</td>
-<td align="right">1.01</td>
-<td align="right">1.03</td>
+<td align="right">-33%</td>
 <td align="right">2%</td>
 </tr>
 <tr class="odd">
 <td align="left">rOpenSci</td>
-<td align="right">0.18</td>
-<td align="right">0.22</td>
+<td align="right">-92%</td>
 <td align="right">23%</td>
 </tr>
 </tbody>
