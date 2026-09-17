@@ -35,12 +35,16 @@ repo-months/rate calculations.}
 A \code{patchwork} object (two stacked ggplot panels).
 }
 \description{
-Two-panel figure: repos created per month (top, from
-\code{repo_creation_tbl()}) and commits per repo-month (bottom, from
+Two-panel figure: each source's percentage share of repos created (top,
+from \code{repo_creation_tbl()}) and commits per repo-month (bottom, from
 \code{commit_rate_tbl()}), both \code{window}-month trailing sums/averages, one
 line per source. Unlike \code{plot_new_author_rate()}/\code{plot_author_interval()},
 sources aren't faceted apart and lines aren't split by popularity
 stratum - all sources are overlaid on the same axes in each panel.
+}
+\details{
+The repo-creation panel plots each source's percentage share of that
+month's total repos for each source .
 }
 \examples{
 \dontrun{

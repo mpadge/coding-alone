@@ -922,12 +922,15 @@ repo_creation_tbl <- function (issue_authors_tbl,
 
 #' Plot repo-creation rate and commit rate, across sources
 #'
-#' Two-panel figure: repos created per month (top, from
-#' `repo_creation_tbl()`) and commits per repo-month (bottom, from
+#' Two-panel figure: each source's percentage share of repos created (top,
+#' from `repo_creation_tbl()`) and commits per repo-month (bottom, from
 #' `commit_rate_tbl()`), both `window`-month trailing sums/averages, one
 #' line per source. Unlike `plot_new_author_rate()`/`plot_author_interval()`,
 #' sources aren't faceted apart and lines aren't split by popularity
 #' stratum - all sources are overlaid on the same axes in each panel.
+#'
+#' The repo-creation panel plots each source's percentage share of that
+#' month's total repos for each source .
 #'
 #' @param commit_counts_tbl As returned by `fetch_repo_commits()`.
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
@@ -954,27 +957,16 @@ plot_commit_rate <- function (commit_counts_tbl,
                               date_end = NULL,
                               start_year = NULL) {
 
-    month <- rate <- source <- n_created <- NULL
+    month <- rate <- source <- n_created <- total_created <- pct_created <- NULL
 
     sources <- names (POPULARITY_METRIC)
-    creation_sources <- setdiff (sources, c ("ropensci", "joss"))
-
-    # Fixed factor levels (all five sources) shared by both panels, so
-    # `scale_colour_brewer(drop = FALSE)` assigns the same colour to each
-    # source in both, and the creation panel's legend still lists sources
-    # it has no rows for ("ropensci" and "joss").
-    source_levels <- if (!is.null (source_display)) {
-        unname (source_display [sources])
-    } else {
-        sources
-    }
 
     relabel_source <- function (tbl) {
         if (!is.null (source_display)) {
             lab <- unname (source_display [tbl$source])
             tbl$source <- ifelse (is.na (lab), tbl$source, lab)
         }
-        tbl$source <- factor (tbl$source, levels = source_levels)
+        tbl$source <- factor (tbl$source, levels = unique (tbl$source))
         tbl
     }
 
@@ -985,7 +977,7 @@ plot_commit_rate <- function (commit_counts_tbl,
         ) |>
             dplyr::mutate (source = src)
     })
-    creation_tbl <- purrr::map_dfr (creation_sources, \ (src) {
+    creation_tbl <- purrr::map_dfr (sources, \ (src) {
         repo_creation_tbl (
             issue_authors_tbl, repo_tbl, src,
             window = window, date_start = date_start, date_end = date_end
@@ -999,19 +991,29 @@ plot_commit_rate <- function (commit_counts_tbl,
         creation_tbl <- dplyr::filter (creation_tbl, month >= start_date)
     }
 
+    # Rescale each month's per-source counts to a percentage share of that
+    # month's total across all sources.
+    creation_tbl <- creation_tbl |>
+        dplyr::group_by (source) |>
+        dplyr::mutate (
+            total_created = sum (n_created),
+            pct_created = 100 * n_created / total_created
+        ) |>
+        dplyr::ungroup ()
+
     commit_tbl <- relabel_source (commit_tbl)
     creation_tbl <- relabel_source (creation_tbl)
 
     p_creation <- ggplot2::ggplot (
         creation_tbl,
-        ggplot2::aes (month, n_created, colour = source)
+        ggplot2::aes (month, pct_created, colour = source)
     ) +
         ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
         ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
         ggplot2::labs (
             x = NULL,
             y = stringr::str_glue (
-                "Repos created per month ({window}-month trailing sum)"
+                "Share of repos created (%, {window}-month trailing sum)"
             ),
             colour = "Source"
         ) +
