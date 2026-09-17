@@ -7,7 +7,6 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/SOURCE_DISPLAY_NAME.html</loc></url>
-<url><loc>/reference/author_density_fold_change_tbl.html</loc></url>
 <url><loc>/reference/author_density_tbl.html</loc></url>
 <url><loc>/reference/author_interval_tbl.html</loc></url>
 <url><loc>/reference/author_interval_trend_tbl.html</loc></url>
@@ -21,7 +20,6 @@
 <url><loc>/reference/fetch_issue_authors.html</loc></url>
 <url><loc>/reference/fetch_repo_commits.html</loc></url>
 <url><loc>/reference/fit_activity_model.html</loc></url>
-<url><loc>/reference/fold_change_tbl.html</loc></url>
 <url><loc>/reference/github_commit_counts_by_month.html</loc></url>
 <url><loc>/reference/github_issue_authors.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
@@ -34,15 +32,12 @@
 <url><loc>/reference/plot_author_interval.html</loc></url>
 <url><loc>/reference/plot_cohort_age.html</loc></url>
 <url><loc>/reference/plot_commit_rate.html</loc></url>
-<url><loc>/reference/plot_fold_change.html</loc></url>
 <url><loc>/reference/plot_new_author_rate.html</loc></url>
-<url><loc>/reference/plot_ropensci_reviewed_fold_change.html</loc></url>
 <url><loc>/reference/plot_ropensci_reviewed_trend.html</loc></url>
 <url><loc>/reference/pypi_downloads_full.html</loc></url>
 <url><loc>/reference/repo_creation_tbl.html</loc></url>
 <url><loc>/reference/resolve_repo_urls.html</loc></url>
 <url><loc>/reference/ropensci_reviewed_activity_tbl.html</loc></url>
-<url><loc>/reference/ropensci_reviewed_fold_change_tbl.html</loc></url>
 <url><loc>/reference/solo_repo_share_tbl.html</loc></url>
 </urlset>
 

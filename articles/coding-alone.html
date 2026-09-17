@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.014</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.017</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ favour of coding alone.</h3>
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">15 September 2026</h4>
+            <h4 data-toc-skip class="date">17 September 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
       <div class="hidden name"><code>coding-alone.Rmd</code></div>
@@ -188,8 +188,10 @@ alongside the main analysis.</p>
 repositories, and numbers of commits in each. Time series of these two
 statistics are shown in the following two panels.</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"><p class="caption">
-plot of chunk commit-rate-plot
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."><p class="caption">
+Rates of creation of new repos (top panel, as relative monthly
+percentages) and of commits per month (bottom). All rates are 12-month
+trailing averages.
 </p>
 </div>
 <p>Both of these panels manifest two distinct regimes, separated either
@@ -202,38 +204,38 @@ overall coding activity.</p>
 <th align="left">Source</th>
 <th align="right">Jan 2021</th>
 <th align="right">Latest</th>
-<th align="right">Relative change</th>
+<th align="right">Fold-change</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">JOSS</td>
-<td align="right">1.43</td>
-<td align="right">0.52</td>
-<td align="right">36%</td>
+<td align="right">2.15</td>
+<td align="right">0.80</td>
+<td align="right">37%</td>
 </tr>
 <tr class="even">
 <td align="left">CRAN</td>
-<td align="right">0.34</td>
-<td align="right">0.18</td>
-<td align="right">51%</td>
+<td align="right">0.51</td>
+<td align="right">0.31</td>
+<td align="right">61%</td>
+</tr>
+<tr class="odd">
+<td align="left">npm</td>
+<td align="right">2.01</td>
+<td align="right">2.00</td>
+<td align="right">99%</td>
+</tr>
+<tr class="even">
+<td align="left">PyPI</td>
+<td align="right">1.01</td>
+<td align="right">1.03</td>
+<td align="right">102%</td>
 </tr>
 <tr class="odd">
 <td align="left">rOpenSci</td>
 <td align="right">0.18</td>
-<td align="right">0.14</td>
-<td align="right">80%</td>
-</tr>
-<tr class="even">
-<td align="left">npm</td>
-<td align="right">1.83</td>
-<td align="right">1.79</td>
-<td align="right">98%</td>
-</tr>
-<tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">0.56</td>
-<td align="right">0.72</td>
-<td align="right">130%</td>
+<td align="right">0.22</td>
+<td align="right">123%</td>
 </tr>
 </tbody>
 </table>
@@ -252,11 +254,11 @@ the 2017–2020 window, and an ongoing decline since. That resemblance
 alone doesn’t prove much - a falling issue rate is mechanically
 compatible with a falling author count, since fewer issues can’t come
 from more people without each of them opening fewer on average. What
-settles it is comparing the two fold-changes directly, source by source
+settles it is comparing the two step-changes directly, source by source
 and stratum by stratum:</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/fold-change-plot-authors-1.png" alt="plot of chunk fold-change-plot-authors"><p class="caption">
-plot of chunk fold-change-plot-authors
+<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="plot of chunk step-change-plot-authors"><p class="caption">
+plot of chunk step-change-plot-authors
 </p>
 </div>
 <p>Every one of the 20 (source, stratum) cells in this figure sits below
@@ -336,8 +338,8 @@ is core and non-core combined, with no threshold at all - counting
 literally everyone this dataset can see interacting with a repository
 through its issues.</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/fold-change-plot-bytype-1.png" alt="plot of chunk fold-change-plot-bytype"><p class="caption">
-plot of chunk fold-change-plot-bytype
+<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="plot of chunk step-change-plot-bytype"><p class="caption">
+plot of chunk step-change-plot-bytype
 </p>
 </div>
 <p>Core headcounts have fallen in every one of the five sources - 5 out
@@ -454,7 +456,7 @@ opposite<a class="anchor" aria-label="anchor" href="#finding-5-popularity-offers
 generally, it should land on popular and obscure software alike. It
 doesn’t:</p>
 <table class="table">
-<caption>Distinct-author fold-change since Jan 2021, least vs. most
+<caption>Distinct-author step-change since Jan 2021, least vs. most
 popular quartile</caption>
 <thead><tr class="header">
 <th align="left">Source</th>
@@ -608,7 +610,7 @@ not normalised by exposure at all</strong>, unlike every other measure
 in this document - it doesn’t correct for the same repo-count growth
 just described. It answers a different question on purpose (how many
 repositories, not how much activity per repository), but that also means
-it isn’t directly comparable in magnitude to the fold-changes reported
+it isn’t directly comparable in magnitude to the step-changes reported
 elsewhere.</li>
 <li>
 <strong><code>contribution</code> is a lifetime measure, not a
