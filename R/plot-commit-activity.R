@@ -90,9 +90,7 @@ plot_commit_rate <- function (commit_counts_tbl,
         ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
         ggplot2::labs (
             x = NULL,
-            y = stringr::str_glue (
-                "Share of repos created (%, {window}-month trailing sum)"
-            ),
+            y = "New repos created per month (% of total)",
             colour = "Source"
         ) +
         ggplot2::theme_minimal () +
@@ -106,9 +104,7 @@ plot_commit_rate <- function (commit_counts_tbl,
         ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
         ggplot2::labs (
             x = NULL,
-            y = stringr::str_glue (
-                "Commits per repo-month ({window}-month trailing avg)"
-            ),
+            y = "Commits per repo-month",
             colour = "Source"
         ) +
         ggplot2::theme_minimal () +

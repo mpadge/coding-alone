@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone."
 author: "Mark Padgham"
-date: "15 September 2026"
+date: "17 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
@@ -83,8 +83,9 @@ Software)](https://joss.theoj.org), and [rOpenSci](https://ropensci.org).
 Analyses included every repository reviewed by [JOSS](https://joss.theoj.org)
 and [rOpenSci](https://ropensci.org), and samples from the other three. Samples
 were stratified by popularity (measured as downloads) to ensure even sampling
-and representation regardless of popularity. In total, 3,135,960 issues were
-analysed across 52,461 repositories.
+and representation regardless of popularity. In total,
+3,135,960 issues were analysed across
+52,461 repositories.
 
 More popular or prominent repositories attract greater interaction, resulting
 in issues being opened more frequently, and from a wider community. To account
@@ -114,24 +115,24 @@ repositories, and numbers of commits in each. Time series of these two
 statistics are shown in the following two panels.
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="plot of chunk commit-rate-plot"  />
-<p class="caption">plot of chunk commit-rate-plot</p>
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."  />
+<p class="caption">Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.</p>
 </div>
 
 Both of these panels manifest two distinct regimes, separated either side of
 late 2020, early 2021. The following table compares current values with those
 in Jan 2021, showing the percentage decrease in overall coding activity.
 
+
 Table: Commits per repo-month, by source, now vs. Jan 2021
 
-|Source   | Jan 2021| Latest| Relative change|
+|Source   | Jan 2021| Latest| Fold-change|
 |:--------|--------:|------:|-----------:|
-|JOSS     |     1.43|   0.52|         36%|
-|CRAN     |     0.34|   0.18|         51%|
-|rOpenSci |     0.18|   0.14|         80%|
-|npm      |     1.83|   1.79|         98%|
-|PyPI     |     0.56|   0.72|        130%|
-
+|JOSS     |     2.15|   0.80|         37%|
+|CRAN     |     0.51|   0.31|         61%|
+|npm      |     2.01|   2.00|         99%|
+|PyPI     |     1.01|   1.03|        102%|
+|rOpenSci |     0.18|   0.22|        123%|
 
 ## Finding 1: fewer outsiders, counted properly
 

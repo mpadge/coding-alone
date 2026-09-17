@@ -30,7 +30,8 @@ via the usual vignette machinery never needs the data again.
 knitr::opts_chunk$set (
     echo = FALSE, message = FALSE, warning = FALSE,
     fig.align = "center", fig.width = 9, fig.height = 4, dpi = 150,
-    fig.path = "coding-alone-figures/"
+    fig.path = "coding-alone-figures/", cache.path = "coding-alone-cache/",
+    autodep = TRUE
 )
 ```
 
@@ -39,7 +40,7 @@ knitr::opts_chunk$set (
 library (codingAlone)
 ```
 
-```{r initial-data-load}
+```{r initial-data-load, cache = TRUE}
 out_dir <- "../repo-data-out"
 repo_tbl <- build_repo_tbl (out_dir)
 issue_authors_tbl <- readr::read_csv (
@@ -58,7 +59,7 @@ n_repos_primary <- length (unique (
 date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
 ```
 
-```{r generate-data, include=FALSE}
+```{r generate-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
 contrib_threshold <- 0.01
 
 # Event-count fold-change (rate now vs. Jan 2021), for comparison against
@@ -340,7 +341,7 @@ The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
 statistics are shown in the following two panels.
 
-```{r commit-rate-plot, fig.height=9}
+```{r commit-rate-plot, fig.height=9, fig.cap = "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."}
 plot_commit_rate (
     commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
