@@ -24,12 +24,9 @@ reads from it.}
 \code{out_dir}, invisibly.
 }
 \description{
-If \code{out_dir} already exists, nothing is downloaded and the function
-returns invisibly without contacting GitHub at all - this is meant to
-be safe to call at the start of any analysis script without
-re-downloading a dataset that's already there. Otherwise, \code{out_dir} is
-created and every asset attached to the given release \code{tag} is
-downloaded into it via \code{piggyback::pb_download()}.
+Download is only triggered if \code{out_dir} does not already exist. If \code{out_dir}
+does not exist, it is created and every asset attached to the given release
+\code{tag} is downloaded into it via \code{piggyback::pb_download()}.
 }
 \examples{
 \dontrun{

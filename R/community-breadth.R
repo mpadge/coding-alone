@@ -805,7 +805,8 @@ commit_rate_tbl <- function (commit_counts_tbl,
         tibble::tibble (month = months)
     ) |>
         dplyr::inner_join (
-            dplyr::select (repos, repo_url, repo_created_at), by = "repo_url"
+            dplyr::select (repos, repo_url, repo_created_at),
+            by = "repo_url"
         ) |>
         dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
         dplyr::count (month, name = "n_repo_months")
@@ -919,16 +920,14 @@ repo_creation_tbl <- function (issue_authors_tbl,
     result
 }
 
-#' Plot commit rate and repo-creation rate, across sources
+#' Plot repo-creation rate and commit rate, across sources
 #'
-#' Two-panel figure: commits per repo-month (top, from `commit_rate_tbl()`)
-#' and repos created per month (bottom, from `repo_creation_tbl()`), both
-#' `window`-month trailing sums/averages, one line per source. Unlike
-#' `plot_new_author_rate()`/`plot_author_interval()`, sources aren't
-#' faceted apart and lines aren't split by popularity stratum - all five
-#' sources are overlaid on the same axes in each panel, since
-#' `commit_rate_tbl()` no longer has a stratum dimension to facet or
-#' colour by.
+#' Two-panel figure: repos created per month (top, from
+#' `repo_creation_tbl()`) and commits per repo-month (bottom, from
+#' `commit_rate_tbl()`), both `window`-month trailing sums/averages, one
+#' line per source. Unlike `plot_new_author_rate()`/`plot_author_interval()`,
+#' sources aren't faceted apart and lines aren't split by popularity
+#' stratum - all sources are overlaid on the same axes in each panel.
 #'
 #' @param commit_counts_tbl As returned by `fetch_repo_commits()`.
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
@@ -946,7 +945,9 @@ repo_creation_tbl <- function (issue_authors_tbl,
 #' plot_commit_rate (commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME)
 #' }
 #' @export
-plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
+plot_commit_rate <- function (commit_counts_tbl,
+                              issue_authors_tbl,
+                              repo_tbl,
                               source_display = NULL,
                               window = 12L,
                               date_start = as.Date ("2015-01-01"),
@@ -956,13 +957,24 @@ plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
     month <- rate <- source <- n_created <- NULL
 
     sources <- names (POPULARITY_METRIC)
+    creation_sources <- setdiff (sources, c ("ropensci", "joss"))
+
+    # Fixed factor levels (all five sources) shared by both panels, so
+    # `scale_colour_brewer(drop = FALSE)` assigns the same colour to each
+    # source in both, and the creation panel's legend still lists sources
+    # it has no rows for ("ropensci" and "joss").
+    source_levels <- if (!is.null (source_display)) {
+        unname (source_display [sources])
+    } else {
+        sources
+    }
 
     relabel_source <- function (tbl) {
         if (!is.null (source_display)) {
             lab <- unname (source_display [tbl$source])
             tbl$source <- ifelse (is.na (lab), tbl$source, lab)
         }
-        tbl$source <- factor (tbl$source, levels = unique (tbl$source))
+        tbl$source <- factor (tbl$source, levels = source_levels)
         tbl
     }
 
@@ -973,7 +985,7 @@ plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
         ) |>
             dplyr::mutate (source = src)
     })
-    creation_tbl <- purrr::map_dfr (sources, \ (src) {
+    creation_tbl <- purrr::map_dfr (creation_sources, \ (src) {
         repo_creation_tbl (
             issue_authors_tbl, repo_tbl, src,
             window = window, date_start = date_start, date_end = date_end
@@ -990,28 +1002,12 @@ plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
     commit_tbl <- relabel_source (commit_tbl)
     creation_tbl <- relabel_source (creation_tbl)
 
-    p1 <- ggplot2::ggplot (
-        dplyr::filter (commit_tbl, !is.na (rate)),
-        ggplot2::aes (month, rate, colour = source)
-    ) +
-        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::scale_colour_brewer (palette = "Set2") +
-        ggplot2::labs (
-            x = NULL,
-            y = stringr::str_glue (
-                "Commits per repo-month ({window}-month trailing avg)"
-            ),
-            colour = "Source"
-        ) +
-        ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top")
-
-    p2 <- ggplot2::ggplot (
+    p_creation <- ggplot2::ggplot (
         creation_tbl,
         ggplot2::aes (month, n_created, colour = source)
     ) +
         ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::scale_colour_brewer (palette = "Set2") +
+        ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
         ggplot2::labs (
             x = NULL,
             y = stringr::str_glue (
@@ -1020,7 +1016,23 @@ plot_commit_rate <- function (commit_counts_tbl, issue_authors_tbl, repo_tbl,
             colour = "Source"
         ) +
         ggplot2::theme_minimal () +
+        ggplot2::theme (legend.position = "top")
+
+    p_commit <- ggplot2::ggplot (
+        dplyr::filter (commit_tbl, !is.na (rate)),
+        ggplot2::aes (month, rate, colour = source)
+    ) +
+        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
+        ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
+        ggplot2::labs (
+            x = NULL,
+            y = stringr::str_glue (
+                "Commits per repo-month ({window}-month trailing avg)"
+            ),
+            colour = "Source"
+        ) +
+        ggplot2::theme_minimal () +
         ggplot2::theme (legend.position = "none")
 
-    patchwork::wrap_plots (p1, p2, ncol = 1)
+    patchwork::wrap_plots (p_creation, p_commit, ncol = 1)
 }

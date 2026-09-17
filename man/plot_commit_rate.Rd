@@ -2,7 +2,7 @@
 % Please edit documentation in R/community-breadth.R
 \name{plot_commit_rate}
 \alias{plot_commit_rate}
-\title{Plot commit rate and repo-creation rate, across sources}
+\title{Plot repo-creation rate and commit rate, across sources}
 \usage{
 plot_commit_rate(
   commit_counts_tbl,
@@ -35,14 +35,12 @@ repo-months/rate calculations.}
 A \code{patchwork} object (two stacked ggplot panels).
 }
 \description{
-Two-panel figure: commits per repo-month (top, from \code{commit_rate_tbl()})
-and repos created per month (bottom, from \code{repo_creation_tbl()}), both
-\code{window}-month trailing sums/averages, one line per source. Unlike
-\code{plot_new_author_rate()}/\code{plot_author_interval()}, sources aren't
-faceted apart and lines aren't split by popularity stratum - all five
-sources are overlaid on the same axes in each panel, since
-\code{commit_rate_tbl()} no longer has a stratum dimension to facet or
-colour by.
+Two-panel figure: repos created per month (top, from
+\code{repo_creation_tbl()}) and commits per repo-month (bottom, from
+\code{commit_rate_tbl()}), both \code{window}-month trailing sums/averages, one
+line per source. Unlike \code{plot_new_author_rate()}/\code{plot_author_interval()},
+sources aren't faceted apart and lines aren't split by popularity
+stratum - all sources are overlaid on the same axes in each panel.
 }
 \examples{
 \dontrun{
