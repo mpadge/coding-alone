@@ -36,22 +36,15 @@ read_issue_authors_data <- function (out_dir) {
 }
 
 #' Fetch issue-author data (`github_issue_authors()`, for many repos,
-#' batched and checkpointed to disk.
+#' with intermediate batches dumped to disk.
 #'
-#' Repos already recorded as done (in `<out_dir>/issue-authors-done.rds`,
-#' tracked independently of row count so a repo with zero issues isn't retried
-#' forever) are skipped, so re-running after an interruption - rate-limited or
-#' otherwise - picks up where it left off rather than starting over. Each
-#' batch's repos are fetched concurrently (via `progressify`/`futurize`);
-#' GitHub's hourly rate limit is a cumulative budget rather than a burst limit,
-#' so the risk is running through it too fast overall, not concurrency within
-#' one batch - hence checkpointing after every batch rather than throttling
-#' within one.
+#' Completed repos are tracked in `<out_dir>/issue-authors-done.rds`, and that
+#' file is read on re-start. Each batch is fetched concurrently via
+#' `progressify`/`futurize`).
 #'
-#' Batches are drawn via `interlace_for_even_coverage()` rather than taken
-#' sequentially off `repo_urls`, so that however far fetching gets before
-#' stopping, the fetched subsample stays evenly spread across `repo_urls`'s own
-#' order instead of silently favouring whatever came first in it.
+#' Batches are drawn via `interlace_for_even_coverage()` rather than
+#' sequentially, so that the fetched subsample stays evenly spread across
+#' `repo_urls`'s intrinsic order.
 #'
 #' @param repo_urls Character vector of repo URLs to fetch issue authors for.
 #' Assumed already ordered by priority if it matters which get fetched

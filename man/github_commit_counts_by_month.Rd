@@ -2,15 +2,7 @@
 % Please edit documentation in R/fetch-repo-commits.R
 \name{github_commit_counts_by_month}
 \alias{github_commit_counts_by_month}
-\title{Monthly commit counts on a single GitHub repo's default branch, as a
-direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package. This is meant to run after issue-author data
-has already been fetched (\code{fetch_issue_authors()}), which records each
-repo's own creation timestamp for free (\code{repo_created_at}, on every row)
-\itemize{
-\item so rather than spend a separate GraphQL call re-discovering that here,
-\code{fetch_repo_commits()} passes it straight through as \code{repo_created_at}.
-}}
+\title{Monthly commit counts on a single GitHub repo's default branch.}
 \usage{
 github_commit_counts_by_month(
   repo_url = NULL,
@@ -25,7 +17,7 @@ github_commit_counts_by_month(
 \item{repo_created_at}{The repo's own creation timestamp (as recorded in
 \code{issue-authors.csv}'s \code{repo_created_at} column), used to raise
 \code{date_start} up to the month the repo actually came into existence.
-\code{NULL} (the default) leaves \code{date_start} untouched.}
+\code{NULL} defaults to `date_start .}
 
 \item{date_start, date_end}{Date bounds on the monthly sequence, raised to
 the repo's creation month if \code{repo_created_at} is later; \code{date_end}
@@ -37,15 +29,8 @@ trimmed of any leading/trailing zero-commit months. Zero rows if the repo's
 creation month is after \code{date_end}, or it has no commits at all in range.
 }
 \description{
-Monthly commit counts on a single GitHub repo's default branch, as a
-direct measure of code-activity to sit alongside the issue-based measures
-elsewhere in this package. This is meant to run after issue-author data
-has already been fetched (\code{fetch_issue_authors()}), which records each
-repo's own creation timestamp for free (\code{repo_created_at}, on every row)
-\itemize{
-\item so rather than spend a separate GraphQL call re-discovering that here,
-\code{fetch_repo_commits()} passes it straight through as \code{repo_created_at}.
-}
+This is meant to run after issue-author data has already been fetched
+(\code{fetch_issue_authors()}).
 }
 \examples{
 \dontrun{

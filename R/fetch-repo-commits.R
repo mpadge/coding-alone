@@ -1,20 +1,5 @@
-# GitHub's GraphQL API has no endpoint that hands back a pre-binned
-# month-by-month commit histogram in one call, but `history(since:, until:)`
-# on a `Commit` object (reached via a branch ref's `target`) can be paged
-# with a cursor exactly like `github_repo_issues_graphql()` already does for
-# issues (see github-issues.R). Fetching just the `committedDate` of every
-# commit in `[since, until)` and binning locally is far cheaper than one
-# `totalCount`-only query per calendar month: it costs `ceil(n_commits /
-# page_size)` requests for the whole range, which for a typical low/medium
-# activity repo (tens of commits/month) undercuts the number of months by a
-# wide margin, especially over a repo's early, quiet years.
-
-#' GraphQL query for one page of a repo's default-branch commit history
-#' within `[since, until)`, asking only for each commit's `committedDate` -
-#' cheap because it never requests diffs, messages, or authors. Pages via a
-#' cursor exactly like `build_issues_query()` in github-issues.R.
-#' `since`/`until` are GitTimestamp strings (ISO-8601, e.g.
-#' `"2020-01-01T00:00:00Z"`).
+#' GraphQL query for one page of a repo's default-branch commit history within
+#' `[since, until)`, extracting only for each commit's `committedDate`.
 #' @noRd
 build_commit_history_query <- function (owner, repo, since, until,
                                         cursor = NULL) {
@@ -46,8 +31,7 @@ build_commit_history_query <- function (owner, repo, since, until,
 }
 
 #' Timestamps of every commit landed on a repo's default branch within
-#' `[since, until)`. Returns `character(0)` for a repo with no default
-#' branch at all (an empty repo), rather than erroring.
+#' `[since, until)`. Returns `character(0)` for a repos with no default branch.
 #' @noRd
 github_repo_commit_dates <- function (owner, repo, since, until) {
 
@@ -83,19 +67,16 @@ github_repo_commit_dates <- function (owner, repo, since, until) {
     unlist (pages, use.names = FALSE)
 }
 
-#' Monthly commit counts on a single GitHub repo's default branch, as a
-#' direct measure of code-activity to sit alongside the issue-based measures
-#' elsewhere in this package. This is meant to run after issue-author data
-#' has already been fetched (`fetch_issue_authors()`), which records each
-#' repo's own creation timestamp for free (`repo_created_at`, on every row)
-#' - so rather than spend a separate GraphQL call re-discovering that here,
-#' `fetch_repo_commits()` passes it straight through as `repo_created_at`.
+#' Monthly commit counts on a single GitHub repo's default branch.
+#'
+#' This is meant to run after issue-author data has already been fetched
+#' (`fetch_issue_authors()`).
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
 #' @param repo_created_at The repo's own creation timestamp (as recorded in
 #' `issue-authors.csv`'s `repo_created_at` column), used to raise
 #' `date_start` up to the month the repo actually came into existence.
-#' `NULL` (the default) leaves `date_start` untouched.
+#' `NULL` defaults to `date_start .
 #' @param date_start,date_end Date bounds on the monthly sequence, raised to
 #' the repo's creation month if `repo_created_at` is later; `date_end`
 #' defaults to the start of the current month.
@@ -164,17 +145,11 @@ COMMIT_COUNTS_COL_TYPES <- readr::cols (
 )
 
 #' Fetch monthly commit counts (`github_commit_counts_by_month()`) for many
-#' repos, batched and checkpointed to disk exactly like
-#' `fetch_issue_authors()` above - same checkpoint/resume logic and the same
-#' concurrent-batch execution via `progressify`/`futurize`, for the same
-#' reason: GitHub's hourly rate limit is a cumulative budget, so the risk is
-#' running through it too fast overall, not concurrency within one batch.
+#' repos, batched like `fetch_issue_authors()`.
 #'
-#' Assumes `fetch_issue_authors()` has already been run against `out_dir`,
-#' so each repo's creation timestamp can be read straight out of its
-#' `issue-authors.csv` rather than fetched again here (see
-#' `github_commit_counts_by_month()`'s `repo_created_at` argument); a repo
-#' missing from that file (e.g. it has never had any issues) just falls
+#' Assumes `fetch_issue_authors()` has already been run, so each repo's
+#' creation timestamp can be read straight out of its `issue-authors.csv`
+#' rather than fetched again here. A repo missing from that file defaults
 #' back to `date_start`.
 #'
 #' @inheritParams fetch_issue_authors

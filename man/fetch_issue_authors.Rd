@@ -3,7 +3,7 @@
 \name{fetch_issue_authors}
 \alias{fetch_issue_authors}
 \title{Fetch issue-author data (\code{github_issue_authors()}, for many repos,
-batched and checkpointed to disk.}
+with intermediate batches dumped to disk.}
 \usage{
 fetch_issue_authors(repo_urls, out_dir, batch_size = 50L)
 }
@@ -22,21 +22,14 @@ A tibble with columns \code{repo_url}, \code{issue_number}, \code{author},
 accumulated result, including rows from any previous run(s).
 }
 \description{
-Repos already recorded as done (in \verb{<out_dir>/issue-authors-done.rds},
-tracked independently of row count so a repo with zero issues isn't retried
-forever) are skipped, so re-running after an interruption - rate-limited or
-otherwise - picks up where it left off rather than starting over. Each
-batch's repos are fetched concurrently (via \code{progressify}/\code{futurize});
-GitHub's hourly rate limit is a cumulative budget rather than a burst limit,
-so the risk is running through it too fast overall, not concurrency within
-one batch - hence checkpointing after every batch rather than throttling
-within one.
+Completed repos are tracked in \verb{<out_dir>/issue-authors-done.rds}, and that
+file is read on re-start. Each batch is fetched concurrently via
+\code{progressify}/\code{futurize}).
 }
 \details{
-Batches are drawn via \code{interlace_for_even_coverage()} rather than taken
-sequentially off \code{repo_urls}, so that however far fetching gets before
-stopping, the fetched subsample stays evenly spread across \code{repo_urls}'s own
-order instead of silently favouring whatever came first in it.
+Batches are drawn via \code{interlace_for_even_coverage()} rather than
+sequentially, so that the fetched subsample stays evenly spread across
+\code{repo_urls}'s intrinsic order.
 }
 \examples{
 repo_urls <- c (
