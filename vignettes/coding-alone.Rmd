@@ -122,29 +122,37 @@ the main analysis.
 
 ## Finding #1: People are still coding
 
+
+
+
+
 The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels.
+statistics are shown in the following two panels. Both of these show trends
+common to most results that follow, with variable development up until
+2020-2021, followed by more progressive trends. For that reason, many of the
+results shown below only show time series from the January 2021 onwards.
+Comparisons are also made as "step changes" between January 2021 and the
+present (Sep 2026)
 
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/commit-rate-plot-1.png" alt="Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."  />
 <p class="caption">Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.</p>
 </div>
 
-Both of these panels manifest two distinct regimes, separated either side of
-late 2020, early 2021. The following table compares current values with those
-in Jan 2021, showing the percentage decrease in overall coding activity.
+The following table shows the percentage change in both rates, for each of
+the five data sources, from Jan 2021 until Sep 2026.
 
 
-Table: Commits per repo-month, by source, now vs. Jan 2021
+Table: Percentage change in repo-creation rate and commit rate, by source, now vs. Jan 2021
 
-|Source   | Jan 2021| Current| Relative change(%)|
-|:--------|--------:|-------:|------------------:|
-|JOSS     |     2.15|    0.80|               -63%|
-|CRAN     |     0.51|    0.31|               -39%|
-|npm      |     2.01|    2.00|                -1%|
-|PyPI     |     1.01|    1.03|                 2%|
-|rOpenSci |     0.18|    0.22|                23%|
+|Source   | Repo creation (%)| Commits (%)|
+|:--------|-----------------:|-----------:|
+|JOSS     |              -98%|        -63%|
+|CRAN     |              -56%|        -39%|
+|npm      |              -93%|         -1%|
+|PyPI     |              -33%|          2%|
+|rOpenSci |              -92%|         23%|
 
 ## Finding 1: fewer outsiders, counted properly
 

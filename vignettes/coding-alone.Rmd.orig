@@ -161,7 +161,7 @@ n_solo_sources_risen <- solo_by_source |>
 # way as sc_authors above but for new_author_rate_tbl() - lets Finding 1
 # separate "existing regulars posting a bit less" from "fewer people
 # showing up for the very first time".
-new_arrival_fc <- purrr::map_dfr (primary_sources, \ (src) {
+new_arrival_sc <- purrr::map_dfr (primary_sources, \ (src) {
     na_tbl <- new_author_rate_tbl (issue_authors_tbl, repo_tbl, src)
     na_tbl <- dplyr::filter (na_tbl, !is.na (rate))
     ref <- dplyr::filter (na_tbl, month == as.Date ("2021-01-01"))
@@ -174,10 +174,10 @@ new_arrival_fc <- purrr::map_dfr (primary_sources, \ (src) {
     ) |>
         dplyr::mutate (source = src, step_change = rate_latest / rate_ref)
 })
-n_new_declined <- sum (new_arrival_fc$step_change < 1)
-n_new_cells <- nrow (new_arrival_fc)
+n_new_declined <- sum (new_arrival_sc$step_change < 1)
+n_new_cells <- nrow (new_arrival_sc)
 new_vs_density <- dplyr::inner_join (
-    new_arrival_fc, sc_authors,
+    new_arrival_sc, sc_authors,
     by = c ("source", "popularity_stratum"),
     suffix = c ("_new", "_density")
 )
@@ -187,9 +187,9 @@ n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_cha
 ```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
 # Wait-time (interval) step-change: geometric-mean days between
 # consecutive first-time authors, now vs. Jan 2021 - the interval-based
-# analogue of new_arrival_fc above, expressing the same shrinking-pipeline
+# analogue of new_arrival_sc above, expressing the same shrinking-pipeline
 # finding as elapsed time rather than a monthly rate.
-interval_fc <- purrr::map_dfr (primary_sources, \ (src) {
+interval_sc <- purrr::map_dfr (primary_sources, \ (src) {
     ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src)
     ir <- dplyr::filter (ir, !is.na (geo_mean_days))
     ref <- dplyr::filter (ir, month == as.Date ("2021-01-01"))
@@ -202,9 +202,9 @@ interval_fc <- purrr::map_dfr (primary_sources, \ (src) {
     ) |>
         dplyr::mutate (source = src, step_change = days_latest / days_ref)
 })
-n_interval_cells <- nrow (interval_fc)
-n_interval_lengthened <- sum (interval_fc$step_change > 1)
-interval_q1 <- interval_fc |>
+n_interval_cells <- nrow (interval_sc)
+n_interval_lengthened <- sum (interval_sc$step_change > 1)
+interval_q1 <- interval_sc |>
     dplyr::filter (popularity_stratum == "Q1") |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (dplyr::desc (step_change))
@@ -215,7 +215,7 @@ interval_q1 <- interval_fc |>
 # commit_rate_tbl() isn't stratified by popularity (no material
 # difference between strata), so this is already the whole story per
 # source, not a pooled-down version of a finer table.
-commit_fc <- purrr::map_dfr (primary_sources, \ (src) {
+commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
     cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, src)
     cr <- dplyr::filter (cr, !is.na (rate))
     ref <- dplyr::filter (cr, month == as.Date ("2021-01-01"))$rate
@@ -226,11 +226,40 @@ commit_fc <- purrr::map_dfr (primary_sources, \ (src) {
         step_change = latest / ref, latest_month = latest_month
     )
 })
-n_commit_declined <- sum (commit_fc$step_change < 1)
-n_commit_risen <- sum (commit_fc$step_change >= 1)
-commit_sc_display <- commit_fc |>
+n_commit_declined <- sum (commit_sc$step_change < 1)
+n_commit_risen <- sum (commit_sc$step_change >= 1)
+commit_sc_display <- commit_sc |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (step_change)
+
+# Repo-creation-rate step-change (rate now vs. Jan 2021), per source - the
+# other direct measure shown alongside commit_sc in the two-panel figure
+# above (commit_rate_tbl()/repo_creation_tbl()), tracking how many new
+# repos are entering each ecosystem rather than how much commit activity
+# lands on the ones that already exist.
+repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
+    rc <- repo_creation_tbl (issue_authors_tbl, repo_tbl, src)
+    ref <- dplyr::filter (rc, month == as.Date ("2021-01-01"))$n_created
+    latest_month <- max (rc$month)
+    latest <- dplyr::filter (rc, month == latest_month)$n_created
+    tibble::tibble (
+        source = src, n_created_ref = ref, n_created_latest = latest,
+        step_change = latest / ref, latest_month = latest_month
+    )
+})
+n_repo_creation_declined <- sum (repo_creation_sc$step_change < 1)
+n_repo_creation_risen <- sum (repo_creation_sc$step_change >= 1)
+
+# Combined (repo-creation, commits) percentage-change table, one row per
+# source - the single table requested to sit under the two-panel figure
+# in place of separate per-metric tables.
+combined_sc_display <- dplyr::inner_join (
+    dplyr::transmute (repo_creation_sc, source, repo_creation_change = step_change - 1),
+    dplyr::transmute (commit_sc, source, commit_change = step_change - 1),
+    by = "source"
+) |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    dplyr::arrange (commit_change)
 ```
 
 ```{r generate-cohort-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
@@ -355,9 +384,20 @@ the main analysis.
 
 ## Finding #1: People are still coding
 
+```{r define-now, echo = FALSE}
+now <- format (Sys.Date (), "%b %Y")
+```
+
+
+
 The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels.
+statistics are shown in the following two panels. Both of these show trends
+common to most results that follow, with variable development up until
+2020-2021, followed by more progressive trends. For that reason, many of the
+results shown below only show time series from the January 2021 onwards.
+Comparisons are also made as "step changes" between January 2021 and the
+present (`r now`)
 
 ```{r commit-rate-plot, fig.height=9, fig.cap = "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."}
 plot_commit_rate (
@@ -366,22 +406,19 @@ plot_commit_rate (
 )
 ```
 
-Both of these panels manifest two distinct regimes, separated either side of
-late 2020, early 2021. The following table compares current values with those
-in Jan 2021, showing the percentage decrease in overall coding activity.
+The following table shows the percentage change in both rates, for each of
+the five data sources, from Jan 2021 until `r now`.
 
 ```{r commit-rate-table, cache = TRUE}
-commit_sc_display |>
-    dplyr::mutate (step_change = step_change - 1) |>
+combined_sc_display |>
     dplyr::transmute (
         Source = source,
-        `Jan 2021` = round (rate_ref, 2),
-        Current = round (rate_latest, 2),
-        `Relative change(%)` = scales::percent (step_change, accuracy = 1)
+        `Repo creation (%)` = scales::percent (repo_creation_change, accuracy = 1),
+        `Commits (%)` = scales::percent (commit_change, accuracy = 1)
     ) |>
     knitr::kable (
-        align = c ("l", "r", "r", "r"),
-        caption = "Commits per repo-month, by source, now vs. Jan 2021"
+        align = c ("l", "r", "r"),
+        caption = "Percentage change in repo-creation rate and commit rate, by source, now vs. Jan 2021"
     )
 ```
 

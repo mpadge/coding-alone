@@ -94,7 +94,12 @@ plot_commit_rate <- function (commit_counts_tbl,
             colour = "Source"
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top")
+        ggplot2::theme (legend.position = "top") +
+        ggplot2::annotate (
+            "text",
+            x = structure (Inf, class = "Date"), y = Inf, label = "(A)",
+            hjust = 2.2, vjust = 3, size = 6
+        )
 
     p_commit <- ggplot2::ggplot (
         dplyr::filter (commit_tbl, !is.na (rate)),
@@ -108,7 +113,12 @@ plot_commit_rate <- function (commit_counts_tbl,
             colour = "Source"
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "none")
+        ggplot2::theme (legend.position = "none") +
+        ggplot2::annotate (
+            "text",
+            x = structure (Inf, class = "Date"), y = Inf, label = "(B)",
+            hjust = 2.2, vjust = 3, size = 6
+        )
 
     patchwork::wrap_plots (p_creation, p_commit, ncol = 1)
 }
