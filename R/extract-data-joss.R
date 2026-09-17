@@ -179,7 +179,7 @@ join_registry_downloads <- function (tbl, pypi_tbl = NULL, npm_tbl = NULL) {
 # ---- issue listing (GraphQL) -----------------------------------------------
 
 # PEERREVIEW_TESTS = "true" is set by tests that need it (see
-# fetch_issue_authors() in R/analyses.R for the same convention). Whenever a
+# fetch_issue_authors() in R/fetch-issue-authors.R for the same convention). Whenever a
 # test is actually running, request just 2 issues per page instead of 100,
 # and stop after that single page rather than following cursors to the real
 # (thousands-strong) end of the list - so that a live, test_all-gated run

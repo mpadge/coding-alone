@@ -1,12 +1,203 @@
-# Table-generation functions backing the "coding-alone" vignette.
-# These answer a narrower question than `issue_rate_tbl()`'s event rate:
-# not "how many non-core issues land per repo-month" but "how many distinct
-# people file them" - a repository could in principle hold a falling issue
-# rate steady by getting fewer, more repetitive strangers rather than fewer
-# strangers altogether, and the two aren't the same failure mode. Built as
-# a close structural analogue of `issue_rate_tbl()`/`fold_change_tbl()` so
-# the same reference-month fold-change framing applies to headcount as it
-# does to event counts.
+# For each source, bin non-contributor issues by month, stratify repos by
+# popularity (downloads where it exists for the source, stars otherwise), and
+# compute a rate normalized by true repo-months exposure (from each repo's
+# GitHub creation date).
+#
+# The author-density/solo-repo/new-author functions below answer a narrower
+# question than `issue_rate_tbl()`'s event rate: not "how many non-core
+# issues land per repo-month" but "how many distinct people file them" - a
+# repository could in principle hold a falling issue rate steady by getting
+# fewer, more repetitive strangers rather than fewer strangers altogether,
+# and the two aren't the same failure mode. Built as a close structural
+# analogue of `issue_rate_tbl()`/`fold_change_tbl()` so the same
+# reference-month fold-change framing applies to headcount as it does to
+# event counts.
+
+#' Build the (popularity stratum-x-month) issue-rate table for one source:
+#' a chosen `metric` from non-contributor issues, aggregated over a
+#' trailing rolling `window` of months and normalized by repo-months of
+#' exposure, where a repo's exposure begins at its GitHub creation date.
+#' "Non-contributor" here means `contribution <= contrib_threshold` (see
+#' `github_issue_authors()` for how `contribution` - each author's
+#' fractional share of all commits ever landed on the repo - is computed).
+#' `repo_created_at` lives on `issue_authors_tbl` (fetched alongside each
+#' repo's issues by `github_issue_authors()`/`fetch_issue_authors()`), not
+#' `repo_tbl`, so a repo only contributes exposure once it's been fetched
+#' at least once - repos with zero issues fetched (either not yet fetched
+#' at all, or fetched and genuinely having none) don't have a
+#' `repo_created_at` on file and are excluded here rather than analysed.
+#'
+#' Each reported month is a trailing aggregate over `window` months (that
+#' month and the `window - 1` preceding it), not a single month's own
+#' count - smoothing month-to-month noise at the cost of some lag, and of
+#' treating the `window - 1` months at the very start of the series as a
+#' shorter, partial window rather than dropping them.
+#'
+#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
+#' @param repo_tbl As returned by `build_repo_tbl()`.
+#' @param source_name One of `repo_tbl$source` (`"pypi"`, `"npm"`, `"joss"`,
+#' `"ropensci"`).
+#' @param n_strata Number of popularity strata.
+#' @param contrib_threshold Issues whose author's `contribution` is at or
+#' below this value count as "non-contributor" issues. Default 0.01 (allow
+#' a small nonzero commit share and still call it "non-contributor").
+#' @param metric Which per-issue quantity to aggregate: `"issues"` (default)
+#' counts qualifying issues; `"comments"` sums qualifying issues'
+#' `n_comments` instead.
+#' @param window Trailing aggregation window, in months. Default 12: each
+#' reported month's `n_metric`/`n_repo_months` sum that month and the
+#' preceding 11.
+#' @param date_start,date_end Date bounds on the analysis window;
+#' `date_end` defaults to the start of the current month.
+#' @return A tibble with one row per (popularity stratum, month):
+#' `popularity_stratum`, `month` (Date, first-of-month), `n_metric`,
+#' `n_repo_months`, `rate` - the latter two already `window`-month trailing
+#' sums, not single-month counts. Also carries `metric`, `window`,
+#' `contrib_threshold`, and `source_name` as attributes, so `plot_activity()`
+#' can label its y-axis correctly without being told them again.
+#'
+#' @examples
+#' \dontrun{
+#' rate_tbl <- issue_rate_tbl (issue_authors_tbl, repo_tbl, "pypi")
+#' }
+#' @export
+issue_rate_tbl <- function (issue_authors_tbl,
+                            repo_tbl,
+                            source_name,
+                            n_strata = 4L,
+                            contrib_threshold = 0.01,
+                            metric = c ("issues", "comments"),
+                            window = 12L,
+                            date_start = as.Date ("2015-01-01"),
+                            date_end = NULL) {
+
+    metric <- match.arg (metric)
+
+    # rm no visible binding notes
+    source <- repo_url <- .data <- month <- metric_val <-
+        popularity_stratum <- n_metric <- n_repo_months <- contribution <-
+        created_at <- repo_created_at <- n_comments <- NULL
+
+    metric_col <- unname (POPULARITY_METRIC [source_name])
+    if (is.na (metric_col)) {
+        stop ("Unknown source: ", source_name, call. = FALSE)
+    }
+
+    if (is.null (date_end)) {
+        date_end <- floor_month (Sys.Date ())
+    }
+
+    repo_created_tbl <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at)
+
+    repos <- repo_tbl |>
+        dplyr::filter (source == source_name) |>
+        dplyr::distinct (repo_url, .keep_all = TRUE) |>
+        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
+        dplyr::mutate (
+            repo_created_at = floor_month (repo_created_at),
+            metric_val = .data [[metric_col]]
+        ) |>
+        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
+
+    if (nrow (repos) == 0) {
+        empty <- tibble::tibble (
+            popularity_stratum = factor (ordered = TRUE),
+            month = as.Date (character ()),
+            n_metric = double (),
+            n_repo_months = integer (),
+            rate = double ()
+        )
+        attr (empty, "metric") <- metric
+        attr (empty, "window") <- window
+        attr (empty, "contrib_threshold") <- contrib_threshold
+        attr (empty, "source_name") <- source_name
+        return (empty)
+    }
+
+    repos$popularity_stratum <- popularity_strata (repos$metric_val, n_strata)
+    stratum_levels <- levels (repos$popularity_stratum)
+
+    months <- seq (date_start, date_end, by = "month")
+
+    exposure <- dplyr::cross_join (
+        tibble::tibble (repo_url = repos$repo_url),
+        tibble::tibble (month = months)
+    ) |>
+        dplyr::inner_join (
+            dplyr::select (
+                repos, repo_url, repo_created_at, popularity_stratum
+            ),
+            by = "repo_url"
+        ) |>
+        dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
+        dplyr::count (popularity_stratum, month, name = "n_repo_months")
+
+    filtered_issues <- issue_authors_tbl |>
+        dplyr::filter (
+            repo_url %in% repos$repo_url, contribution <= contrib_threshold
+        ) |>
+        dplyr::mutate (month = floor_month (created_at)) |>
+        dplyr::filter (month >= date_start, month <= date_end) |>
+        dplyr::inner_join (
+            dplyr::select (repos, repo_url, popularity_stratum),
+            by = "repo_url"
+        )
+
+    issues <- if (metric == "issues") {
+
+        dplyr::count (
+            filtered_issues, popularity_stratum, month,
+            name = "n_metric"
+        )
+
+    } else {
+
+        filtered_issues |>
+            dplyr::group_by (popularity_stratum, month) |>
+            dplyr::summarise (n_metric = sum (n_comments), .groups = "drop")
+    }
+
+    # Full (stratum x month) grid, so the trailing rolling sum below has no
+    # gaps in either dimension to silently skip over.
+    grid <- dplyr::cross_join (
+        tibble::tibble (
+            popularity_stratum = factor (
+                stratum_levels,
+                levels = stratum_levels, ordered = TRUE
+            )
+        ),
+        tibble::tibble (month = months)
+    )
+
+    result <- grid |>
+        dplyr::left_join (exposure, by = c ("popularity_stratum", "month")) |>
+        dplyr::left_join (issues, by = c ("popularity_stratum", "month")) |>
+        dplyr::mutate (
+            n_metric = dplyr::coalesce (n_metric, 0),
+            n_repo_months = dplyr::coalesce (n_repo_months, 0L)
+        ) |>
+        dplyr::arrange (popularity_stratum, month) |>
+        dplyr::group_by (popularity_stratum) |>
+        dplyr::mutate (
+            n_metric = trailing_roll_sum (n_metric, window),
+            n_repo_months = trailing_roll_sum (n_repo_months, window)
+        ) |>
+        dplyr::ungroup () |>
+        dplyr::mutate (
+            rate = dplyr::if_else (
+                n_repo_months > 0, n_metric / n_repo_months, NA_real_
+            )
+        )
+
+    attr (result, "metric") <- metric
+    attr (result, "window") <- window
+    attr (result, "contrib_threshold") <- contrib_threshold
+    attr (result, "source_name") <- source_name
+
+    result
+}
 
 # ---- distinct non-core author density ---------------------------------------
 
@@ -712,329 +903,4 @@ author_interval_trend_tbl <- function (issue_authors_tbl,
     attr (result, "source_name") <- source_name
 
     result
-}
-
-# ---- commit-based activity: a direct, non-issue-tracker measure ------------
-
-#' Monthly commit rate per repo-month, by source
-#'
-#' Direct, commit-history-based analogue of `issue_rate_tbl()`/
-#' `author_density_tbl()`: rather than counting issue-tracker events or
-#' distinct issue authors, counts actual commits landed on each repo's
-#' default branch (as fetched by `fetch_repo_commits()`), normalised by
-#' repo-months of exposure and reported as a `window`-month trailing sum
-#' over the same trailing repo-months denominator. A direct measure of
-#' code-level activity to compare against the issue-tracker-based measures
-#' elsewhere in this package - it can see contributors who only ever
-#' commit and never file an issue, which `author_density_tbl()`'s "all
-#' contributors" reading can't (see that function's doc).
-#'
-#' Unlike every other rate table in this package, this one isn't split by
-#' popularity stratum: commit rate shows no material difference between
-#' popularity strata, so pooling all of a source's repos into one line
-#' loses nothing a stratified version would show and is simpler to read.
-#'
-#' As in `author_density_tbl()`/`new_author_rate_tbl()`, `repo_created_at`
-#' is read off `issue_authors_tbl` (not `commit_counts_tbl`, which has no
-#' such column) to compute repo-months exposure, so a repo only
-#' contributes exposure once it's been fetched at least once by
-#' `fetch_issue_authors()`.
-#'
-#' @param commit_counts_tbl As returned by `fetch_repo_commits()` (or read
-#' straight from `commit-counts.csv`): one row per (repo, month) with
-#' `n_commits`.
-#' @inheritParams issue_rate_tbl
-#' @return A tibble with one row per month: `month`, `n_metric` (trailing
-#' sum of commits), `n_repo_months`, `rate`. Carries `window` and
-#' `source_name` as attributes.
-#'
-#' @examples
-#' \dontrun{
-#' commit_counts_tbl <- readr::read_csv ("repo-data-out/commit-counts.csv")
-#' cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, "pypi")
-#' }
-#' @export
-commit_rate_tbl <- function (commit_counts_tbl,
-                             issue_authors_tbl,
-                             repo_tbl,
-                             source_name,
-                             window = 12L,
-                             date_start = as.Date ("2015-01-01"),
-                             date_end = NULL) {
-
-    # rm no visible binding notes
-    source <- repo_url <- .data <- month <- metric_val <-
-        n_metric <- n_repo_months <- repo_created_at <- n_commits <- NULL
-
-    if (is.null (date_end)) {
-        date_end <- floor_month (Sys.Date ())
-    }
-
-    metric_col <- unname (POPULARITY_METRIC [source_name])
-    if (is.na (metric_col)) {
-        stop ("Unknown source: ", source_name, call. = FALSE)
-    }
-
-    months <- seq (date_start, date_end, by = "month")
-
-    repo_created_tbl <- issue_authors_tbl |>
-        dplyr::filter (!is.na (repo_created_at)) |>
-        dplyr::distinct (repo_url, repo_created_at)
-
-    repos <- repo_tbl |>
-        dplyr::filter (source == source_name) |>
-        dplyr::distinct (repo_url, .keep_all = TRUE) |>
-        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
-        dplyr::mutate (
-            repo_created_at = floor_month (repo_created_at),
-            metric_val = .data [[metric_col]]
-        ) |>
-        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
-
-    if (nrow (repos) == 0) {
-        result <- tibble::tibble (
-            month = months, n_metric = 0, n_repo_months = 0L, rate = NA_real_
-        )
-        attr (result, "window") <- window
-        attr (result, "source_name") <- source_name
-        return (result)
-    }
-
-    exposure <- dplyr::cross_join (
-        tibble::tibble (repo_url = repos$repo_url),
-        tibble::tibble (month = months)
-    ) |>
-        dplyr::inner_join (
-            dplyr::select (repos, repo_url, repo_created_at),
-            by = "repo_url"
-        ) |>
-        dplyr::filter (month >= pmax (repo_created_at, date_start)) |>
-        dplyr::count (month, name = "n_repo_months")
-
-    commits <- commit_counts_tbl |>
-        dplyr::filter (
-            repo_url %in% repos$repo_url,
-            month >= date_start, month <= date_end
-        ) |>
-        dplyr::group_by (month) |>
-        dplyr::summarise (n_metric = sum (n_commits), .groups = "drop")
-
-    result <- tibble::tibble (month = months) |>
-        dplyr::left_join (exposure, by = "month") |>
-        dplyr::left_join (commits, by = "month") |>
-        dplyr::mutate (
-            n_metric = dplyr::coalesce (n_metric, 0),
-            n_repo_months = dplyr::coalesce (n_repo_months, 0L)
-        ) |>
-        dplyr::arrange (month) |>
-        dplyr::mutate (
-            n_metric = trailing_roll_sum (n_metric, window),
-            n_repo_months = trailing_roll_sum (n_repo_months, window),
-            rate = dplyr::if_else (
-                n_repo_months > 0, n_metric / n_repo_months, NA_real_
-            )
-        )
-
-    attr (result, "window") <- window
-    attr (result, "source_name") <- source_name
-
-    result
-}
-
-#' Monthly repo-creation rate, by source
-#'
-#' Counts how many repositories were created (per GitHub's own
-#' `repo_created_at` timestamp, as recorded on `issue_authors_tbl`) each
-#' calendar month, for one source, reported as a `window`-month trailing
-#' sum in the same way every other rate in this package is - the
-#' ecosystem's own raw growth in repo count over time, meant to be read
-#' alongside `commit_rate_tbl()`'s per-repo-month commit rate (see
-#' `plot_commit_rate()`) so a reader can judge how much of any shift in
-#' commit rate reflects more repos existing now rather than a change in
-#' per-repo behaviour. Restricted to the same repo population as
-#' `commit_rate_tbl()` (repos with a non-`NA` popularity metric and a
-#' known creation date), so the two panels describe the same set of
-#' repositories.
-#'
-#' @inheritParams issue_rate_tbl
-#' @return A tibble with one row per month: `month`, `n_created`
-#' (`window`-month trailing sum of repos created that month). Carries
-#' `window` and `source_name` as attributes.
-#'
-#' @examples
-#' \dontrun{
-#' rc <- repo_creation_tbl (issue_authors_tbl, repo_tbl, "pypi")
-#' }
-#' @export
-repo_creation_tbl <- function (issue_authors_tbl,
-                               repo_tbl,
-                               source_name,
-                               window = 12L,
-                               date_start = as.Date ("2015-01-01"),
-                               date_end = NULL) {
-
-    # rm no visible binding notes
-    source <- repo_url <- .data <- month <- metric_val <-
-        repo_created_at <- n_created <- NULL
-
-    if (is.null (date_end)) {
-        date_end <- floor_month (Sys.Date ())
-    }
-
-    metric_col <- unname (POPULARITY_METRIC [source_name])
-    if (is.na (metric_col)) {
-        stop ("Unknown source: ", source_name, call. = FALSE)
-    }
-
-    months <- seq (date_start, date_end, by = "month")
-
-    repo_created_tbl <- issue_authors_tbl |>
-        dplyr::filter (!is.na (repo_created_at)) |>
-        dplyr::distinct (repo_url, repo_created_at)
-
-    repos <- repo_tbl |>
-        dplyr::filter (source == source_name) |>
-        dplyr::distinct (repo_url, .keep_all = TRUE) |>
-        dplyr::inner_join (repo_created_tbl, by = "repo_url") |>
-        dplyr::mutate (
-            repo_created_at = floor_month (repo_created_at),
-            metric_val = .data [[metric_col]]
-        ) |>
-        dplyr::filter (!is.na (metric_val), !is.na (repo_created_at))
-
-    created_counts <- repos |>
-        dplyr::filter (
-            repo_created_at >= date_start, repo_created_at <= date_end
-        ) |>
-        dplyr::count (month = repo_created_at, name = "n_created")
-
-    result <- tibble::tibble (month = months) |>
-        dplyr::left_join (created_counts, by = "month") |>
-        dplyr::mutate (n_created = dplyr::coalesce (n_created, 0L)) |>
-        dplyr::arrange (month) |>
-        dplyr::mutate (n_created = trailing_roll_sum (n_created, window))
-
-    attr (result, "window") <- window
-    attr (result, "source_name") <- source_name
-
-    result
-}
-
-#' Plot repo-creation rate and commit rate, across sources
-#'
-#' Two-panel figure: each source's percentage share of repos created (top,
-#' from `repo_creation_tbl()`) and commits per repo-month (bottom, from
-#' `commit_rate_tbl()`), both `window`-month trailing sums/averages, one
-#' line per source. Unlike `plot_new_author_rate()`/`plot_author_interval()`,
-#' sources aren't faceted apart and lines aren't split by popularity
-#' stratum - all sources are overlaid on the same axes in each panel.
-#'
-#' The repo-creation panel plots each source's percentage share of that
-#' month's total repos for each source .
-#'
-#' @param commit_counts_tbl As returned by `fetch_repo_commits()`.
-#' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
-#' @param repo_tbl As returned by `build_repo_tbl()`.
-#' @param source_display Named character vector as in `plot_fold_change()`.
-#' @param window,date_start,date_end Passed to each source's
-#' `commit_rate_tbl()`/`repo_creation_tbl()` call.
-#' @param start_year Optional year to crop the plotted window to, as in
-#' `plot_activity()` - display-only, doesn't affect the underlying
-#' repo-months/rate calculations.
-#' @return A `patchwork` object (two stacked ggplot panels).
-#'
-#' @examples
-#' \dontrun{
-#' plot_commit_rate (commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME)
-#' }
-#' @export
-plot_commit_rate <- function (commit_counts_tbl,
-                              issue_authors_tbl,
-                              repo_tbl,
-                              source_display = NULL,
-                              window = 12L,
-                              date_start = as.Date ("2015-01-01"),
-                              date_end = NULL,
-                              start_year = NULL) {
-
-    month <- rate <- source <- n_created <- total_created <- pct_created <- NULL
-
-    sources <- names (POPULARITY_METRIC)
-
-    relabel_source <- function (tbl) {
-        if (!is.null (source_display)) {
-            lab <- unname (source_display [tbl$source])
-            tbl$source <- ifelse (is.na (lab), tbl$source, lab)
-        }
-        tbl$source <- factor (tbl$source, levels = unique (tbl$source))
-        tbl
-    }
-
-    commit_tbl <- purrr::map_dfr (sources, \ (src) {
-        commit_rate_tbl (
-            commit_counts_tbl, issue_authors_tbl, repo_tbl, src,
-            window = window, date_start = date_start, date_end = date_end
-        ) |>
-            dplyr::mutate (source = src)
-    })
-    creation_tbl <- purrr::map_dfr (sources, \ (src) {
-        repo_creation_tbl (
-            issue_authors_tbl, repo_tbl, src,
-            window = window, date_start = date_start, date_end = date_end
-        ) |>
-            dplyr::mutate (source = src)
-    })
-
-    if (!is.null (start_year)) {
-        start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
-        commit_tbl <- dplyr::filter (commit_tbl, month >= start_date)
-        creation_tbl <- dplyr::filter (creation_tbl, month >= start_date)
-    }
-
-    # Rescale each month's per-source counts to a percentage share of that
-    # month's total across all sources.
-    creation_tbl <- creation_tbl |>
-        dplyr::group_by (source) |>
-        dplyr::mutate (
-            total_created = sum (n_created),
-            pct_created = 100 * n_created / total_created
-        ) |>
-        dplyr::ungroup ()
-
-    commit_tbl <- relabel_source (commit_tbl)
-    creation_tbl <- relabel_source (creation_tbl)
-
-    p_creation <- ggplot2::ggplot (
-        creation_tbl,
-        ggplot2::aes (month, pct_created, colour = source)
-    ) +
-        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
-        ggplot2::labs (
-            x = NULL,
-            y = stringr::str_glue (
-                "Share of repos created (%, {window}-month trailing sum)"
-            ),
-            colour = "Source"
-        ) +
-        ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top")
-
-    p_commit <- ggplot2::ggplot (
-        dplyr::filter (commit_tbl, !is.na (rate)),
-        ggplot2::aes (month, rate, colour = source)
-    ) +
-        ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::scale_colour_brewer (palette = "Set2", drop = FALSE) +
-        ggplot2::labs (
-            x = NULL,
-            y = stringr::str_glue (
-                "Commits per repo-month ({window}-month trailing avg)"
-            ),
-            colour = "Source"
-        ) +
-        ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "none")
-
-    patchwork::wrap_plots (p_creation, p_commit, ncol = 1)
 }

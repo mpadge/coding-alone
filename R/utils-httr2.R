@@ -19,7 +19,7 @@ perform_json_parallel <- function (urls, max_active = 40L) {
     # can never be dynamically (re-)recorded through the parallel path; it
     # would just silently fall through to a live, uncached call on every
     # run instead. PEERREVIEW_TESTS == "true" (see fetch_issue_authors() in
-    # R/analyses.R for the same convention) switches to sequential
+    # R/fetch-issue-authors.R for the same convention) switches to sequential
     # req_perform() calls instead - slower, but otherwise identical
     # (same per-request error handling below) and traceable/recordable.
     if (identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")) {
