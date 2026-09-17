@@ -5,4 +5,6 @@
 ^doc$
 ^docs$
 ^repo-data-out$
+^vignettes/coding-alone-cache
+^vignettes/coding-alone\.Rmd\.orig$
 ^vignettes/review-dividend\.Rmd\.orig$
