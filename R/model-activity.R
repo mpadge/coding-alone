@@ -1,11 +1,7 @@
-# Statistical modelling on top of the activity rate tables in
-# table-activity.R.
-
-#' Fit the quasi-Poisson GLM described in analysis-plan.md: does the
-#' month-over-month trend in issue rate differ across popularity strata?
-#' The `month_num:popularity_stratum` interaction is the term of interest -
-#' it's what tests whether the long tail is trending differently from the
-#' popular head, rather than just reporting one global trend line.
+#' Fit a quasi-Poisson GLM to analyse differences in monthly issue rates across
+#' popularity strata. The `month_num:popularity_stratum` interaction tests
+#' whether the long tail trends differently from the popular head, rather than
+#' just reporting one global trend line.
 #'
 #' @param rate_tbl As returned by `issue_rate_tbl()`.
 #' @return A fitted `glm` object.

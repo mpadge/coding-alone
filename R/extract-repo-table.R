@@ -1,12 +1,8 @@
-# Functions that assemble the combined repo table from data already on
-# disk - no network I/O (see fetch-issue-authors.R/fetch-repo-commits.R for
-# that).
-
-#' Combine the PyPI/npm/JOSS/rOpenSci output tables in `out_dir` into a
-#' single table of names, GitHub URLs, and download/star metrics, tagged
-#' with their `source`. Files are matched by exact basename, so anything
-#' else written to `out_dir` (e.g. the issue-authors output below) is
-#' ignored rather than breaking the read.
+#' Combine output tables into a single table of repository-specific data.
+#'
+#' Combines locally-stored tables of data for PyPI, npm, CRAN, JOSS, and
+#' rOpenSci into a single table of names, GitHub URLs, and
+#' download/star metrics.
 #'
 #' @param out_dir Directory holding the source CSVs.
 #' @return A tibble with columns `name`, `repo_url`, `downloads`, `stars`,
@@ -63,9 +59,7 @@ build_repo_tbl <- function (out_dir) {
 }
 
 #' Left-join `repo_tbl`'s per-repo metadata (name, downloads, stars, source)
-#' onto an issue-authors table by `repo_url`, after deduplicating `repo_tbl`
-#' on `repo_url` so a repo appearing under multiple sources doesn't fan out
-#' the join.
+#' onto an issue-authors table by `repo_url`.
 #'
 #' @inheritParams issue_rate_tbl
 #' @return `issue_authors_tbl` with `repo_tbl`'s columns attached.

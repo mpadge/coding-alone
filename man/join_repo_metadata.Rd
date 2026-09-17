@@ -3,9 +3,7 @@
 \name{join_repo_metadata}
 \alias{join_repo_metadata}
 \title{Left-join \code{repo_tbl}'s per-repo metadata (name, downloads, stars, source)
-onto an issue-authors table by \code{repo_url}, after deduplicating \code{repo_tbl}
-on \code{repo_url} so a repo appearing under multiple sources doesn't fan out
-the join.}
+onto an issue-authors table by \code{repo_url}.}
 \usage{
 join_repo_metadata(issue_authors_tbl, repo_tbl)
 }
@@ -19,9 +17,7 @@ join_repo_metadata(issue_authors_tbl, repo_tbl)
 }
 \description{
 Left-join \code{repo_tbl}'s per-repo metadata (name, downloads, stars, source)
-onto an issue-authors table by \code{repo_url}, after deduplicating \code{repo_tbl}
-on \code{repo_url} so a repo appearing under multiple sources doesn't fan out
-the join.
+onto an issue-authors table by \code{repo_url}.
 }
 \examples{
 issue_authors_tbl <- tibble::tibble (

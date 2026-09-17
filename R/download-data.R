@@ -1,13 +1,9 @@
-#' Download the `repo-data-out/` dataset from this package's GitHub
-#' release, if it doesn't already exist locally
+#' Download pre-generated datasets from this package's GitHub release
 #'
-#' Download is only triggered if `out_dir` does not already exist. If `out_dir`
-#' does not exist, it is created and every asset attached to the given release
-#' `tag` is downloaded into it via `piggyback::pb_download()`.
+#' Download is only triggered if `out_dir` does not already exist.
 #'
 #' @param out_dir Directory to create and download data into. Default
-#' `"repo-data-out"`, matching every other function in this package that
-#' reads from it.
+#' `"repo-data-out"` is used in all data-reading functions in this package.
 #' @param repo GitHub `owner/repo` to download release assets from.
 #' @param tag Release tag holding the data assets.
 #' @return `out_dir`, invisibly.

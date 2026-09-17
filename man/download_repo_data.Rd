@@ -2,8 +2,7 @@
 % Please edit documentation in R/download-data.R
 \name{download_repo_data}
 \alias{download_repo_data}
-\title{Download the \verb{repo-data-out/} dataset from this package's GitHub
-release, if it doesn't already exist locally}
+\title{Download pre-generated datasets from this package's GitHub release}
 \usage{
 download_repo_data(
   out_dir = "repo-data-out",
@@ -13,8 +12,7 @@ download_repo_data(
 }
 \arguments{
 \item{out_dir}{Directory to create and download data into. Default
-\code{"repo-data-out"}, matching every other function in this package that
-reads from it.}
+\code{"repo-data-out"} is used in all data-reading functions in this package.}
 
 \item{repo}{GitHub \code{owner/repo} to download release assets from.}
 
@@ -24,9 +22,7 @@ reads from it.}
 \code{out_dir}, invisibly.
 }
 \description{
-Download is only triggered if \code{out_dir} does not already exist. If \code{out_dir}
-does not exist, it is created and every asset attached to the given release
-\code{tag} is downloaded into it via \code{piggyback::pb_download()}.
+Download is only triggered if \code{out_dir} does not already exist.
 }
 \examples{
 \dontrun{
