@@ -372,11 +372,12 @@ in Jan 2021, showing the percentage decrease in overall coding activity.
 
 ```{r commit-rate-table, cache = TRUE}
 commit_sc_display |>
+    dplyr::mutate (step_change = step_change - 1) |>
     dplyr::transmute (
         Source = source,
         `Jan 2021` = round (rate_ref, 2),
-        Latest = round (rate_latest, 2),
-        `Fold-change` = scales::percent (step_change, accuracy = 1)
+        Current = round (rate_latest, 2),
+        `Relative change(%)` = scales::percent (step_change, accuracy = 1)
     ) |>
     knitr::kable (
         align = c ("l", "r", "r", "r"),
