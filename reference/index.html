@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.008</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.014</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
       </tr><tr><td>
           <p><code><a href="build_repo_tbl.html">build_repo_tbl()</a></code> </p>
         </td>
-        <td><p>Combine the PyPI/npm/JOSS/rOpenSci output tables in <code>out_dir</code> into a single table of names, GitHub URLs, and download/star metrics, tagged with their <code>source</code>. Files are matched by exact basename, so anything else written to <code>out_dir</code> (e.g. the issue-authors output below) is ignored rather than breaking the read.</p></td>
+        <td><p>Combine output tables into a single table of repository-specific data.</p></td>
       </tr><tr><td>
           <p><code><a href="build_runiv_table.html">build_runiv_table()</a></code> </p>
         </td>
@@ -110,19 +110,19 @@
       </tr><tr><td>
           <p><code><a href="download_repo_data.html">download_repo_data()</a></code> </p>
         </td>
-        <td><p>Download the <code>repo-data-out/</code> dataset from this package's GitHub release, if it doesn't already exist locally</p></td>
+        <td><p>Download pre-generated datasets from this package's GitHub release</p></td>
       </tr><tr><td>
           <p><code><a href="fetch_issue_authors.html">fetch_issue_authors()</a></code> </p>
         </td>
-        <td><p>Fetch issue-author data (<code><a href="../reference/github_issue_authors.html">github_issue_authors()</a></code>, for many repos, batched and checkpointed to disk.</p></td>
+        <td><p>Fetch issue-author data (<code><a href="../reference/github_issue_authors.html">github_issue_authors()</a></code>, for many repos, with intermediate batches dumped to disk.</p></td>
       </tr><tr><td>
           <p><code><a href="fetch_repo_commits.html">fetch_repo_commits()</a></code> </p>
         </td>
-        <td><p>Fetch monthly commit counts (<code><a href="../reference/github_commit_counts_by_month.html">github_commit_counts_by_month()</a></code>) for many repos, batched and checkpointed to disk exactly like <code><a href="../reference/fetch_issue_authors.html">fetch_issue_authors()</a></code> above - same checkpoint/resume logic and the same concurrent-batch execution via <code>progressify</code>/<code>futurize</code>, for the same reason: GitHub's hourly rate limit is a cumulative budget, so the risk is running through it too fast overall, not concurrency within one batch.</p></td>
+        <td><p>Fetch monthly commit counts (<code><a href="../reference/github_commit_counts_by_month.html">github_commit_counts_by_month()</a></code>) for many repos, batched like <code><a href="../reference/fetch_issue_authors.html">fetch_issue_authors()</a></code>.</p></td>
       </tr><tr><td>
           <p><code><a href="fit_activity_model.html">fit_activity_model()</a></code> </p>
         </td>
-        <td><p>Fit the quasi-Poisson GLM described in analysis-plan.md: does the month-over-month trend in issue rate differ across popularity strata? The <code>month_num:popularity_stratum</code> interaction is the term of interest - it's what tests whether the long tail is trending differently from the popular head, rather than just reporting one global trend line.</p></td>
+        <td><p>Fit a quasi-Poisson GLM to analyse differences in monthly issue rates across popularity strata. The <code>month_num:popularity_stratum</code> interaction tests whether the long tail trends differently from the popular head, rather than just reporting one global trend line.</p></td>
       </tr><tr><td>
           <p><code><a href="fold_change_tbl.html">fold_change_tbl()</a></code> </p>
         </td>
@@ -130,7 +130,7 @@
       </tr><tr><td>
           <p><code><a href="github_commit_counts_by_month.html">github_commit_counts_by_month()</a></code> </p>
         </td>
-        <td><p>Monthly commit counts on a single GitHub repo's default branch, as a direct measure of code-activity to sit alongside the issue-based measures elsewhere in this package. This is meant to run after issue-author data has already been fetched (<code><a href="../reference/fetch_issue_authors.html">fetch_issue_authors()</a></code>), which records each repo's own creation timestamp for free (<code>repo_created_at</code>, on every row) </p><ul><li><p>so rather than spend a separate GraphQL call re-discovering that here, <code><a href="../reference/fetch_repo_commits.html">fetch_repo_commits()</a></code> passes it straight through as <code>repo_created_at</code>.</p></li> </ul></td>
+        <td><p>Monthly commit counts on a single GitHub repo's default branch.</p></td>
       </tr><tr><td>
           <p><code><a href="github_issue_authors.html">github_issue_authors()</a></code> </p>
         </td>
@@ -142,7 +142,7 @@
       </tr><tr><td>
           <p><code><a href="join_repo_metadata.html">join_repo_metadata()</a></code> </p>
         </td>
-        <td><p>Left-join <code>repo_tbl</code>'s per-repo metadata (name, downloads, stars, source) onto an issue-authors table by <code>repo_url</code>, after deduplicating <code>repo_tbl</code> on <code>repo_url</code> so a repo appearing under multiple sources doesn't fan out the join.</p></td>
+        <td><p>Left-join <code>repo_tbl</code>'s per-repo metadata (name, downloads, stars, source) onto an issue-authors table by <code>repo_url</code>.</p></td>
       </tr><tr><td>
           <p><code><a href="new_author_rate_tbl.html">new_author_rate_tbl()</a></code> </p>
         </td>
@@ -170,7 +170,7 @@
       </tr><tr><td>
           <p><code><a href="plot_commit_rate.html">plot_commit_rate()</a></code> </p>
         </td>
-        <td><p>Plot commit rate and repo-creation rate, across sources</p></td>
+        <td><p>Plot repo-creation rate and commit rate, across sources</p></td>
       </tr><tr><td>
           <p><code><a href="plot_fold_change.html">plot_fold_change()</a></code> </p>
         </td>
