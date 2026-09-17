@@ -206,14 +206,9 @@ fetch_repo_commits <- function (repo_urls, out_dir, batch_size = 50L,
         progressr::handlers (global = TRUE)
     }
 
-    issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
-    repo_created_at_lookup <- if (file.exists (issue_authors_csv)) {
-        readr::read_csv (issue_authors_csv, col_types = ISSUE_AUTHORS_COL_TYPES) |>
-            dplyr::distinct (repo_url, repo_created_at) |>
-            tibble::deframe ()
-    } else {
-        character ()
-    }
+    repo_created_at_lookup <- read_issue_authors_data (out_dir) |>
+        dplyr::distinct (repo_url, repo_created_at) |>
+        tibble::deframe ()
 
     commit_counts_csv <- file.path (out_dir, "commit-counts.csv")
     commit_counts_done_rds <- file.path (out_dir, "commit-counts-done.rds")

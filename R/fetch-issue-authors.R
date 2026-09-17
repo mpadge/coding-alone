@@ -1,15 +1,39 @@
 # Fetches issue-author data (github_issue_authors(), for many repos,
 # batched and checkpointed to disk.
 
-ISSUE_AUTHORS_COL_TYPES <- readr::cols (
-    repo_url = readr::col_character (),
-    issue_number = readr::col_integer (),
-    author = readr::col_character (),
-    created_at = readr::col_character (),
-    n_comments = readr::col_integer (),
-    contribution = readr::col_double (),
-    repo_created_at = readr::col_character ()
-)
+#' Read the `issue-authors.csv` checkpoint file written by
+#' `fetch_issue_authors()`, falling back to an empty tibble with the same
+#' schema if it hasn't been written yet.
+#'
+#' @param out_dir Directory holding `issue-authors.csv`.
+#' @return A tibble with columns `repo_url`, `issue_number`, `author`,
+#' `created_at`, `n_comments`, `contribution`, `repo_created_at`.
+#' @noRd
+read_issue_authors_data <- function (out_dir) {
+
+    issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
+
+    col_types <- readr::cols (
+        repo_url = readr::col_character (),
+        issue_number = readr::col_integer (),
+        author = readr::col_character (),
+        created_at = readr::col_character (),
+        n_comments = readr::col_integer (),
+        contribution = readr::col_double (),
+        repo_created_at = readr::col_character ()
+    )
+
+    if (file.exists (issue_authors_csv)) {
+        out <- readr::read_csv (issue_authors_csv, col_types = col_types)
+    } else {
+        header <- paste (names (col_types$cols), collapse = ",")
+        out <- tibble::as_tibble (
+            readr::read_csv (I (header), col_types = col_types)
+        )
+    }
+
+    return (out)
+}
 
 #' Fetch issue-author data (`github_issue_authors()`, for many repos,
 #' batched and checkpointed to disk.
@@ -60,20 +84,7 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
     issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
     issue_authors_done_rds <- file.path (out_dir, "issue-authors-done.rds")
 
-    issue_authors_tbl <- if (file.exists (issue_authors_csv)) {
-
-        readr::read_csv (issue_authors_csv, col_types = ISSUE_AUTHORS_COL_TYPES)
-
-    } else {
-
-        tibble::tibble (
-            repo_url = character (), issue_number = integer (),
-            author = character (), created_at = character (),
-            n_comments = integer (),
-            contribution = double (),
-            repo_created_at = character ()
-        )
-    }
+    issue_authors_tbl <- read_issue_authors_data (out_dir)
 
     repo_urls_done <- if (file.exists (issue_authors_done_rds)) {
         readRDS (issue_authors_done_rds)
