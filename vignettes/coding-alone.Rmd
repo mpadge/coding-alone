@@ -163,12 +163,12 @@ rise or plateau through the late 2010s, a peak somewhere in the
 doesn't prove much - a falling issue rate is mechanically compatible with
 a falling author count, since fewer issues can't come from more people
 without each of them opening fewer on average. What settles it is
-comparing the two fold-changes directly, source by source and stratum by
+comparing the two step-changes directly, source by source and stratum by
 stratum:
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/fold-change-plot-authors-1.png" alt="plot of chunk fold-change-plot-authors"  />
-<p class="caption">plot of chunk fold-change-plot-authors</p>
+<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="plot of chunk step-change-plot-authors"  />
+<p class="caption">plot of chunk step-change-plot-authors</p>
 </div>
 
 Every one of the 20 (source, stratum) cells in this
@@ -258,8 +258,8 @@ counting literally everyone this dataset can see interacting with a
 repository through its issues.
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/fold-change-plot-bytype-1.png" alt="plot of chunk fold-change-plot-bytype"  />
-<p class="caption">plot of chunk fold-change-plot-bytype</p>
+<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="plot of chunk step-change-plot-bytype"  />
+<p class="caption">plot of chunk step-change-plot-bytype</p>
 </div>
 
 Core headcounts have fallen in every one of the five sources -
@@ -355,7 +355,7 @@ generally, it should land on popular and obscure software alike. It
 doesn't:
 
 
-Table: Distinct-author fold-change since Jan 2021, least vs. most popular quartile
+Table: Distinct-author step-change since Jan 2021, least vs. most popular quartile
 
 |Source   | Least popular (Q1)| Most popular (Q4)| Gap (Q4 − Q1)|
 |:--------|------------------:|-----------------:|-------------:|
@@ -475,7 +475,7 @@ time, and, well before social media, the privatising pull of television
   document - it doesn't correct for the same repo-count growth just
   described. It answers a different question on purpose (how many
   repositories, not how much activity per repository), but that also
-  means it isn't directly comparable in magnitude to the fold-changes
+  means it isn't directly comparable in magnitude to the step-changes
   reported elsewhere.
 - **`contribution` is a lifetime measure, not a point-in-time one**, so
   an issue filed by someone who later became a core maintainer is

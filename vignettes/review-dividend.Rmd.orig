@@ -71,7 +71,7 @@ date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
 
 
 ```{r generate-data, include=FALSE}
-# Cross-source fold-change (rate now vs. Jan 2021), both metrics
+# Cross-source step-change (rate now vs. Jan 2021), both metrics
 contrib_threshold <- 0.01
 fc_issues <- step_change_tbl (
     issue_authors_tbl,
@@ -230,7 +230,7 @@ patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
     )
 ```
 
-Shown here as issues, the primary metric; the fold-change comparison in
+Shown here as issues, the primary metric; the step-change comparison in
 [Finding 3](#finding-3-the-decline-favours-the-obscure) below confirms
 comments follow the same trajectory.
 
@@ -295,11 +295,11 @@ point — January 2021, chosen to sit after each source's initial ramp-up
 but before the steepest part of the decline, avoiding cherry-picking each
 stratum's own noisier peak — shows it doesn't:
 
-```{r fold-change-plot-issues, fig.height=3.5, fig.width=10}
+```{r step-change-plot-issues, fig.height=3.5, fig.width=10}
 plot_step_change (fc_issues, SOURCE_DISPLAY_NAME, metric = "issues")
 ```
 
-```{r fold-change-plot-comments, fig.height=3.5, fig.width=10}
+```{r step-change-plot-comments, fig.height=3.5, fig.width=10}
 plot_step_change (fc_comments, SOURCE_DISPLAY_NAME, metric = "comments")
 ```
 

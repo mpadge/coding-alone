@@ -4,9 +4,9 @@
 # `plot_activity_by_source()`, which plot `issue_rate_tbl()` output directly
 # rather than one of these higher-level comparison tables.
 
-# ---- cross-source fold-change -----------------------------------------------
+# ---- cross-source step-change -----------------------------------------------
 
-#' Plot fold-change in non-core rate across sources and strata
+#' Plot step-change in non-core rate across sources and strata
 #'
 #' Bar chart of `step_change_tbl()` output: one column per source, one bar
 #' per popularity stratum, `step_change` on a log y-axis (so a halving and a
@@ -204,7 +204,7 @@ plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
     p
 }
 
-#' Plot fold-change in rOpenSci non-core rate, by review status
+#' Plot step-change in rOpenSci non-core rate, by review status
 #'
 #' Bar chart of `ropensci_reviewed_step_change_tbl()` output: one bar for
 #' reviewed, one for non-reviewed, faceted by popularity stratum. If `tbl`

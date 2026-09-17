@@ -10,7 +10,7 @@
 # fewer, more repetitive strangers rather than fewer strangers altogether,
 # and the two aren't the same failure mode. Built as a close structural
 # analogue of `issue_rate_tbl()`/`step_change_tbl()` so the same
-# reference-month fold-change framing applies to headcount as it does to
+# reference-month step-change framing applies to headcount as it does to
 # event counts.
 
 #' Build the (popularity stratum-x-month) issue-rate table for one source:

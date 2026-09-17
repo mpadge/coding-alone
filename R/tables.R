@@ -3,11 +3,11 @@
 # These sit alongside the plotting functions in R/plots.R rather than in
 # R/analyse-activity.R because they recombine that file's primitives
 # (`issue_rate_tbl()`, `popularity_strata()`, etc.) into higher-level
-# comparisons - fold-change, cohort/age disentangling, and the rOpenSci
+# comparisons - step-change, cohort/age disentangling, and the rOpenSci
 # reviewed-vs-non-reviewed split - rather than computing a rate table
 # directly from `issue_authors_tbl`/`repo_tbl`.
 
-# ---- cross-source fold-change (rate now vs. a fixed reference month) -------
+# ---- cross-source step-change (rate now vs. a fixed reference month) -------
 
 #' Fold-change in non-core rate, from a reference month to now
 #'

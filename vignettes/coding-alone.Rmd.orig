@@ -68,14 +68,14 @@ date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
 ```{r generate-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
 contrib_threshold <- 0.01
 
-# Event-count fold-change (rate now vs. Jan 2021), for comparison against
+# Event-count step-change (rate now vs. Jan 2021), for comparison against
 # the person-count version below.
 sc_issues <- step_change_tbl (
     issue_authors_tbl, repo_tbl, primary_sources,
     metric = "issues", contrib_threshold = contrib_threshold
 )
 
-# Distinct-author fold-change, non-core only - this vignette's first,
+# Distinct-author step-change, non-core only - this vignette's first,
 # stricter measure.
 sc_authors <- author_density_step_change_tbl (
     issue_authors_tbl, repo_tbl, primary_sources,
@@ -94,7 +94,7 @@ n_authors_fell_more <- sum (sc_compare$step_change_authors < sc_compare$step_cha
 ```
 
 ```{r generate-step-change-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Non-core / core / total distinct-author fold-change, pooled across
+# Non-core / core / total distinct-author step-change, pooled across
 # popularity strata (n_strata = 1) per source - is the shrinkage confined
 # to the outer circle, or does it reach the inner one too?
 pooled_step_change <- function (src, contrib_min, contrib_threshold, label,
@@ -157,7 +157,7 @@ n_solo_sources_risen <- solo_by_source |>
 ```
 
 ```{r generate-new-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# New (non-founding) author arrival-rate fold-change, computed the same
+# New (non-founding) author arrival-rate step-change, computed the same
 # way as sc_authors above but for new_author_rate_tbl() - lets Finding 1
 # separate "existing regulars posting a bit less" from "fewer people
 # showing up for the very first time".
@@ -185,7 +185,7 @@ n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_cha
 ```
 
 ```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Wait-time (interval) fold-change: geometric-mean days between
+# Wait-time (interval) step-change: geometric-mean days between
 # consecutive first-time authors, now vs. Jan 2021 - the interval-based
 # analogue of new_arrival_fc above, expressing the same shrinking-pipeline
 # finding as elapsed time rather than a monthly rate.
@@ -209,7 +209,7 @@ interval_q1 <- interval_fc |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (dplyr::desc (step_change))
 
-# Commit-rate fold-change (rate now vs. Jan 2021), per source - the
+# Commit-rate step-change (rate now vs. Jan 2021), per source - the
 # direct, commit-history-based check on everything above, which counts
 # code landed on the default branch rather than issues filed against it.
 # commit_rate_tbl() isn't stratified by popularity (no material
@@ -422,10 +422,10 @@ rise or plateau through the late 2010s, a peak somewhere in the
 doesn't prove much - a falling issue rate is mechanically compatible with
 a falling author count, since fewer issues can't come from more people
 without each of them opening fewer on average. What settles it is
-comparing the two fold-changes directly, source by source and stratum by
+comparing the two step-changes directly, source by source and stratum by
 stratum:
 
-```{r fold-change-plot-authors, fig.height=3.5, fig.width=10}
+```{r step-change-plot-authors, fig.height=3.5, fig.width=10}
 plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
     ggplot2::labs (
         title = "Distinct non-core authors",
@@ -523,7 +523,7 @@ and **total** is core and non-core combined, with no threshold at all -
 counting literally everyone this dataset can see interacting with a
 repository through its issues.
 
-```{r fold-change-plot-bytype, fig.height=4.5}
+```{r step-change-plot-bytype, fig.height=4.5}
 ggplot2::ggplot (
     sc_by_type,
     ggplot2::aes (unname (SOURCE_DISPLAY_NAME [source]), step_change, fill = type)
@@ -536,7 +536,7 @@ ggplot2::ggplot (
     ) +
     ggplot2::labs (
         x = NULL, y = "Rate now, as % of rate in Jan 2021", fill = NULL,
-        title = "Distinct-author fold-change since Jan 2021, by contributor type",
+        title = "Distinct-author step-change since Jan 2021, by contributor type",
         subtitle = "Pooled across popularity strata, per source"
     ) +
     ggplot2::theme_minimal () +
@@ -666,7 +666,7 @@ q1q4_tbl |>
     ) |>
     knitr::kable (
         align = c ("l", "r", "r", "r"),
-        caption = "Distinct-author fold-change since Jan 2021, least vs. most popular quartile"
+        caption = "Distinct-author step-change since Jan 2021, least vs. most popular quartile"
     )
 ```
 
@@ -780,7 +780,7 @@ time, and, well before social media, the privatising pull of television
   document - it doesn't correct for the same repo-count growth just
   described. It answers a different question on purpose (how many
   repositories, not how much activity per repository), but that also
-  means it isn't directly comparable in magnitude to the fold-changes
+  means it isn't directly comparable in magnitude to the step-changes
   reported elsewhere.
 - **`contribution` is a lifetime measure, not a point-in-time one**, so
   an issue filed by someone who later became a core maintainer is
