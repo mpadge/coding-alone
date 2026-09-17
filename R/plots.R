@@ -8,16 +8,16 @@
 
 #' Plot fold-change in non-core rate across sources and strata
 #'
-#' Bar chart of `fold_change_tbl()` output: one column per source, one bar
-#' per popularity stratum, `fold_change` on a log y-axis (so a halving and a
+#' Bar chart of `step_change_tbl()` output: one column per source, one bar
+#' per popularity stratum, `step_change` on a log y-axis (so a halving and a
 #' doubling are visually symmetric) with a reference line at 1 (no change).
 #' If `tbl` carries a `metric` column (e.g. issues vs. comments, row-bound
-#' from two `fold_change_tbl()` calls), it is filtered down to the single
+#' from two `step_change_tbl()` calls), it is filtered down to the single
 #' `metric` requested before plotting - one call produces one single-metric
 #' plot, so issues and comments are two separate figures rather than two
 #' facet rows of the same one.
 #'
-#' @param tbl As returned by `fold_change_tbl()`, optionally with an added
+#' @param tbl As returned by `step_change_tbl()`, optionally with an added
 #' `metric` column.
 #' @param source_display Named character vector mapping internal source
 #' names to display labels, e.g. `SOURCE_DISPLAY_NAME`.
@@ -26,23 +26,23 @@
 #' carries a `metric` column (matched case-insensitively against that
 #' column's values, e.g. `"Issues"`/`"Comments"`); otherwise `tbl` is
 #' assumed to already be single-metric, and this only sets the plot title.
-#' @param ref_date The same `ref_date` passed to `fold_change_tbl()`, used
+#' @param ref_date The same `ref_date` passed to `step_change_tbl()`, used
 #' only to label the plot.
 #' @return A ggplot object.
 #'
 #' @examples
 #' \dontrun{
-#' fc <- fold_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-#' plot_fold_change (fc, SOURCE_DISPLAY_NAME, metric = "issues")
+#' fc <- step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
+#' plot_step_change (fc, SOURCE_DISPLAY_NAME, metric = "issues")
 #' }
 #' @export
-plot_fold_change <- function (tbl, source_display = NULL,
+plot_step_change <- function (tbl, source_display = NULL,
                               metric = c ("issues", "comments"),
                               ref_date = as.Date ("2021-01-01")) {
 
     metric <- match.arg (metric)
 
-    popularity_stratum <- fold_change <- source <- NULL
+    popularity_stratum <- step_change <- source <- NULL
 
     if ("metric" %in% names (tbl)) {
         tbl <- tbl [tolower (as.character (tbl$metric)) == metric, ]
@@ -57,7 +57,7 @@ plot_fold_change <- function (tbl, source_display = NULL,
 
     ggplot2::ggplot (
         tbl,
-        ggplot2::aes (popularity_stratum, fold_change, fill = popularity_stratum)
+        ggplot2::aes (popularity_stratum, step_change, fill = popularity_stratum)
     ) +
         ggplot2::geom_col () +
         ggplot2::geom_hline (yintercept = 1, linetype = 2, colour = "grey40") +
@@ -88,7 +88,7 @@ plot_fold_change <- function (tbl, source_display = NULL,
 #' compare sources against each other - only cohorts within a source).
 #'
 #' @param tbl As returned by `cohort_age_rate_tbl()`.
-#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param source_display Named character vector as in `plot_step_change()`.
 #' @param min_repo_months Cells with less exposure than this are dropped
 #' before plotting, since a handful of repo-months makes for an unstable
 #' rate estimate.
@@ -206,37 +206,37 @@ plot_ropensci_reviewed_trend <- function (tbl, start_year = NULL) {
 
 #' Plot fold-change in rOpenSci non-core rate, by review status
 #'
-#' Bar chart of `ropensci_reviewed_fold_change_tbl()` output: one bar for
+#' Bar chart of `ropensci_reviewed_step_change_tbl()` output: one bar for
 #' reviewed, one for non-reviewed, faceted by popularity stratum. If `tbl`
 #' carries a `metric` column (e.g. issues vs. comments, row-bound from two
-#' `ropensci_reviewed_fold_change_tbl()` calls), it is filtered down to the
+#' `ropensci_reviewed_step_change_tbl()` calls), it is filtered down to the
 #' single `metric` requested before plotting - one call produces one
 #' single-metric plot, so issues and comments are two separate figures
 #' rather than two facet rows of the same one.
 #'
-#' @param tbl As returned by `ropensci_reviewed_fold_change_tbl()`,
+#' @param tbl As returned by `ropensci_reviewed_step_change_tbl()`,
 #' optionally with an added `metric` column.
 #' @param metric Which metric to plot: `"issues"` (default) or
 #' `"comments"`. Only used to filter `tbl` down to one metric when it
 #' carries a `metric` column (matched case-insensitively against that
 #' column's values, e.g. `"Issues"`/`"Comments"`); otherwise `tbl` is
 #' assumed to already be single-metric, and this only sets the plot title.
-#' @param ref_date As in `plot_fold_change()`, used only to label the plot.
+#' @param ref_date As in `plot_step_change()`, used only to label the plot.
 #' @return A ggplot object.
 #'
 #' @examples
 #' \dontrun{
 #' ros <- ropensci_reviewed_activity_tbl (issue_authors_tbl, repo_tbl, ropensci_raw)
-#' ros_fc <- ropensci_reviewed_fold_change_tbl (ros)
-#' plot_ropensci_reviewed_fold_change (ros_fc, metric = "issues")
+#' ros_fc <- ropensci_reviewed_step_change_tbl (ros)
+#' plot_ropensci_reviewed_step_change (ros_fc, metric = "issues")
 #' }
 #' @export
-plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comments"),
+plot_ropensci_reviewed_step_change <- function (tbl, metric = c ("issues", "comments"),
                                                 ref_date = as.Date ("2021-01-01")) {
 
     metric <- match.arg (metric)
 
-    popularity_stratum <- fold_change <- reviewed <- reviewed_label <-
+    popularity_stratum <- step_change <- reviewed <- reviewed_label <-
         rate_latest <- rate_ref <- NULL
 
     if ("metric" %in% names (tbl)) {
@@ -248,7 +248,7 @@ plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comm
 
     ggplot2::ggplot (
         tbl,
-        ggplot2::aes (reviewed_label, fold_change, fill = reviewed_label)
+        ggplot2::aes (reviewed_label, step_change, fill = reviewed_label)
     ) +
         ggplot2::geom_col () +
         ggplot2::geom_hline (yintercept = 1, linetype = 2, colour = "grey40") +
@@ -281,7 +281,7 @@ plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comm
 #' row-binds the results, then plots each source's trailing-window rate
 #' over calendar time, one line per popularity stratum, faceted by source
 #' with a free y-scale per facet (sources sit on very different absolute
-#' rates, as in `plot_cohort_age()`). Unlike `plot_fold_change()`/
+#' rates, as in `plot_cohort_age()`). Unlike `plot_step_change()`/
 #' `plot_activity_by_source()`, this builds its own multi-source table
 #' internally rather than taking one as `tbl` - `new_author_rate_tbl()`
 #' itself is single-source, matching `issue_rate_tbl()`/
@@ -289,7 +289,7 @@ plot_ropensci_reviewed_fold_change <- function (tbl, metric = c ("issues", "comm
 #'
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
-#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param source_display Named character vector as in `plot_step_change()`.
 #' @param n_strata,window,date_start,date_end Passed to each source's
 #' `new_author_rate_tbl()` call.
 #' @param start_year Optional year to crop the plotted window to, as in
@@ -369,7 +369,7 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
 #'
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
-#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param source_display Named character vector as in `plot_step_change()`.
 #' @param n_strata,window,date_start,date_end Passed to each source's
 #' `author_interval_trend_tbl()` call.
 #' @param start_year Optional year to crop the plotted window to, as in

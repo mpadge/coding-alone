@@ -20,7 +20,7 @@ plot_new_author_rate(
 
 \item{repo_tbl}{As returned by \code{build_repo_tbl()}.}
 
-\item{source_display}{Named character vector as in \code{plot_fold_change()}.}
+\item{source_display}{Named character vector as in \code{plot_step_change()}.}
 
 \item{n_strata, window, date_start, date_end}{Passed to each source's
 \code{new_author_rate_tbl()} call.}
@@ -37,7 +37,7 @@ Calls \code{new_author_rate_tbl()} for every source in \code{POPULARITY_METRIC} 
 row-binds the results, then plots each source's trailing-window rate
 over calendar time, one line per popularity stratum, faceted by source
 with a free y-scale per facet (sources sit on very different absolute
-rates, as in \code{plot_cohort_age()}). Unlike \code{plot_fold_change()}/
+rates, as in \code{plot_cohort_age()}). Unlike \code{plot_step_change()}/
 \code{plot_activity_by_source()}, this builds its own multi-source table
 internally rather than taking one as \code{tbl} - \code{new_author_rate_tbl()}
 itself is single-source, matching \code{issue_rate_tbl()}/

@@ -9,7 +9,7 @@
 # repository could in principle hold a falling issue rate steady by getting
 # fewer, more repetitive strangers rather than fewer strangers altogether,
 # and the two aren't the same failure mode. Built as a close structural
-# analogue of `issue_rate_tbl()`/`fold_change_tbl()` so the same
+# analogue of `issue_rate_tbl()`/`step_change_tbl()` so the same
 # reference-month fold-change framing applies to headcount as it does to
 # event counts.
 
@@ -366,24 +366,24 @@ author_density_tbl <- function (issue_authors_tbl,
 #' Fold-change in distinct non-core author density, from a reference month
 #' to now
 #'
-#' The `author_density_tbl()` analogue of `fold_change_tbl()`: for each of
+#' The `author_density_tbl()` analogue of `step_change_tbl()`: for each of
 #' several sources, compare each popularity stratum's author-density value
 #' at a fixed reference month against its most recent value.
 #'
-#' @inheritParams fold_change_tbl
+#' @inheritParams step_change_tbl
 #' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
-#' `rate_latest`, `fold_change`, `latest_month`.
+#' `rate_latest`, `step_change`, `latest_month`.
 #'
 #' @examples
 #' \dontrun{
-#' fc <- author_density_fold_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-#' plot_fold_change (fc, SOURCE_DISPLAY_NAME, metric = "issues") +
+#' fc <- author_density_step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
+#' plot_step_change (fc, SOURCE_DISPLAY_NAME, metric = "issues") +
 #'     ggplot2::labs (title = "Distinct authors")
 #' }
 #' @param contrib_min As in `author_density_tbl()`.
 #' @param contrib_threshold,window Passed to `author_density_tbl()`.
 #' @export
-author_density_fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
+author_density_step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
                                             contrib_threshold = 0.01,
                                             contrib_min = -Inf,
                                             window = 12L,
@@ -403,7 +403,7 @@ author_density_fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources
             return (tibble::tibble (
                 source = character (), popularity_stratum = factor (),
                 rate_ref = double (), rate_latest = double (),
-                fold_change = double (), latest_month = as.Date (character ())
+                step_change = double (), latest_month = as.Date (character ())
             ))
         }
 
@@ -416,7 +416,7 @@ author_density_fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources
         dplyr::inner_join (ref, latest, by = "popularity_stratum") |>
             dplyr::mutate (
                 source = src,
-                fold_change = rate_latest / rate_ref,
+                step_change = rate_latest / rate_ref,
                 latest_month = latest_month
             )
     })

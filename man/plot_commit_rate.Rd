@@ -22,7 +22,7 @@ plot_commit_rate(
 
 \item{repo_tbl}{As returned by \code{build_repo_tbl()}.}
 
-\item{source_display}{Named character vector as in \code{plot_fold_change()}.}
+\item{source_display}{Named character vector as in \code{plot_step_change()}.}
 
 \item{window, date_start, date_end}{Passed to each source's
 \code{commit_rate_tbl()}/\code{repo_creation_tbl()} call.}

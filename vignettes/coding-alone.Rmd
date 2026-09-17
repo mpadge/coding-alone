@@ -35,6 +35,18 @@ via the usual vignette machinery never needs the data again.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 <style>
 .callout {
     border-left: 4px solid #2c3e50;
@@ -135,6 +147,10 @@ Table: Commits per repo-month, by source, now vs. Jan 2021
 |rOpenSci |     0.18|   0.22|        123%|
 
 ## Finding 1: fewer outsiders, counted properly
+
+
+
+
 
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/trend-plots-1.png" alt="plot of chunk trend-plots"  />

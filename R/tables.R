@@ -27,15 +27,15 @@
 #' @param ref_date Reference `Date` (first-of-month) to compare against the
 #' latest available month.
 #' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
-#' `rate_latest`, `fold_change` (`rate_latest / rate_ref`), `latest_month`.
+#' `rate_latest`, `step_change` (`rate_latest / rate_ref`), `latest_month`.
 #'
 #' @examples
 #' \dontrun{
-#' fc <- fold_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-#' plot_fold_change (fc)
+#' fc <- step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
+#' plot_step_change (fc)
 #' }
 #' @export
-fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
+step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
                              metric = "issues", contrib_threshold = 0.01,
                              window = 12L,
                              ref_date = as.Date ("2021-01-01")) {
@@ -54,7 +54,7 @@ fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
             return (tibble::tibble (
                 source = character (), popularity_stratum = factor (),
                 rate_ref = double (), rate_latest = double (),
-                fold_change = double (), latest_month = as.Date (character ())
+                step_change = double (), latest_month = as.Date (character ())
             ))
         }
 
@@ -67,7 +67,7 @@ fold_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
         dplyr::inner_join (ref, latest, by = "popularity_stratum") |>
             dplyr::mutate (
                 source = src,
-                fold_change = rate_latest / rate_ref,
+                step_change = rate_latest / rate_ref,
                 latest_month = latest_month
             )
     })
@@ -334,21 +334,21 @@ ropensci_reviewed_activity_tbl <- function (issue_authors_tbl, repo_tbl, ropensc
 #' Fold-change (latest 12-month rate vs. a fixed reference month) computed
 #' from `ropensci_reviewed_activity_tbl()` output, by (popularity stratum x
 #' reviewed status) rather than by (source x popularity stratum) as in
-#' `fold_change_tbl()`.
+#' `step_change_tbl()`.
 #'
 #' @param tbl As returned by `ropensci_reviewed_activity_tbl()`.
-#' @param ref_date As in `fold_change_tbl()`.
+#' @param ref_date As in `step_change_tbl()`.
 #' @return A tibble: `popularity_stratum`, `reviewed`, `rate_ref`,
-#' `rate_latest`, `fold_change`, `latest_month`.
+#' `rate_latest`, `step_change`, `latest_month`.
 #'
 #' @examples
 #' \dontrun{
 #' ros <- ropensci_reviewed_activity_tbl (issue_authors_tbl, repo_tbl, ropensci_raw)
-#' ros_fc <- ropensci_reviewed_fold_change_tbl (ros)
-#' plot_ropensci_reviewed_fold_change (ros_fc)
+#' ros_fc <- ropensci_reviewed_step_change_tbl (ros)
+#' plot_ropensci_reviewed_step_change (ros_fc)
 #' }
 #' @export
-ropensci_reviewed_fold_change_tbl <- function (tbl, ref_date = as.Date ("2021-01-01")) {
+ropensci_reviewed_step_change_tbl <- function (tbl, ref_date = as.Date ("2021-01-01")) {
 
     popularity_stratum <- reviewed <- rate <- rate_latest <-
         rate_ref <- month <- NULL
@@ -363,7 +363,7 @@ ropensci_reviewed_fold_change_tbl <- function (tbl, ref_date = as.Date ("2021-01
 
     dplyr::inner_join (ref, latest, by = c ("popularity_stratum", "reviewed")) |>
         dplyr::mutate (
-            fold_change = rate_latest / rate_ref,
+            step_change = rate_latest / rate_ref,
             latest_month = latest_month
         )
 }

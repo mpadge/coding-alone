@@ -21,7 +21,7 @@ plot_author_interval(
 
 \item{repo_tbl}{As returned by \code{build_repo_tbl()}.}
 
-\item{source_display}{Named character vector as in \code{plot_fold_change()}.}
+\item{source_display}{Named character vector as in \code{plot_step_change()}.}
 
 \item{n_strata, window, date_start, date_end}{Passed to each source's
 \code{author_interval_trend_tbl()} call.}

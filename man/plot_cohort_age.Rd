@@ -9,7 +9,7 @@ plot_cohort_age(tbl, source_display = NULL, min_repo_months = 30)
 \arguments{
 \item{tbl}{As returned by \code{cohort_age_rate_tbl()}.}
 
-\item{source_display}{Named character vector as in \code{plot_fold_change()}.}
+\item{source_display}{Named character vector as in \code{plot_step_change()}.}
 
 \item{min_repo_months}{Cells with less exposure than this are dropped
 before plotting, since a handful of repo-months makes for an unstable

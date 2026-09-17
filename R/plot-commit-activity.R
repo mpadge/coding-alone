@@ -13,7 +13,7 @@
 #' @param commit_counts_tbl As returned by `fetch_repo_commits()`.
 #' @param issue_authors_tbl As returned by `fetch_issue_authors()`.
 #' @param repo_tbl As returned by `build_repo_tbl()`.
-#' @param source_display Named character vector as in `plot_fold_change()`.
+#' @param source_display Named character vector as in `plot_step_change()`.
 #' @param window,date_start,date_end Passed to each source's
 #' `commit_rate_tbl()`/`repo_creation_tbl()` call.
 #' @param start_year Optional year to crop the plotted window to, as in

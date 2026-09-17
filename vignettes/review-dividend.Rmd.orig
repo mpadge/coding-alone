@@ -73,14 +73,14 @@ date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
 ```{r generate-data, include=FALSE}
 # Cross-source fold-change (rate now vs. Jan 2021), both metrics
 contrib_threshold <- 0.01
-fc_issues <- fold_change_tbl (
+fc_issues <- step_change_tbl (
     issue_authors_tbl,
     repo_tbl,
     primary_sources,
     metric = "issues",
     contrib_threshold = contrib_threshold
 )
-fc_comments <- fold_change_tbl (
+fc_comments <- step_change_tbl (
     issue_authors_tbl,
     repo_tbl,
     primary_sources,
@@ -104,8 +104,8 @@ ros_trend_all <- dplyr::bind_rows (
 )
 ros_trend_all$metric <- factor (ros_trend_all$metric, levels = c ("Issues", "Comments"))
 
-ros_fc_issues <- ropensci_reviewed_fold_change_tbl (ros_issues)
-ros_fc_comments <- ropensci_reviewed_fold_change_tbl (ros_comments)
+ros_fc_issues <- ropensci_reviewed_step_change_tbl (ros_issues)
+ros_fc_comments <- ropensci_reviewed_step_change_tbl (ros_comments)
 
 # Repo counts by review status, for prose below
 ropensci_repo_created <- issue_authors_tbl |>
@@ -296,26 +296,26 @@ but before the steepest part of the decline, avoiding cherry-picking each
 stratum's own noisier peak — shows it doesn't:
 
 ```{r fold-change-plot-issues, fig.height=3.5, fig.width=10}
-plot_fold_change (fc_issues, SOURCE_DISPLAY_NAME, metric = "issues")
+plot_step_change (fc_issues, SOURCE_DISPLAY_NAME, metric = "issues")
 ```
 
 ```{r fold-change-plot-comments, fig.height=3.5, fig.width=10}
-plot_fold_change (fc_comments, SOURCE_DISPLAY_NAME, metric = "comments")
+plot_step_change (fc_comments, SOURCE_DISPLAY_NAME, metric = "comments")
 ```
 
 In CRAN, JOSS, npm and rOpenSci, the *most* popular quartile has fallen
 furthest, not the least popular one. CRAN's Q4 sits at
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+`r scales::percent (fc_issues$step_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
 of its January-2021 rate versus Q1's
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
+`r scales::percent (fc_issues$step_change [fc_issues$source == "cran" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
 JOSS's Q4 is at
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+`r scales::percent (fc_issues$step_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
 versus Q1's
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
+`r scales::percent (fc_issues$step_change [fc_issues$source == "joss" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`;
 and rOpenSci's Q4 is at
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
+`r scales::percent (fc_issues$step_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q4"], accuracy = 1)`
 while its Q1 has, on net, *risen* to
-`r scales::percent (fc_issues$fold_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`
+`r scales::percent (fc_issues$step_change [fc_issues$source == "ropensci" & fc_issues$popularity_stratum == "Q1"], accuracy = 1)`
 of its 2021 level. Comments (second figure) show the same ordering within
 every source, generally with a larger drop at every stratum — comments
 are the more discretionary of the two metrics, so a bigger fall there is
@@ -352,25 +352,25 @@ plot_ropensci_reviewed_trend (ros_trend_all, start_year = 2016)
 ```
 
 ```{r ropensci-reviewed-foldchange-issues, fig.height=3.5}
-plot_ropensci_reviewed_fold_change (ros_fc_issues, metric = "issues")
+plot_ropensci_reviewed_step_change (ros_fc_issues, metric = "issues")
 ```
 
 ```{r ropensci-reviewed-foldchange-comments, fig.height=3.5}
-plot_ropensci_reviewed_fold_change (ros_fc_comments, metric = "comments")
+plot_ropensci_reviewed_step_change (ros_fc_comments, metric = "comments")
 ```
 
 In Q1, the two groups move in opposite directions. Formally reviewed Q1
 packages' non-core issue rate rose to
-`r scales::percent (ros_fc_issues$fold_change [ros_fc_issues$popularity_stratum == "Q1" & ros_fc_issues$reviewed], accuracy = 1)`
+`r scales::percent (ros_fc_issues$step_change [ros_fc_issues$popularity_stratum == "Q1" & ros_fc_issues$reviewed], accuracy = 1)`
 of its January-2021 level, while non-reviewed Q1 packages fell to
-`r scales::percent (ros_fc_issues$fold_change [ros_fc_issues$popularity_stratum == "Q1" & !ros_fc_issues$reviewed], accuracy = 1)`
+`r scales::percent (ros_fc_issues$step_change [ros_fc_issues$popularity_stratum == "Q1" & !ros_fc_issues$reviewed], accuracy = 1)`
 — back in line with the broad decline seen everywhere else in this
 dataset. Comments show an even sharper version of the same split:
 reviewed Q1 packages rose to
-`r scales::percent (ros_fc_comments$fold_change [ros_fc_comments$popularity_stratum == "Q1" & ros_fc_comments$reviewed], accuracy = 1)`
+`r scales::percent (ros_fc_comments$step_change [ros_fc_comments$popularity_stratum == "Q1" & ros_fc_comments$reviewed], accuracy = 1)`
 of their 2021 comment rate, while non-reviewed Q1 packages collapsed to
 just
-`r scales::percent (ros_fc_comments$fold_change [ros_fc_comments$popularity_stratum == "Q1" & !ros_fc_comments$reviewed], accuracy = 1)`.
+`r scales::percent (ros_fc_comments$step_change [ros_fc_comments$popularity_stratum == "Q1" & !ros_fc_comments$reviewed], accuracy = 1)`.
 Q1's "exception" isn't a property of rOpenSci's obscure packages in
 general — it belongs specifically to the ones that went through formal
 review.
