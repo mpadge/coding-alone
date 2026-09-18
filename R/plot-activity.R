@@ -93,6 +93,8 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab = NULL) {
 #' straight off it, the first three to label the y-axis and `source_name`
 #' to annotate the plot panel directly (top-right corner), rather than
 #' needing to be passed in again.
+#' @param src_name Name of source of `rate_tbl` to be added as plot annotation
+#' if specified.
 #' @param start_year Optional year (e.g. `2018`) to start the plotted
 #' window from; `NULL` (default) plots `rate_tbl`'s full window. Only
 #' crops the display - `rate_tbl` isn't refetched, so this can't extend

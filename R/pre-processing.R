@@ -58,6 +58,9 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
 
 pre_process_author_densities <- function (issue_authors, repos, contrib_threshold = 0.01) {
 
+    # Suppress no visible binding notes:
+    issue_authors_tbl <- repo_tbl <- NULL
+
     primary_sources <- unique (repos$source)
 
     purrr::map_dfr (primary_sources, \ (src) {
@@ -76,6 +79,9 @@ pre_process_author_densities <- function (issue_authors, repos, contrib_threshol
 step_change_regression <- function (tbl,
                                     value_col,
                                     ref_date = as.Date ("2021-01-01")) {
+
+    # Suppress no visible binding notes:
+    month <- NULL
 
     tbl <- dplyr::filter (tbl, month >= ref_date)
     latest_month <- max (tbl$month)

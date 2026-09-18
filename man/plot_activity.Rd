@@ -6,7 +6,7 @@
 its \code{metric} param for whether that's issues or comments per repo-month)
 over time, one line per popularity stratum.}
 \usage{
-plot_activity(rate_tbl, start_year = NULL)
+plot_activity(rate_tbl, src_name = NULL, start_year = NULL)
 }
 \arguments{
 \item{rate_tbl}{As returned by \code{issue_rate_tbl()} - its \code{metric},
@@ -14,6 +14,9 @@ plot_activity(rate_tbl, start_year = NULL)
 straight off it, the first three to label the y-axis and \code{source_name}
 to annotate the plot panel directly (top-right corner), rather than
 needing to be passed in again.}
+
+\item{src_name}{Name of source of \code{rate_tbl} to be added as plot annotation
+if specified.}
 
 \item{start_year}{Optional year (e.g. \code{2018}) to start the plotted
 window from; \code{NULL} (default) plots \code{rate_tbl}'s full window. Only
