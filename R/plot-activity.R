@@ -123,8 +123,6 @@ plot_activity <- function (rate_tbl, src_name = NULL, start_year = NULL) {
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
         activity_plot_layers (rate_tbl, "popularity_stratum")
-    ggplot2::labs (colour = "Popularity\nstratum") +
-        ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
     if (!is.null (src_name)) {
 

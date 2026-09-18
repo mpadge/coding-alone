@@ -67,7 +67,7 @@ pre_process_author_densities <- function (issue_authors, repos, contrib_threshol
         author_density_tbl (
             issue_authors,
             repos,
-            src,
+            source_name = src,
             contrib_threshold = contrib_threshold
         ) |>
             dplyr::mutate (src = src, contrib_threshold = contrib_threshold)

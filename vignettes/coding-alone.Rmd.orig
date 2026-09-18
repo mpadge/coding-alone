@@ -383,7 +383,7 @@ qualitative impact of any of the results or conclusions drawn.
 A few additional statistics were also extracted, and are described alongside
 the main analysis.
 
-## Finding #1: People are still coding
+## Finding #1: People are coding less
 
 ```{r define-now, echo = FALSE}
 now <- format (Sys.Date (), "%b %Y")
@@ -450,9 +450,15 @@ necessarily end up directly contributing to code at all, and so data on issues
 offers more inclusive insights into larger communities beyond direct code
 contributors.
 
+The following graph shows numbers of unique people opening new issues on
+repositories for the five software ecosystems. All counts are standardised to
+numbers of new issues per repository. All of these patterns reveal consistent
+changes either side of around 2020. From here on, all times series start from
+Jan 2021, with patterns prior to that date generally reflecting those shown 
+in Fig 2.
 
 
-```{r trend-plots, fig.height=10, cache = FALSE}
+```{r trend-plots, fig.height=10, cache = FALSE, fig.cap="Fig 2: Numbers of distinct authors opening new issues"}
 p1 <- dplyr::filter (author_densities_tbl, src == "cran") |>
     plot_activity (start_year = 2016, "CRAN") +
     ggplot2::theme (legend.position = "none")
@@ -466,22 +472,24 @@ p4 <- dplyr::filter (author_densities_tbl, src == "pypi") |>
     plot_activity (start_year = 2016, "PyPI") +
     ggplot2::theme (legend.position = "none")
 p5 <- dplyr::filter (author_densities_tbl, src == "ropensci") |>
-    plot_activity (start_year = 2016, "rOpenSci")
+    plot_activity (start_year = 2016, "rOpenSci") +
+    ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
 patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
     patchwork::plot_annotation (
-        title = "Numbers of distinct authors contributing to repository issues"
+        title = "Numbers of distinct authors opening repository issues"
     )
 ```
 
-The shape is the same one the companion vignette found in issue counts: a
-rise or plateau through the late 2010s, a peak somewhere in the
-2017–2020 window, and an ongoing decline since. That resemblance alone
-doesn't prove much - a falling issue rate is mechanically compatible with
-a falling author count, since fewer issues can't come from more people
-without each of them opening fewer on average. What settles it is
-comparing the two step-changes directly, source by source and stratum by
-stratum:
+For each software source, lines are shown for the four distributional quartiles
+described above. "Q4" represents the relatively few extremely popular packages,
+while "Q1" is the quartile of lowest popularity. (And these quartiles are
+defined on a logarithmic scale, so there are far more packages in Q1 than in
+Q4.)
+
+The most severe recent declines (since 2021) have been for the most popular
+packages across all system.
+
 
 ```{r step-change-plot-authors, fig.height=3.5, fig.width=10}
 plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
