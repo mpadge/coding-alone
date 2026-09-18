@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.020</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.021</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ favour of coding alone.</h3>
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">17 September 2026</h4>
+            <h4 data-toc-skip class="date">18 September 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
       <div class="hidden name"><code>coding-alone.Rmd</code></div>
@@ -199,11 +199,18 @@ percentages) and of commits per month (bottom). All rates are 12-month
 trailing averages.
 </p>
 </div>
-<p>The following table shows the percentage change in both rates, for
-each of the five data sources, from Jan 2021 until Sep 2026.</p>
+<p>The following table of percentage change in both rates from Jan 2021
+shows that rates of new repository creations have dropped consistently.
+(Respository creation for both JOSS and rOpenSci generally only occurs
+following rigorous review processes, and so values for these two can’t
+really be directly compared with the other sources, and are likely
+affected by additional constraints and influences.) Repository
+maintenance, measured in terms of numbers of commits, has also generally
+decreased (with the notable extreme outlier of rOpenSci), although by
+relatively little for the two dominant systems of npm and PyPI.</p>
 <table class="table">
-<caption>Percentage change in repo-creation rate and commit rate, by
-source, now vs. Jan 2021</caption>
+<caption>Percentage change in repo-creation rate and commit rate,
+estimated from linear regressions fitted from Jan 2021.</caption>
 <thead><tr class="header">
 <th align="left">Source</th>
 <th align="right">Repo creation (%)</th>
@@ -212,28 +219,28 @@ source, now vs. Jan 2021</caption>
 <tbody>
 <tr class="odd">
 <td align="left">JOSS</td>
-<td align="right">-98%</td>
-<td align="right">-63%</td>
+<td align="right">-73%</td>
+<td align="right">-54%</td>
 </tr>
 <tr class="even">
 <td align="left">CRAN</td>
-<td align="right">-56%</td>
-<td align="right">-39%</td>
+<td align="right">-38%</td>
+<td align="right">-40%</td>
 </tr>
 <tr class="odd">
-<td align="left">npm</td>
-<td align="right">-93%</td>
-<td align="right">-1%</td>
+<td align="left">PyPI</td>
+<td align="right">-29%</td>
+<td align="right">-13%</td>
 </tr>
 <tr class="even">
-<td align="left">PyPI</td>
-<td align="right">-33%</td>
-<td align="right">2%</td>
+<td align="left">npm</td>
+<td align="right">-55%</td>
+<td align="right">-3%</td>
 </tr>
 <tr class="odd">
 <td align="left">rOpenSci</td>
-<td align="right">-92%</td>
-<td align="right">23%</td>
+<td align="right">-78%</td>
+<td align="right">155%</td>
 </tr>
 </tbody>
 </table>
