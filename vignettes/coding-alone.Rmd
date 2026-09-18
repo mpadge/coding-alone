@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone."
 author: "Mark Padgham"
-date: "17 September 2026"
+date: "18 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
@@ -140,19 +140,25 @@ present (Sep 2026)
 <p class="caption">Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.</p>
 </div>
 
-The following table shows the percentage change in both rates, for each of
-the five data sources, from Jan 2021 until Sep 2026.
+The following table of percentage change in both rates from Jan 2021 shows that
+rates of new repository creations have dropped consistently. (Respository
+creation for both JOSS and rOpenSci generally only occurs following rigorous
+review processes, and so values for these two can't really be directly compared
+with the other sources, and are likely affected by additional constraints and
+influences.) Repository maintenance, measured in terms of numbers of commits,
+has also generally decreased (with the notable extreme outlier of rOpenSci),
+although by relatively little for the two dominant systems of npm and PyPI.
 
 
-Table: Percentage change in repo-creation rate and commit rate, by source, now vs. Jan 2021
+Table: Percentage change in repo-creation rate and commit rate, estimated from linear regressions fitted from Jan 2021.
 
 |Source   | Repo creation (%)| Commits (%)|
 |:--------|-----------------:|-----------:|
-|JOSS     |              -98%|        -63%|
-|CRAN     |              -56%|        -39%|
-|npm      |              -93%|         -1%|
-|PyPI     |              -33%|          2%|
-|rOpenSci |              -92%|         23%|
+|JOSS     |              -73%|        -54%|
+|CRAN     |              -38%|        -40%|
+|PyPI     |              -29%|        -13%|
+|npm      |              -55%|         -3%|
+|rOpenSci |              -78%|        155%|
 
 ## Finding 1: fewer outsiders, counted properly
 

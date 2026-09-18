@@ -209,6 +209,21 @@ interval_q1 <- interval_sc |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (dplyr::desc (step_change))
 
+# Estimate step-change endpoints from linear regression.
+regression_step_change <- function (tbl, value_col, ref_date = as.Date ("2021-01-01")) {
+    tbl <- dplyr::filter (tbl, month >= ref_date)
+    latest_month <- max (tbl$month)
+    fit <- lm (
+        value ~ month_num,
+        data = data.frame (value = tbl [[value_col]], month_num = as.numeric (tbl$month))
+    )
+    pred <- stats::predict (
+        fit,
+        newdata = data.frame (month_num = as.numeric (c (ref_date, latest_month)))
+    )
+    list (ref = unname (pred [1]), latest = unname (pred [2]), latest_month = latest_month)
+}
+
 # Commit-rate step-change (rate now vs. Jan 2021), per source - the
 # direct, commit-history-based check on everything above, which counts
 # code landed on the default branch rather than issues filed against it.
@@ -218,12 +233,10 @@ interval_q1 <- interval_sc |>
 commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
     cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, src)
     cr <- dplyr::filter (cr, !is.na (rate))
-    ref <- dplyr::filter (cr, month == as.Date ("2021-01-01"))$rate
-    latest_month <- max (cr$month)
-    latest <- dplyr::filter (cr, month == latest_month)$rate
+    est <- regression_step_change (cr, "rate")
     tibble::tibble (
-        source = src, rate_ref = ref, rate_latest = latest,
-        step_change = latest / ref, latest_month = latest_month
+        source = src, rate_ref = est$ref, rate_latest = est$latest,
+        step_change = est$latest / est$ref, latest_month = est$latest_month
     )
 })
 n_commit_declined <- sum (commit_sc$step_change < 1)
@@ -239,12 +252,10 @@ commit_sc_display <- commit_sc |>
 # lands on the ones that already exist.
 repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
     rc <- repo_creation_tbl (issue_authors_tbl, repo_tbl, src)
-    ref <- dplyr::filter (rc, month == as.Date ("2021-01-01"))$n_created
-    latest_month <- max (rc$month)
-    latest <- dplyr::filter (rc, month == latest_month)$n_created
+    est <- regression_step_change (rc, "n_created")
     tibble::tibble (
-        source = src, n_created_ref = ref, n_created_latest = latest,
-        step_change = latest / ref, latest_month = latest_month
+        source = src, n_created_ref = est$ref, n_created_latest = est$latest,
+        step_change = est$latest / est$ref, latest_month = est$latest_month
     )
 })
 n_repo_creation_declined <- sum (repo_creation_sc$step_change < 1)
@@ -406,8 +417,14 @@ plot_commit_rate (
 )
 ```
 
-The following table shows the percentage change in both rates, for each of
-the five data sources, from Jan 2021 until `r now`.
+The following table of percentage change in both rates from Jan 2021 shows that
+rates of new repository creations have dropped consistently. (Respository
+creation for both JOSS and rOpenSci generally only occurs following rigorous
+review processes, and so values for these two can't really be directly compared
+with the other sources, and are likely affected by additional constraints and
+influences.) Repository maintenance, measured in terms of numbers of commits,
+has also generally decreased (with the notable extreme outlier of rOpenSci),
+although by relatively little for the two dominant systems of npm and PyPI.
 
 ```{r commit-rate-table, cache = TRUE}
 combined_sc_display |>
@@ -418,7 +435,10 @@ combined_sc_display |>
     ) |>
     knitr::kable (
         align = c ("l", "r", "r"),
-        caption = "Percentage change in repo-creation rate and commit rate, by source, now vs. Jan 2021"
+        caption = paste0 (
+            "Percentage change in repo-creation rate and commit rate, ",
+            "estimated from linear regressions fitted from Jan 2021."
+        )
     )
 ```
 
