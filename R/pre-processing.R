@@ -36,10 +36,19 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     })
     cli::cli_alert_success ("Repo creation rates")
 
-    ad001 <- pre_process_author_densities (issue_authors_tbl, repo_tbl, 0.01)
-    cli::cli_alert_success ("Author densities for ctb threshold = 0.01")
-    ad100 <- pre_process_author_densities (issue_authors_tbl, repo_tbl, 1.00)
-    cli::cli_alert_success ("Author densities for ctb threshold = 1")
+    thresholds <- c (0.01, 1)
+    ad <- lapply (thresholds, function (thr) {
+        cli::cli_alert_info ("Author densities for ctb threshold = {thr}")
+        pre_process_author_densities (issue_authors_tbl, repo_tbl, 0.01)
+    })
+    sc <- lapply (thresholds, function (thr) {
+        cli::cli_alert_info ("Author step changes for ctb threshold = {thr}")
+        author_density_step_change_tbl (
+            issue_authors_tbl, repo_tbl, primary_sources,
+            contrib_threshold = thr
+        )
+    })
+
 
     res <- list (
         repo_tbl = repo_tbl,
@@ -47,8 +56,10 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         commit_counts_tbl = commit_counts_tbl,
         commit_rates = commit_rates,
         repo_creation_rates = repo_creation_rates,
-        author_densities_ctb001 = ad001,
-        author_densities_ctb100 = ad100
+        author_densities_ctb001 = ad [[1]],
+        author_densities_ctb100 = ad [[2]],
+        author_dens_step_change001 = sc [[1]],
+        author_dens_step_change100 = sc [[2]]
     )
 
     f <- fs::path (out_dir, paste0 (f_name, ".Rds"))

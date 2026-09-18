@@ -352,7 +352,11 @@ author_density_tbl <- function (issue_authors_tbl,
 #'
 #' The `author_density_tbl()` analogue of `step_change_tbl()`: for each of
 #' several sources, compare each popularity stratum's author-density value
-#' at a fixed reference month against its most recent value.
+#' at a fixed reference month against its most recent value. Both endpoints
+#' are estimated from a linear regression fitted to the trailing rate from
+#' `ref_date` onwards (via `step_change_regression()`), rather than read off
+#' as the empirical rate at those two individual months, so a single noisy
+#' month at either endpoint doesn't dominate the comparison.
 #'
 #' @inheritParams step_change_tbl
 #' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
@@ -373,7 +377,7 @@ author_density_step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources
                                             window = 12L,
                                             ref_date = as.Date ("2021-01-01")) {
 
-    popularity_stratum <- rate <- month <- rate_latest <- rate_ref <- NULL
+    popularity_stratum <- rate <- NULL
 
     purrr::map_dfr (sources, \ (src) {
 
@@ -391,18 +395,25 @@ author_density_step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources
             ))
         }
 
-        latest_month <- max (rate_tbl$month)
-        ref <- dplyr::filter (rate_tbl, month == ref_date) |>
-            dplyr::select (popularity_stratum, rate_ref = rate)
-        latest <- dplyr::filter (rate_tbl, month == latest_month) |>
-            dplyr::select (popularity_stratum, rate_latest = rate)
+        stratum_levels <- levels (rate_tbl$popularity_stratum)
 
-        dplyr::inner_join (ref, latest, by = "popularity_stratum") |>
-            dplyr::mutate (
+        purrr::map_dfr (stratum_levels, \ (stratum) {
+
+            stratum_tbl <- dplyr::filter (rate_tbl, popularity_stratum == stratum)
+            est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
+
+            tibble::tibble (
                 source = src,
-                step_change = rate_latest / rate_ref,
-                latest_month = latest_month
+                popularity_stratum = factor (
+                    stratum,
+                    levels = stratum_levels, ordered = TRUE
+                ),
+                rate_ref = est$ref,
+                rate_latest = est$latest,
+                step_change = est$latest / est$ref,
+                latest_month = est$latest_month
             )
+        })
     })
 }
 

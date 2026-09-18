@@ -57,6 +57,7 @@ commit_counts_tbl <- dat$commit_counts_tbl
 commit_rates <- dat$commit_rates
 repo_creation_rates <- dat$repo_creation_rates
 author_densities_tbl <- dat$author_densities_ctb100
+sc_authors <- dat$author_dens_step_change100
 
 primary_sources <- unique (repo_tbl$source)
 n_repos_primary <- length (unique (
@@ -73,13 +74,6 @@ contrib_threshold <- 0.01
 sc_issues <- step_change_tbl (
     issue_authors_tbl, repo_tbl, primary_sources,
     metric = "issues", contrib_threshold = contrib_threshold
-)
-
-# Distinct-author step-change, non-core only - this vignette's first,
-# stricter measure.
-sc_authors <- author_density_step_change_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources,
-    contrib_threshold = contrib_threshold
 )
 
 sc_compare <- dplyr::inner_join (
@@ -494,8 +488,8 @@ packages across all system.
 ```{r step-change-plot-authors, fig.height=3.5, fig.width=10}
 plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
     ggplot2::labs (
-        title = "Distinct non-core authors",
-        y = "Rate now, as % of rate in Jan 2021"
+        title = "Distinct issue authors",
+        y = "% change in rate since Jan 2021"
     )
 ```
 
