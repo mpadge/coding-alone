@@ -173,9 +173,6 @@ contributors.
 
 
 
-
-
-
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/trend-plots-1.png" alt="plot of chunk trend-plots"  />
 <p class="caption">plot of chunk trend-plots</p>

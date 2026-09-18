@@ -105,16 +105,9 @@ activity_plot_layers <- function (rate_tbl, group_col, y_lab = NULL) {
 #' plot_activity (rate_tbl)
 #' }
 #' @export
-plot_activity <- function (rate_tbl, start_year = NULL) {
+plot_activity <- function (rate_tbl, src_name = NULL, start_year = NULL) {
 
     month <- rate <- popularity_stratum <- NULL # rm no visible binding notes
-    metric <- attr (rate_tbl, "metric")
-    if (is.null (metric)) metric <- "issues"
-    window <- attr (rate_tbl, "window")
-    if (is.null (window)) window <- 12L
-    contrib_threshold <- attr (rate_tbl, "contrib_threshold")
-    if (is.null (contrib_threshold)) contrib_threshold <- 0.01
-    source_name <- attr (rate_tbl, "source_name")
 
     if (!is.null (start_year)) {
         start_date <- as.Date (stringr::str_glue ("{start_year}-01-01"))
@@ -123,27 +116,21 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
     rate_tbl$popularity_stratum <-
         label_stratum_extremes (rate_tbl$popularity_stratum)
 
-    lab <- activity_metric_label (metric, window, contrib_threshold)
-
     p <- ggplot2::ggplot (
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
-        # activity_plot_layers (rate_tbl, "popularity_stratum", lab)
         activity_plot_layers (rate_tbl, "popularity_stratum")
     ggplot2::labs (colour = "Popularity\nstratum") +
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
-    if (!is.null (source_name)) {
-
-        display_name <- unname (SOURCE_DISPLAY_NAME [source_name])
-        if (is.na (display_name)) display_name <- source_name
+    if (!is.null (src_name)) {
 
         p <- p + ggplot2::annotate (
             "text",
             x = structure (Inf, class = "Date"),
             y = Inf,
-            label = display_name,
+            label = src_name,
             hjust = 1.1,
             vjust = 1.5,
             fontface = "bold",

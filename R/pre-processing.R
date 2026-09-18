@@ -29,22 +29,47 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, src) |>
             dplyr::mutate (src = src)
     })
+    cli::cli_alert_success ("Commit rates")
     repo_creation_rates <- purrr::map_dfr (primary_sources, \ (src) {
         repo_creation_tbl (issue_authors_tbl, repo_tbl, src) |>
             dplyr::mutate (src = src)
     })
+    cli::cli_alert_success ("Repo creation rates")
+
+    ad001 <- pre_process_author_densities (issue_authors_tbl, repo_tbl, 0.01)
+    cli::cli_alert_success ("Author densities for ctb threshold = 0.01")
+    ad100 <- pre_process_author_densities (issue_authors_tbl, repo_tbl, 1.00)
+    cli::cli_alert_success ("Author densities for ctb threshold = 1")
 
     res <- list (
         repo_tbl = repo_tbl,
         issue_authors_tbl = issue_authors_tbl,
         commit_counts_tbl = commit_counts_tbl,
         commit_rates = commit_rates,
-        repo_creation_rates = repo_creation_rates
+        repo_creation_rates = repo_creation_rates,
+        author_densities_ctb001 = ad001,
+        author_densities_ctb100 = ad100
     )
 
     f <- fs::path (out_dir, paste0 (f_name, ".Rds"))
     saveRDS (res, f)
     return (f)
+}
+
+pre_process_author_densities <- function (issue_authors, repos, contrib_threshold = 0.01) {
+
+    primary_sources <- unique (repos$source)
+
+    purrr::map_dfr (primary_sources, \ (src) {
+        author_density_tbl (
+            issue_authors_tbl,
+            repo_tbl,
+            src,
+            contrib_threshold = contrib_threshold
+        ) |>
+            dplyr::mutate (src = src, contrib_threshold = contrib_threshold)
+    })
+
 }
 
 # Estimate step-change endpoints from linear regression.

@@ -56,6 +56,7 @@ commit_counts_tbl <- dat$commit_counts_tbl
 
 commit_rates <- dat$commit_rates
 repo_creation_rates <- dat$repo_creation_rates
+author_densities_tbl <- dat$author_densities_ctb100
 
 primary_sources <- unique (repo_tbl$source)
 n_repos_primary <- length (unique (
@@ -443,52 +444,22 @@ offers more inclusive insights into larger communities beyond direct code
 contributors.
 
 
-```{r author-density-data, cache = TRUE}
-contrib_threshold <- 1
-ad_cran <- author_density_tbl (
-    issue_authors_tbl,
-    repo_tbl,
-    "cran",
-    contrib_threshold = contrib_threshold
-)
-ad_joss <- author_density_tbl (
-    issue_authors_tbl,
-    repo_tbl,
-    "joss",
-    contrib_threshold = contrib_threshold
-)
-ad_npm <- author_density_tbl (
-    issue_authors_tbl,
-    repo_tbl,
-    "npm",
-    contrib_threshold = contrib_threshold
-)
-ad_pypi <- author_density_tbl (
-    issue_authors_tbl,
-    repo_tbl,
-    "pypi",
-    contrib_threshold = contrib_threshold
-)
-ad_ropensci <- author_density_tbl (
-    issue_authors_tbl,
-    repo_tbl,
-    "ropensci",
-    contrib_threshold = contrib_threshold
-)
-```
 
-
-
-```{r trend-plots, fig.height=10, cache = TRUE}
-p1 <- plot_activity (ad_cran, start_year = 2016) +
+```{r trend-plots, fig.height=10, cache = FALSE}
+p1 <- dplyr::filter (author_densities_tbl, src == "cran") |>
+    plot_activity (start_year = 2016, "CRAN") +
     ggplot2::theme (legend.position = "none")
-p2 <- plot_activity (ad_joss, start_year = 2016) +
+p2 <- dplyr::filter (author_densities_tbl, src == "joss") |>
+    plot_activity (start_year = 2016, "JOSS") +
     ggplot2::theme (legend.position = "none")
-p3 <- plot_activity (ad_npm, start_year = 2016) +
+p3 <- dplyr::filter (author_densities_tbl, src == "npm") |>
+    plot_activity (start_year = 2016, "npm") +
     ggplot2::theme (legend.position = "none")
-p4 <- plot_activity (ad_pypi, start_year = 2016) +
+p4 <- dplyr::filter (author_densities_tbl, src == "pypi") |>
+    plot_activity (start_year = 2016, "PyPI") +
     ggplot2::theme (legend.position = "none")
-p5 <- plot_activity (ad_ropensci, start_year = 2016)
+p5 <- dplyr::filter (author_densities_tbl, src == "ropensci") |>
+    plot_activity (start_year = 2016, "rOpenSci")
 
 patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
     patchwork::plot_annotation (
