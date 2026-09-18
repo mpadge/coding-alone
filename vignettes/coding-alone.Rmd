@@ -155,12 +155,22 @@ Table: Percentage change in repo-creation rate and commit rate, estimated from l
 |Source   | Repo creation (%)| Commits (%)|
 |:--------|-----------------:|-----------:|
 |JOSS     |              -73%|        -54%|
-|CRAN     |              -38%|        -40%|
-|PyPI     |              -29%|        -13%|
-|npm      |              -55%|         -3%|
-|rOpenSci |              -78%|        155%|
+|CRAN     |              -38%|        -54%|
+|npm      |              -55%|        -12%|
+|PyPI     |              -29%|         -8%|
+|rOpenSci |              -78%|         -4%|
 
-## Finding 2: fewer outsiders, counted properly
+## Finding 2: Fewer contributors
+
+There are several ways to measures numbers of contributors to open-source
+software. Source code itself provides one of the most direct measures,
+generally through tracking who made each change. Code-hosting platforms provide
+a different approach, through data on repository issues. Anybody (with an
+account) can open an issue to ask a simple question. Many who do may not
+necessarily end up directly contributing to code at all, and so data on issues
+offers more inclusive insights into larger communities beyond direct code
+contributors.
+
 
 
 

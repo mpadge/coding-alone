@@ -46,19 +46,18 @@ knitr::opts_chunk$set (
 library (codingAlone)
 ```
 
-```{r initial-data-load, cache = TRUE}
+```{r initial-data-load, cache = FALSE}
 out_dir <- "../repo-data-out"
-repo_tbl <- build_repo_tbl (out_dir)
-issue_authors_tbl <- readr::read_csv (
-    file.path (out_dir, "issue-authors.csv"),
-    show_col_types = FALSE, progress = FALSE
-)
-commit_counts_tbl <- readr::read_csv (
-    file.path (out_dir, "commit-counts.csv"),
-    show_col_types = FALSE, progress = FALSE
-)
+f <- fs::dir_ls (out_dir, regexp = "pre-process", fixed = TRUE)
+dat <- readRDS (f)
+repo_tbl <- dat$repo_tbl
+issue_authors_tbl <- dat$issue_authors_tbl
+commit_counts_tbl <- dat$commit_counts_tbl
 
-primary_sources <- c ("cran", "joss", "npm", "pypi", "ropensci")
+commit_rates <- dat$commit_rates
+repo_creation_rates <- dat$repo_creation_rates
+
+primary_sources <- unique (repo_tbl$source)
 n_repos_primary <- length (unique (
     repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
 ))
@@ -209,31 +208,21 @@ interval_q1 <- interval_sc |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (dplyr::desc (step_change))
 
-# Estimate step-change endpoints from linear regression.
-regression_step_change <- function (tbl, value_col, ref_date = as.Date ("2021-01-01")) {
-    tbl <- dplyr::filter (tbl, month >= ref_date)
-    latest_month <- max (tbl$month)
-    fit <- lm (
-        value ~ month_num,
-        data = data.frame (value = tbl [[value_col]], month_num = as.numeric (tbl$month))
-    )
-    pred <- stats::predict (
-        fit,
-        newdata = data.frame (month_num = as.numeric (c (ref_date, latest_month)))
-    )
-    list (ref = unname (pred [1]), latest = unname (pred [2]), latest_month = latest_month)
-}
-
 # Commit-rate step-change (rate now vs. Jan 2021), per source - the
 # direct, commit-history-based check on everything above, which counts
 # code landed on the default branch rather than issues filed against it.
 # commit_rate_tbl() isn't stratified by popularity (no material
 # difference between strata), so this is already the whole story per
 # source, not a pooled-down version of a finer table.
+step_change_regression <- getFromNamespace (
+    "step_change_regression", "codingAlone"
+)
 commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    cr <- commit_rate_tbl (commit_counts_tbl, issue_authors_tbl, repo_tbl, src)
-    cr <- dplyr::filter (cr, !is.na (rate))
-    est <- regression_step_change (cr, "rate")
+
+    est <- dplyr::filter (commit_rates, src == !!src) |>
+        dplyr::filter (!is.na (rate)) |>
+        step_change_regression ("rate")
+
     tibble::tibble (
         source = src, rate_ref = est$ref, rate_latest = est$latest,
         step_change = est$latest / est$ref, latest_month = est$latest_month
@@ -251,8 +240,8 @@ commit_sc_display <- commit_sc |>
 # repos are entering each ecosystem rather than how much commit activity
 # lands on the ones that already exist.
 repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    rc <- repo_creation_tbl (issue_authors_tbl, repo_tbl, src)
-    est <- regression_step_change (rc, "n_created")
+    est <- dplyr::filter (repo_creation_rates, src == !!src) |>
+        step_change_regression ("n_created")
     tibble::tibble (
         source = src, n_created_ref = est$ref, n_created_latest = est$latest,
         step_change = est$latest / est$ref, latest_month = est$latest_month
@@ -410,7 +399,7 @@ results shown below only show time series from the January 2021 onwards.
 Comparisons are also made as "step changes" between January 2021 and the
 present (`r now`)
 
-```{r commit-rate-plot, fig.height=9, fig.cap = "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."}
+```{r commit-rate-plot, fig.height=9, fig.cap = "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.", cache = TRUE}
 plot_commit_rate (
     commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
@@ -442,7 +431,17 @@ combined_sc_display |>
     )
 ```
 
-## Finding 2: fewer outsiders, counted properly
+## Finding 2: Fewer contributors
+
+There are several ways to measures numbers of contributors to open-source
+software. Source code itself provides one of the most direct measures,
+generally through tracking who made each change. Code-hosting platforms provide
+a different approach, through data on repository issues. Anybody (with an
+account) can open an issue to ask a simple question. Many who do may not
+necessarily end up directly contributing to code at all, and so data on issues
+offers more inclusive insights into larger communities beyond direct code
+contributors.
+
 
 ```{r author-density-data, cache = TRUE}
 contrib_threshold <- 1
@@ -480,7 +479,7 @@ ad_ropensci <- author_density_tbl (
 
 
 
-```{r trend-plots, fig.height=10}
+```{r trend-plots, fig.height=10, cache = TRUE}
 p1 <- plot_activity (ad_cran, start_year = 2016) +
     ggplot2::theme (legend.position = "none")
 p2 <- plot_activity (ad_joss, start_year = 2016) +
@@ -546,7 +545,7 @@ joining a bowling league, tracked the same way as every rate above:
 normalised by repo-months of exposure and reported as a 12-month trailing
 average.
 
-```{r new-author-rate-plot, fig.height=6}
+```{r new-author-rate-plot, fig.height=6, cache = TRUE}
 plot_new_author_rate (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
@@ -572,7 +571,7 @@ Measuring the gap between each first-time author and the one before them,
 time-stamped at the moment the *later* one shows up, turns the same
 decline into units of elapsed time rather than frequency.
 
-```{r author-interval-plot, fig.height=6}
+```{r author-interval-plot, fig.height=6, cache = TRUE}
 plot_author_interval (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
@@ -717,7 +716,7 @@ flat lines at a given age regardless of which year that age happened to
 fall in, while a shared calendar-time effect predicts later cohorts
 showing a lower rate at that same fixed age than earlier ones did.
 
-```{r cohort-age-plot, fig.height=6.5}
+```{r cohort-age-plot, fig.height=6.5, cache = TRUE}
 plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
 ```
 

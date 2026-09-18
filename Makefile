@@ -16,7 +16,9 @@ pkgdowncheck: ## Check 'pkgdown' site structure
 	echo "pkgdown::check_pkgdown()" | R --no-save -q
 
 vignette: $(VIGNETTE).Rmd.orig ## Precompile the review-dividend vignette from live source (requires repo-data-out/)
-	cd $(dir $(VIGNETTE)) && Rscript -e "knitr::knit ('$(notdir $(VIGNETTE)).Rmd.orig', output = '$(notdir $(VIGNETTE)).Rmd')"
+	cd $(dir $(VIGNETTE)) && \
+		Rscript -e "knitr::knit ('$(notdir $(VIGNETTE)).Rmd.orig', output = '$(notdir $(VIGNETTE)).Rmd')"
+		Rscript -e 'pkgdown::build_article("$(notdir $(VIGNETTE))")'
 
 knitr: $(README).Rmd ## Render README as markdown
 	echo "rmarkdown::render('$(README).Rmd',output_file='$(README).md')" | R --no-save -q
