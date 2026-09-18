@@ -19,7 +19,7 @@ over time, one line per popularity stratum."><!-- mathjax --><script src="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.024</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.028</span>
       </span>
     </div>
 
@@ -70,7 +70,7 @@ over time, one line per popularity stratum.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_activity</span><span class="op">(</span><span class="va">rate_tbl</span>, start_year <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_activity</span><span class="op">(</span><span class="va">rate_tbl</span>, src_name <span class="op">=</span> <span class="cn">NULL</span>, start_year <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -83,6 +83,11 @@ over time, one line per popularity stratum.</p>
 straight off it, the first three to label the y-axis and <code>source_name</code>
 to annotate the plot panel directly (top-right corner), rather than
 needing to be passed in again.</p></dd>
+
+
+<dt id="arg-src-name">src_name<a class="anchor" aria-label="anchor" href="#arg-src-name"></a></dt>
+<dd><p>Name of source of <code>rate_tbl</code> to be added as plot annotation
+if specified.</p></dd>
 
 
 <dt id="arg-start-year">start_year<a class="anchor" aria-label="anchor" href="#arg-start-year"></a></dt>

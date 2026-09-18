@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.024</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.028</span>
       </span>
     </div>
 
@@ -182,7 +182,7 @@ impact of any of the results or conclusions drawn.</p>
 alongside the main analysis.</p>
 </div>
 <div class="section level2">
-<h2 id="finding-1-people-are-still-coding">Finding #1: People are still coding<a class="anchor" aria-label="anchor" href="#finding-1-people-are-still-coding"></a>
+<h2 id="finding-1-people-are-coding-less">Finding #1: People are coding less<a class="anchor" aria-label="anchor" href="#finding-1-people-are-coding-less"></a>
 </h2>
 <p>The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
@@ -193,21 +193,28 @@ many of the results shown below only show time series from the January
 2021 onwards. Comparisons are also made as “step changes” between
 January 2021 and the present (Sep 2026)</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."><p class="caption">
-Rates of creation of new repos (top panel, as relative monthly
+<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."><p class="caption">
+Fig. 1: Rates of creation of new repos (top panel, as relative monthly
 percentages) and of commits per month (bottom). All rates are 12-month
 trailing averages.
 </p>
 </div>
-<p>The following table of percentage change in both rates from Jan 2021
-shows that rates of new repository creations have dropped consistently.
-(Respository creation for both JOSS and rOpenSci generally only occurs
-following rigorous review processes, and so values for these two can’t
-really be directly compared with the other sources, and are likely
-affected by additional constraints and influences.) Repository
-maintenance, measured in terms of numbers of commits, has also generally
-decreased (with the notable extreme outlier of rOpenSci), although by
-relatively little for the two dominant systems of npm and PyPI.</p>
+<p>The decrease in repository creation could of course simply reflect
+people moving away from GitHub and towards alternative code hosting
+sites. Such effects are not considered further here, but all analyses
+that follow are derived from existing GitHub repositories, and are
+independent of whether or not people are abandoning GitHub for
+alternative sites. The rates of monthly commits of Fig. 1 are an
+example. All of these rates generally decline, although also at lower
+rates than equivalent declines in rates of repository creation. These
+declines in commit rates are genuine declines observed among those
+people still active on GitHub.</p>
+<p>These relative differences are quantified in the following table of
+percentage change in both rates from Jan 2021. (Repository creation for
+both JOSS and rOpenSci generally only occurs following rigorous review
+processes, and so values for these two can’t really be directly compared
+with the other sources, and are likely affected by additional
+constraints and influences.)</p>
 <table class="table">
 <caption>Percentage change in repo-creation rate and commit rate,
 estimated from linear regressions fitted from Jan 2021.</caption>
@@ -220,27 +227,27 @@ estimated from linear regressions fitted from Jan 2021.</caption>
 <tr class="odd">
 <td align="left">JOSS</td>
 <td align="right">-73%</td>
-<td align="right">-54%</td>
+<td align="right">-52%</td>
 </tr>
 <tr class="even">
 <td align="left">CRAN</td>
 <td align="right">-38%</td>
-<td align="right">-54%</td>
-</tr>
-<tr class="odd">
-<td align="left">npm</td>
-<td align="right">-55%</td>
-<td align="right">-12%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">-29%</td>
-<td align="right">-8%</td>
+<td align="right">-51%</td>
 </tr>
 <tr class="odd">
 <td align="left">rOpenSci</td>
 <td align="right">-78%</td>
-<td align="right">-4%</td>
+<td align="right">-43%</td>
+</tr>
+<tr class="even">
+<td align="left">npm</td>
+<td align="right">-55%</td>
+<td align="right">-12%</td>
+</tr>
+<tr class="odd">
+<td align="left">PyPI</td>
+<td align="right">-29%</td>
+<td align="right">-11%</td>
 </tr>
 </tbody>
 </table>
@@ -256,19 +263,24 @@ issues. Anybody (with an account) can open an issue to ask a simple
 question. Many who do may not necessarily end up directly contributing
 to code at all, and so data on issues offers more inclusive insights
 into larger communities beyond direct code contributors.</p>
+<p>The following graph shows numbers of unique people opening new issues
+on repositories for the five software ecosystems. All counts are
+standardised to numbers of new issues per repository. All of these
+patterns reveal consistent changes either side of around 2020. From here
+on, all times series start from Jan 2021, with patterns prior to that
+date generally reflecting those shown in Fig 2.</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/trend-plots-1.png" alt="plot of chunk trend-plots"><p class="caption">
-plot of chunk trend-plots
+<img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"><p class="caption">
+Fig 2: Numbers of distinct authors opening new issues
 </p>
 </div>
-<p>The shape is the same one the companion vignette found in issue
-counts: a rise or plateau through the late 2010s, a peak somewhere in
-the 2017–2020 window, and an ongoing decline since. That resemblance
-alone doesn’t prove much - a falling issue rate is mechanically
-compatible with a falling author count, since fewer issues can’t come
-from more people without each of them opening fewer on average. What
-settles it is comparing the two step-changes directly, source by source
-and stratum by stratum:</p>
+<p>For each software source, lines are shown for the four distributional
+quartiles described above. “Q4” represents the relatively few extremely
+popular packages, while “Q1” is the quartile of lowest popularity. (And
+these quartiles are defined on a logarithmic scale, so there are far
+more packages in Q1 than in Q4.)</p>
+<p>The most severe recent declines (since 2021) have been for the most
+popular packages across all system.</p>
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/step-change-plot-authors-1.png" alt="plot of chunk step-change-plot-authors"><p class="caption">
 plot of chunk step-change-plot-authors
@@ -279,12 +291,12 @@ its January-2021 level - 20 out of 20, with no exceptions. That includes
 rOpenSci’s least-popular quartile, the one cell in the companion
 vignette’s event-count figure that rose rather than fell: counted by
 issues, it reached 124% of its 2021 rate; counted by distinct authors,
-the same cell manages only 98% - essentially flat, not growth. Whatever
+the same cell manages only 87% - essentially flat, not growth. Whatever
 rOpenSci’s peer-review process is doing for its most obscure packages,
 it isn’t attracting a widening circle of new people; at best, on this
 measure, it’s holding the existing circle from shrinking.</p>
 <p>Beyond that one cell, the two measures mostly move together, but not
-identically: in 15 of the 20 cells, the distinct-author count has fallen
+identically: in 10 of the 20 cells, the distinct-author count has fallen
 by <em>more</em> than the issue count has, meaning the average non-core
 author isn’t opening noticeably more issues to compensate for fewer of
 them showing up - if anything, the opposite.</p>
@@ -306,7 +318,7 @@ plot of chunk new-author-rate-plot
 </div>
 <p>The new-arrival rate has fallen in 20 of 20 (source, stratum) cells
 since January 2021 - the same near-universal decline Finding 1 found in
-overall density. In 17 of those 20 cells, the new-arrival rate has
+overall density. In 15 of those 20 cells, the new-arrival rate has
 fallen by <em>more</em> than overall density has, meaning the decline
 documented above isn’t simply existing regulars posting a little less
 often; it’s disproportionately a shrinking supply of people showing up
@@ -480,33 +492,33 @@ popular quartile</caption>
 <tbody>
 <tr class="odd">
 <td align="left">rOpenSci</td>
-<td align="right">98%</td>
-<td align="right">23%</td>
-<td align="right">-75%</td>
+<td align="right">87%</td>
+<td align="right">27%</td>
+<td align="right">-60%</td>
 </tr>
 <tr class="even">
-<td align="left">JOSS</td>
-<td align="right">89%</td>
-<td align="right">38%</td>
-<td align="right">-51%</td>
+<td align="left">CRAN</td>
+<td align="right">58%</td>
+<td align="right">32%</td>
+<td align="right">-26%</td>
 </tr>
 <tr class="odd">
+<td align="left">JOSS</td>
+<td align="right">65%</td>
+<td align="right">41%</td>
+<td align="right">-23%</td>
+</tr>
+<tr class="even">
 <td align="left">npm</td>
 <td align="right">43%</td>
 <td align="right">26%</td>
 <td align="right">-17%</td>
 </tr>
-<tr class="even">
-<td align="left">CRAN</td>
-<td align="right">38%</td>
-<td align="right">28%</td>
-<td align="right">-10%</td>
-</tr>
 <tr class="odd">
 <td align="left">PyPI</td>
-<td align="right">66%</td>
+<td align="right">63%</td>
 <td align="right">62%</td>
-<td align="right">-4%</td>
+<td align="right">0%</td>
 </tr>
 </tbody>
 </table>
@@ -612,7 +624,7 @@ grew over the same period: 21,548 primary-source repositories exist in
 this dataset now, against 13,043 that already existed by January 2021 -
 a 1.7x increase. Raw, unnormalised monthly non-core author counts across
 all five sources combined have fallen only to about 75% of their
-January-2021 level, well short of the roughly 43% median seen per
+January-2021 level, well short of the roughly 53% median seen per
 repository. More repositories now compete for a shrinking amount of
 attention per repository - the total pool of people engaging with open
 source hasn’t collapsed nearly as sharply as any individual project’s
