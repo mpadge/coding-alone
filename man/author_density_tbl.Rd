@@ -2,7 +2,7 @@
 % Please edit documentation in R/table-activity.R
 \name{author_density_tbl}
 \alias{author_density_tbl}
-\title{Distinct non-core authors per repo-month, by source and popularity stratum}
+\title{Distinct authors per repo-month, by source and popularity stratum}
 \usage{
 author_density_tbl(
   issue_authors_tbl,
@@ -56,30 +56,15 @@ via \code{+ ggplot2::labs(y = ...)}) since the value isn't actually an issue
 rate.
 }
 \description{
-For one source, count \emph{distinct} non-core issue authors active per
-calendar month (not issue events - a single prolific outsider filing ten
-issues in a month counts once), normalised by repo-months of exposure the
-same way \code{issue_rate_tbl()} is, and reported as a 12-month trailing sum
-of that monthly headcount over the same trailing repo-months denominator.
-The numerator is a trailing \emph{sum} of monthly distinct-author counts
-rather than a single window-wide distinct count, so a person active in
-more than one month within the trailing window is counted once per month
-they're active, not once for the whole window - a "distinct-author-months"
-density, comparable in construction to \code{issue_rate_tbl()}'s "issues" rate
-rather than a strict lifetime-unique headcount (see the vignette's
-caveats for what that does and doesn't mean).
+For one source, count \emph{distinct} issue authors active per
+calendar month.
 }
 \details{
 \code{contrib_min}/\code{contrib_threshold} together select which authors count,
 via \verb{contrib_min < contribution <= contrib_threshold}: the defaults
-(\code{-Inf}, \code{0.01}) reproduce the original non-core-only headcount, but the
-same function also answers the two questions that motivate it -
+(\code{-Inf}, \code{0.01}) counts only non-core contributors. In contrast,
 \verb{contrib_min = 0.01, contrib_threshold = Inf} counts \emph{core} authors
-only (people over the non-core line), and \verb{contrib_min = -Inf, contrib_threshold = Inf} counts \emph{everyone} who filed an issue,
-core and non-core alike - "all contributors", in this dataset's only
-available sense of that phrase (see the vignette's caveats for what
-that does and doesn't capture, pending direct commit-history-based
-contributor timelines).
+only.
 }
 \examples{
 \dontrun{

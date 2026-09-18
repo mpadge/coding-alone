@@ -69,7 +69,7 @@ activity_metric_label <- function (metric = c ("issues", "comments"),
 #' can do this even though the raw rate never goes negative) - otherwise
 #' left at ggplot2's own default lower limit.
 #' @noRd
-activity_plot_layers <- function (rate_tbl, group_col, y_lab) {
+activity_plot_layers <- function (rate_tbl, group_col, y_lab = NULL) {
 
     rng <- loess_range (rate_tbl, group_col)
     lower <- if (rng [1] < 0) 0 else NA
@@ -123,15 +123,15 @@ plot_activity <- function (rate_tbl, start_year = NULL) {
     rate_tbl$popularity_stratum <-
         label_stratum_extremes (rate_tbl$popularity_stratum)
 
+    lab <- activity_metric_label (metric, window, contrib_threshold)
+
     p <- ggplot2::ggplot (
         rate_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
-        activity_plot_layers (
-            rate_tbl, "popularity_stratum",
-            activity_metric_label (metric, window, contrib_threshold)
-        ) +
-        ggplot2::labs (colour = "Popularity\nstratum") +
+        # activity_plot_layers (rate_tbl, "popularity_stratum", lab)
+        activity_plot_layers (rate_tbl, "popularity_stratum")
+    ggplot2::labs (colour = "Popularity\nstratum") +
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
     if (!is.null (source_name)) {
@@ -263,7 +263,8 @@ plot_activity_by_source <- function (issue_authors_tbl, repo_tbl, stratum,
         rate_tbl,
         ggplot2::aes (month, rate, colour = source_name)
     ) +
-        activity_plot_layers (rate_tbl, "source_name", y_lab) +
+        # activity_plot_layers (rate_tbl, "source_name", y_lab) +
+        activity_plot_layers (rate_tbl, "source_name") +
         ggplot2::labs (
             colour = "Source",
             title = stringr::str_glue (

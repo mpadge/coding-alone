@@ -442,35 +442,58 @@ combined_sc_display |>
     )
 ```
 
-## Finding 1: fewer outsiders, counted properly
+## Finding 2: fewer outsiders, counted properly
 
 ```{r author-density-data, cache = TRUE}
-ad_cran <- author_density_tbl (issue_authors_tbl, repo_tbl, "cran")
-ad_joss <- author_density_tbl (issue_authors_tbl, repo_tbl, "joss")
-ad_npm <- author_density_tbl (issue_authors_tbl, repo_tbl, "npm")
-ad_pypi <- author_density_tbl (issue_authors_tbl, repo_tbl, "pypi")
-ad_ropensci <- author_density_tbl (issue_authors_tbl, repo_tbl, "ropensci")
+contrib_threshold <- 1
+ad_cran <- author_density_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    "cran",
+    contrib_threshold = contrib_threshold
+)
+ad_joss <- author_density_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    "joss",
+    contrib_threshold = contrib_threshold
+)
+ad_npm <- author_density_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    "npm",
+    contrib_threshold = contrib_threshold
+)
+ad_pypi <- author_density_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    "pypi",
+    contrib_threshold = contrib_threshold
+)
+ad_ropensci <- author_density_tbl (
+    issue_authors_tbl,
+    repo_tbl,
+    "ropensci",
+    contrib_threshold = contrib_threshold
+)
 ```
 
 
 
 ```{r trend-plots, fig.height=10}
-y_lab <- "Distinct non-core authors per repo-month (12-month trailing avg)"
-
 p1 <- plot_activity (ad_cran, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+    ggplot2::theme (legend.position = "none")
 p2 <- plot_activity (ad_joss, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+    ggplot2::theme (legend.position = "none")
 p3 <- plot_activity (ad_npm, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
+    ggplot2::theme (legend.position = "none")
 p4 <- plot_activity (ad_pypi, start_year = 2016) +
-    ggplot2::labs (y = y_lab) + ggplot2::theme (legend.position = "none")
-p5 <- plot_activity (ad_ropensci, start_year = 2016) + ggplot2::labs (y = y_lab)
+    ggplot2::theme (legend.position = "none")
+p5 <- plot_activity (ad_ropensci, start_year = 2016)
 
 patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
     patchwork::plot_annotation (
-        title = "Distinct non-core authors per repo-month, by popularity stratum",
-        subtitle = "12-month trailing average, contrib_threshold = 0.01"
+        title = "Numbers of distinct authors contributing to repository issues"
     )
 ```
 

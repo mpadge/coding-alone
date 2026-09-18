@@ -160,7 +160,7 @@ Table: Percentage change in repo-creation rate and commit rate, estimated from l
 |npm      |              -55%|         -3%|
 |rOpenSci |              -78%|        155%|
 
-## Finding 1: fewer outsiders, counted properly
+## Finding 2: fewer outsiders, counted properly
 
 
 
