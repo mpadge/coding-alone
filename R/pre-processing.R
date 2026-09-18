@@ -65,14 +65,13 @@ pre_process_author_densities <- function (issue_authors, repos, contrib_threshol
 
     purrr::map_dfr (primary_sources, \ (src) {
         author_density_tbl (
-            issue_authors_tbl,
-            repo_tbl,
+            issue_authors,
+            repos,
             src,
             contrib_threshold = contrib_threshold
         ) |>
             dplyr::mutate (src = src, contrib_threshold = contrib_threshold)
     })
-
 }
 
 # Estimate step-change endpoints from linear regression.

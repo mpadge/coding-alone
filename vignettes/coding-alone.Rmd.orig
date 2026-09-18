@@ -46,7 +46,7 @@ knitr::opts_chunk$set (
 library (codingAlone)
 ```
 
-```{r initial-data-load, cache = FALSE}
+```{r initial-data-load, cache = TRUE}
 out_dir <- "../repo-data-out"
 f <- fs::dir_ls (out_dir, regexp = "pre-process", fixed = TRUE)
 dat <- readRDS (f)
@@ -400,21 +400,28 @@ results shown below only show time series from the January 2021 onwards.
 Comparisons are also made as "step changes" between January 2021 and the
 present (`r now`)
 
-```{r commit-rate-plot, fig.height=9, fig.cap = "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.", cache = TRUE}
+```{r commit-rate-plot, fig.height=4.5, fig.cap = "Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.", cache = TRUE}
 plot_commit_rate (
     commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
 )
 ```
 
-The following table of percentage change in both rates from Jan 2021 shows that
-rates of new repository creations have dropped consistently. (Respository
-creation for both JOSS and rOpenSci generally only occurs following rigorous
-review processes, and so values for these two can't really be directly compared
-with the other sources, and are likely affected by additional constraints and
-influences.) Repository maintenance, measured in terms of numbers of commits,
-has also generally decreased (with the notable extreme outlier of rOpenSci),
-although by relatively little for the two dominant systems of npm and PyPI.
+The decrease in repository creation could of course simply reflect people
+moving away from GitHub and towards alternative code hosting sites. Such
+effects are not considered further here, but all analyses that follow are
+derived from existing GitHub repositories, and are independent of whether or
+not people are abandoning GitHub for alternative sites. The rates of monthly
+commits of Fig. 1 are an example. All of these rates generally decline, although
+also at lower rates than equivalent declines in rates of repository creation.
+These declines in commit rates are genuine declines observed among those people
+still active on GitHub.
+
+These relative differences are quantified in the following table of percentage
+change in both rates from Jan 2021. (Repository creation for both JOSS and
+rOpenSci generally only occurs following rigorous review processes, and so
+values for these two can't really be directly compared with the other sources,
+and are likely affected by additional constraints and influences.)
 
 ```{r commit-rate-table, cache = TRUE}
 combined_sc_display |>

@@ -120,5 +120,5 @@ plot_commit_rate <- function (commit_counts_tbl,
             hjust = 2.2, vjust = 3, size = 6
         )
 
-    patchwork::wrap_plots (p_creation, p_commit, ncol = 1)
+    patchwork::wrap_plots (p_creation, p_commit, ncol = 2)
 }
