@@ -37,7 +37,9 @@ A tibble: \code{source}, \code{popularity_stratum}, \code{rate_ref},
 \description{
 The \code{author_density_tbl()} analogue of \code{step_change_tbl()}: for each of
 several sources, compare each popularity stratum's author-density value
-at a fixed reference month against its most recent value.
+at a fixed reference month against its most recent value. Both endpoints
+are estimated from a linear regression fitted to the trailing rate from
+\code{ref_date} onwards.
 }
 \examples{
 \dontrun{

@@ -354,9 +354,7 @@ author_density_tbl <- function (issue_authors_tbl,
 #' several sources, compare each popularity stratum's author-density value
 #' at a fixed reference month against its most recent value. Both endpoints
 #' are estimated from a linear regression fitted to the trailing rate from
-#' `ref_date` onwards (via `step_change_regression()`), rather than read off
-#' as the empirical rate at those two individual months, so a single noisy
-#' month at either endpoint doesn't dominate the comparison.
+#' `ref_date` onwards.
 #'
 #' @inheritParams step_change_tbl
 #' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
