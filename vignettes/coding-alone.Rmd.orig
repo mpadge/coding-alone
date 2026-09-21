@@ -58,6 +58,7 @@ commit_rates <- dat$commit_rates
 repo_creation_rates <- dat$repo_creation_rates
 author_densities_tbl <- dat$author_densities_ctb100
 sc_authors <- dat$author_dens_step_change100
+sc_comments <- dat$issue_comments_step_change
 
 primary_sources <- unique (repo_tbl$source)
 n_repos_primary <- length (unique (
@@ -481,17 +482,33 @@ while "Q1" is the quartile of lowest popularity. (And these quartiles are
 defined on a logarithmic scale, so there are far more packages in Q1 than in
 Q4.)
 
-The most severe recent declines (since 2021) have been for the most popular
-packages across all system.
+The next figure (Fig 3) shows average declines since Jan 2021 for each software
+ecosystem and for each popularity quartile. Many of these declines are more
+pronounced for the most popular software (Q4), although PyPI shows the opposite
+trend, with decreases in numbers of unique issue authors being less severe for
+the most popular packages, while npm shows an intermediate pattern.
 
 
-```{r step-change-plot-authors, fig.height=3.5, fig.width=10}
+```{r step-change-plot-authors, fig.height=3.5, fig.width=10, fig.cap = "Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."}
 plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
     ggplot2::labs (
         title = "Distinct issue authors",
         y = "% change in rate since Jan 2021"
     )
 ```
+
+Total numbers of comments on each issue show a similar pattern (Fig. 4), with
+similarly reversed trends for PyPi as well as npm.
+
+```{r step-change-plot-commits, fig.height=3.5, fig.width=10, fig.cap="Fig 4: Changes in numbers of comments since 2021, as for previous figure."}
+plot_step_change (sc_comments, SOURCE_DISPLAY_NAME) +
+    ggplot2::labs (
+        title = "Num. issue comments",
+        y = "% change in rate since Jan 2021"
+    )
+```
+
+---
 
 Every one of the `r n_authors_cells` (source, stratum) cells in this
 figure sits below its January-2021 level -

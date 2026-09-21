@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone."
 author: "Mark Padgham"
-date: "18 September 2026"
+date: "21 September 2026"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
@@ -161,11 +161,11 @@ Table: Percentage change in repo-creation rate and commit rate, estimated from l
 
 |Source   | Repo creation (%)| Commits (%)|
 |:--------|-----------------:|-----------:|
-|JOSS     |              -73%|        -52%|
-|CRAN     |              -38%|        -51%|
-|rOpenSci |              -78%|        -43%|
-|npm      |              -55%|        -12%|
-|PyPI     |              -29%|        -11%|
+|JOSS     |              -73%|        -56%|
+|rOpenSci |              -78%|        -54%|
+|CRAN     |              -38%|        -49%|
+|npm      |              -55%|        -22%|
+|PyPI     |              -29%|        -17%|
 
 ## Finding 2: Fewer contributors
 
@@ -197,31 +197,44 @@ while "Q1" is the quartile of lowest popularity. (And these quartiles are
 defined on a logarithmic scale, so there are far more packages in Q1 than in
 Q4.)
 
-The most severe recent declines (since 2021) have been for the most popular
-packages across all system.
+The next figure (Fig 3) shows average declines since Jan 2021 for each software
+ecosystem and for each popularity quartile. Many of these declines are more
+pronounced for the most popular software (Q4), although PyPI shows the opposite
+trend, with decreases in numbers of unique issue authors being less severe for
+the most popular packages, while npm shows an intermediate pattern.
 
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="plot of chunk step-change-plot-authors"  />
-<p class="caption">plot of chunk step-change-plot-authors</p>
+<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."  />
+<p class="caption">Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4).</p>
 </div>
+
+Total numbers of comments on each issue show a similar pattern (Fig. 4), with
+similarly reversed trends for PyPi as well as npm.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/step-change-plot-commits-1.png" alt="Fig 4: Changes in numbers of comments since 2021, as for previous figure."  />
+<p class="caption">Fig 4: Changes in numbers of comments since 2021, as for previous figure.</p>
+</div>
+
+---
 
 Every one of the 20 (source, stratum) cells in this
 figure sits below its January-2021 level -
-20 out of 20, with no exceptions.
+19 out of 20, with no exceptions.
 That includes rOpenSci's least-popular quartile, the one cell in the
 companion vignette's event-count figure that rose rather than fell:
 counted by issues, it reached
 124%
 of its 2021 rate; counted by distinct authors, the same cell manages only
-87%
+108%
 - essentially flat, not growth. Whatever rOpenSci's peer-review process is
 doing for its most obscure packages, it isn't attracting a widening
 circle of new people; at best, on this measure, it's holding the existing
 circle from shrinking.
 
 Beyond that one cell, the two measures mostly move together, but not
-identically: in 10 of the 20 cells,
+identically: in 4 of the 20 cells,
 the distinct-author count has fallen by *more* than the issue count has,
 meaning the average non-core author isn't opening noticeably more issues
 to compensate for fewer of them showing up - if anything, the opposite.
@@ -246,7 +259,7 @@ average.
 The new-arrival rate has fallen in
 20 of 20 (source, stratum) cells since
 January 2021 - the same near-universal decline Finding 1 found in overall
-density. In 15 of those 20 cells, the
+density. In 17 of those 20 cells, the
 new-arrival rate has fallen by *more* than overall density has, meaning
 the decline documented above isn't simply existing regulars posting a
 little less often; it's disproportionately a shrinking supply of people
@@ -394,11 +407,11 @@ Table: Distinct-author step-change since Jan 2021, least vs. most popular quarti
 
 |Source   | Least popular (Q1)| Most popular (Q4)| Gap (Q4 − Q1)|
 |:--------|------------------:|-----------------:|-------------:|
-|rOpenSci |                87%|               27%|          -60%|
-|CRAN     |                58%|               32%|          -26%|
-|JOSS     |                65%|               41%|          -23%|
-|npm      |                43%|               26%|          -17%|
-|PyPI     |                63%|               62%|            0%|
+|rOpenSci |               108%|               36%|          -72%|
+|JOSS     |                98%|               47%|          -52%|
+|CRAN     |                73%|               39%|          -33%|
+|npm      |                26%|               30%|            5%|
+|PyPI     |                54%|               77%|           23%|
 
 In every one of the five sources, the most popular quartile's headcount
 has fallen further below its 2021 baseline than the least popular
@@ -500,7 +513,7 @@ time, and, well before social media, the privatising pull of television
   fallen only to about
   75%
   of their January-2021 level, well short of the roughly
-  53%
+  59%
   median seen per repository. More repositories now compete for a
   shrinking amount of attention per repository - the total pool of
   people engaging with open source hasn't collapsed nearly as sharply as

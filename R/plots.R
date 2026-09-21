@@ -51,13 +51,20 @@ plot_step_change <- function (tbl, source_display = NULL,
     if (!is.null (source_display)) {
         lab <- unname (source_display [tbl$source])
         tbl$source <- ifelse (is.na (lab), tbl$source, lab)
+        src_levels <- c ("JOSS", "rOpenSci", "CRAN", "npm", "PyPI")
+        tbl$source <- factor (tbl$source, levels = src_levels)
     }
 
     ref_lab <- format (ref_date, "%b %Y")
 
+
     ggplot2::ggplot (
         tbl,
-        ggplot2::aes (popularity_stratum, step_change, fill = popularity_stratum)
+        ggplot2::aes (
+            popularity_stratum,
+            step_change,
+            fill = popularity_stratum
+        )
     ) +
         ggplot2::geom_col () +
         ggplot2::geom_hline (yintercept = 1, linetype = 2, colour = "grey40") +
