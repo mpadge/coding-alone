@@ -10,7 +10,7 @@ build_pyos_table <- function () {
         "refs/heads/main/data/packages.yml"
     )
     destfile <- fs::path (fs::path_temp (), basename (u))
-    f <- download.file (u, destfile = destfile, quiet = TRUE)
+    f <- utils::download.file (u, destfile = destfile, quiet = TRUE)
     dat <- yaml::read_yaml (destfile)
 
     approved <- vapply (
