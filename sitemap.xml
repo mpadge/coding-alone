@@ -12,6 +12,7 @@
 <url><loc>/reference/author_interval_tbl.html</loc></url>
 <url><loc>/reference/author_interval_trend_tbl.html</loc></url>
 <url><loc>/reference/build_joss_table.html</loc></url>
+<url><loc>/reference/build_pyos_table.html</loc></url>
 <url><loc>/reference/build_repo_tbl.html</loc></url>
 <url><loc>/reference/build_runiv_table.html</loc></url>
 <url><loc>/reference/build_working_sample.html</loc></url>
@@ -28,6 +29,7 @@
 <url><loc>/reference/join_repo_metadata.html</loc></url>
 <url><loc>/reference/new_author_rate_tbl.html</loc></url>
 <url><loc>/reference/npm_downloads_full.html</loc></url>
+<url><loc>/reference/num_comments_step_change_tbl.html</loc></url>
 <url><loc>/reference/plot_activity.html</loc></url>
 <url><loc>/reference/plot_activity_by_source.html</loc></url>
 <url><loc>/reference/plot_author_interval.html</loc></url>
