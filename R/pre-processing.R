@@ -48,6 +48,10 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
             contrib_threshold = thr
         )
     })
+    cmts <- num_comments_step_change_tbl (
+        issue_authors_tbl, repo_tbl, primary_sources
+    )
+    cli::cli_alert_success ("Issue comment rates")
 
 
     res <- list (
@@ -59,7 +63,8 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         author_densities_ctb001 = ad [[1]],
         author_densities_ctb100 = ad [[2]],
         author_dens_step_change001 = sc [[1]],
-        author_dens_step_change100 = sc [[2]]
+        author_dens_step_change100 = sc [[2]],
+        issue_comments_step_change = cmts
     )
 
     f <- fs::path (out_dir, paste0 (f_name, ".Rds"))

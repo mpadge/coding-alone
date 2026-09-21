@@ -369,7 +369,9 @@ author_density_tbl <- function (issue_authors_tbl,
 #' @param contrib_min As in `author_density_tbl()`.
 #' @param contrib_threshold,window Passed to `author_density_tbl()`.
 #' @export
-author_density_step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
+author_density_step_change_tbl <- function (issue_authors_tbl,
+                                            repo_tbl,
+                                            sources,
                                             contrib_threshold = 0.01,
                                             contrib_min = -Inf,
                                             window = 12L,
@@ -380,8 +382,80 @@ author_density_step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources
     purrr::map_dfr (sources, \ (src) {
 
         rate_tbl <- author_density_tbl (
-            issue_authors_tbl, repo_tbl, src,
-            contrib_threshold = contrib_threshold, contrib_min = contrib_min,
+            issue_authors_tbl,
+            repo_tbl,
+            src,
+            contrib_threshold = contrib_threshold,
+            contrib_min = contrib_min,
+            window = window
+        )
+        rate_tbl <- dplyr::filter (rate_tbl, !is.na (rate))
+        if (nrow (rate_tbl) == 0) {
+            return (tibble::tibble (
+                source = character (), popularity_stratum = factor (),
+                rate_ref = double (), rate_latest = double (),
+                step_change = double (), latest_month = as.Date (character ())
+            ))
+        }
+
+        stratum_levels <- levels (rate_tbl$popularity_stratum)
+
+        purrr::map_dfr (stratum_levels, \ (stratum) {
+
+            stratum_tbl <- dplyr::filter (rate_tbl, popularity_stratum == stratum)
+            est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
+
+            tibble::tibble (
+                source = src,
+                popularity_stratum = factor (
+                    stratum,
+                    levels = stratum_levels, ordered = TRUE
+                ),
+                rate_ref = est$ref,
+                rate_latest = est$latest,
+                step_change = est$latest / est$ref,
+                latest_month = est$latest_month
+            )
+        })
+    })
+}
+
+#' Step-change in comment volume, from a reference month to now
+#'
+#' The `issue_rate_tbl(metric = "comments")` analogue of
+#' `author_density_step_change_tbl()`: for each of several sources, compare
+#' each popularity stratum's comment rate (`n_comments`, normalized by
+#' repo-months of exposure) at a fixed reference month against its most recent
+#' value, estimated from linear regression rates.
+#'
+#' @inheritParams step_change_tbl
+#' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
+#' `rate_latest`, `step_change`, `latest_month`.
+#'
+#' @examples
+#' \dontrun{
+#' fc <- num_comments_step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
+#' plot_step_change (fc, SOURCE_DISPLAY_NAME, metric = "comments") +
+#'     ggplot2::labs (title = "Comment volume")
+#' }
+#' @param contrib_threshold,window Passed to `issue_rate_tbl()`.
+#' @export
+num_comments_step_change_tbl <- function (issue_authors_tbl,
+                                          repo_tbl,
+                                          sources,
+                                          window = 12L,
+                                          ref_date = as.Date ("2021-01-01")) {
+
+    popularity_stratum <- rate <- NULL
+
+    purrr::map_dfr (sources, \ (src) {
+
+        rate_tbl <- issue_rate_tbl (
+            issue_authors_tbl,
+            repo_tbl,
+            src,
+            contrib_threshold = 1, # Always count all commits
+            metric = "comments",
             window = window
         )
         rate_tbl <- dplyr::filter (rate_tbl, !is.na (rate))
