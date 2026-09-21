@@ -20,10 +20,10 @@ num_comments_step_change_tbl(
 \item{sources}{Character vector of \code{source_name} values to include (see
 \code{issue_rate_tbl()}).}
 
+\item{window}{Passed to \code{issue_rate_tbl()}.}
+
 \item{ref_date}{Reference \code{Date} (first-of-month) to compare against the
 latest available month.}
-
-\item{contrib_threshold, window}{Passed to \code{issue_rate_tbl()}.}
 }
 \value{
 A tibble: \code{source}, \code{popularity_stratum}, \code{rate_ref},
@@ -35,11 +35,4 @@ The \code{issue_rate_tbl(metric = "comments")} analogue of
 each popularity stratum's comment rate (\code{n_comments}, normalized by
 repo-months of exposure) at a fixed reference month against its most recent
 value, estimated from linear regression rates.
-}
-\examples{
-\dontrun{
-fc <- num_comments_step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-plot_step_change (fc, SOURCE_DISPLAY_NAME, metric = "comments") +
-    ggplot2::labs (title = "Comment volume")
-}
 }

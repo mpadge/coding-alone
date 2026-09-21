@@ -432,13 +432,7 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
 #' @return A tibble: `source`, `popularity_stratum`, `rate_ref`,
 #' `rate_latest`, `step_change`, `latest_month`.
 #'
-#' @examples
-#' \dontrun{
-#' fc <- num_comments_step_change_tbl (issue_authors_tbl, repo_tbl, c ("cran", "npm"))
-#' plot_step_change (fc, SOURCE_DISPLAY_NAME, metric = "comments") +
-#'     ggplot2::labs (title = "Comment volume")
-#' }
-#' @param contrib_threshold,window Passed to `issue_rate_tbl()`.
+#' @param window Passed to `issue_rate_tbl()`.
 #' @export
 num_comments_step_change_tbl <- function (issue_authors_tbl,
                                           repo_tbl,
