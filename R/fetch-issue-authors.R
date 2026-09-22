@@ -70,7 +70,7 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
     if (!is_test_env) {
         requireNamespace ("progressify", quietly = TRUE)
-        requireNamespace ("futurize", quietly = TRUE)
+        requireNamespace ("futurize", quietly = TRUE, warn.conflicts = FALSE)
         progressr::handlers (global = TRUE)
     }
 
