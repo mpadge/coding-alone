@@ -1,5 +1,7 @@
 # Fetches issue-author data (github_issue_authors(), for many repos,
-# batched and checkpointed to disk.
+# batched and checkpointed to disk. update_issue_authors() then refreshes
+# that checkpoint, re-fetching only what's changed per repo since its
+# `last_updated` value.
 
 #' Read the `issue-authors.csv` checkpoint file written by
 #' `fetch_issue_authors()`, falling back to an empty tibble with the same
@@ -7,7 +9,8 @@
 #'
 #' @param out_dir Directory holding `issue-authors.csv`.
 #' @return A tibble with columns `repo_url`, `issue_number`, `author`,
-#' `created_at`, `n_comments`, `contribution`, `repo_created_at`.
+#' `created_at`, `n_comments`, `contribution`, `repo_created_at`,
+#' `last_updated`.
 #' @noRd
 read_issue_authors_data <- function (out_dir) {
 
@@ -20,7 +23,8 @@ read_issue_authors_data <- function (out_dir) {
         created_at = readr::col_character (),
         n_comments = readr::col_integer (),
         contribution = readr::col_double (),
-        repo_created_at = readr::col_character ()
+        repo_created_at = readr::col_character (),
+        last_updated = readr::col_character ()
     )
 
     if (file.exists (issue_authors_csv)) {
@@ -52,8 +56,9 @@ read_issue_authors_data <- function (out_dir) {
 #' @param out_dir Directory to read/write the CSV + done-list checkpoint files.
 #' @param batch_size Repos fetched (concurrently) per checkpoint.
 #' @return A tibble with columns `repo_url`, `issue_number`, `author`,
-#' `created_at`, `n_comments`, `contribution`, `repo_created_at` - the full
-#' accumulated result, including rows from any previous run(s).
+#' `created_at`, `n_comments`, `contribution`, `repo_created_at`,
+#' `last_updated` - the full accumulated result, including rows from any
+#' previous run(s).
 #'
 #' @examples
 #' repo_urls <- c (
@@ -137,6 +142,133 @@ fetch_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
 
     msg <- stringr::str_glue (
         "Issue authors: wrote {nrow(issue_authors_tbl)} rows to ",
+        "{issue_authors_csv}"
+    )
+    cli::cli_alert_success (msg)
+
+    issue_authors_tbl
+}
+
+#' Refresh previously-fetched issue-author data (`fetch_issue_authors()`'s
+#' checkpoint), for repos that have already been fetched at least once.
+#'
+#' Unlike `fetch_issue_authors()`, which skips any repo already marked done,
+#' this re-fetches every repo in `repo_urls`, but each repo's own
+#' `github_issue_authors()` call is scoped with `since` set to that repo's
+#' most recent `last_updated` value already on disk - so GitHub only returns
+#' issues that are new, or that changed (e.g. picked up new comments) since
+#' that time. A repo not yet present in the checkpoint is fetched in full,
+#' exactly as `fetch_issue_authors()` would. Rows returned for an
+#' already-known issue replace the stale row; all other existing rows are
+#' left untouched.
+#'
+#' Because each repo's `since` cursor advances every time it's refreshed,
+#' this is safe to re-run (e.g. from a scheduled job) without any separate
+#' "done" checkpoint: a run interrupted partway simply leaves the
+#' not-yet-reached repos with an older `last_updated`, picked up as normal
+#' on the next call. Batches are drawn via `interlace_for_even_coverage()`
+#' rather than sequentially, so an interrupted run leaves progress spread
+#' across `repo_urls` rather than concentrated at the top.
+#'
+#' @param repo_urls Character vector of repo URLs to refresh. Repos not
+#' already present in the `out_dir` checkpoint are fetched in full.
+#' @param out_dir Directory holding the `issue-authors.csv` checkpoint
+#' written/read by `fetch_issue_authors()`/`read_issue_authors_data()`.
+#' @param batch_size Repos refreshed (concurrently) per checkpoint write.
+#' @return A tibble with columns `repo_url`, `issue_number`, `author`,
+#' `created_at`, `n_comments`, `contribution`, `repo_created_at`,
+#' `last_updated` - the full accumulated result, with refreshed repos'
+#' rows brought up to date.
+#'
+#' @examples
+#' repo_urls <- c (
+#'     "https://github.com/ropensci/targets",
+#'     "https://github.com/ropensci/drake"
+#' )
+#' \dontrun{
+#' issue_authors_tbl <- update_issue_authors (repo_urls, "path/to/repo-data-out")
+#' }
+#' @export
+update_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
+
+    repo_url <- since <- last_updated <- NULL # rm no visible binding notes
+
+    is_test_env <- identical (Sys.getenv ("PEERREVIEW_TESTS"), "true")
+
+    if (!is_test_env) {
+        requireNamespace ("progressify", quietly = TRUE)
+        requireNamespace ("futurize", quietly = TRUE, warn.conflicts = FALSE)
+        progressr::handlers (global = TRUE)
+    }
+
+    issue_authors_csv <- file.path (out_dir, "issue-authors.csv")
+
+    issue_authors_tbl <- read_issue_authors_data (out_dir)
+
+    repo_urls <- unique (repo_urls)
+    n_total <- length (repo_urls)
+    msg <- stringr::str_glue ("Issue authors: updating {n_total} repos...")
+    cli::cli_alert_info (msg)
+
+    since_by_repo <- if (nrow (issue_authors_tbl) == 0) {
+        tibble::tibble (repo_url = character (), since = character ())
+    } else {
+        issue_authors_tbl |>
+            dplyr::filter (repo_url %in% .env$repo_urls) |>
+            dplyr::group_by (repo_url) |>
+            dplyr::summarise (since = max (last_updated), .groups = "drop")
+    }
+
+    get_issue_authors_update_safe <- function (repo_url) {
+        since <- since_by_repo$since [match (repo_url, since_by_repo$repo_url)]
+        if (is.na (since)) since <- NULL
+        tryCatch (
+            github_issue_authors (repo_url, since = since),
+            error = function (e) {
+                cli::cli_alert_warning (
+                    "Issue authors: update failed for {repo_url}: {conditionMessage (e)}"
+                )
+                tibble::tibble (repo_url = repo_url) [0, ]
+            }
+        )
+    }
+
+    n_batches <- ceiling (length (repo_urls) / batch_size)
+    batches <- interlace_for_even_coverage (repo_urls, n_batches)
+
+    for (b in seq_along (batches)) {
+
+        batch <- batches [[b]]
+        msg <- stringr::str_glue (
+            "Issue authors: update batch {b}/{length (batches)} ",
+            "({length (batch)} repos)..."
+        )
+        cli::cli_alert_info (msg)
+
+        if (is_test_env) {
+            batch_tbl <- lapply (batch, get_issue_authors_update_safe)
+        } else {
+            batch_tbl <- lapply (batch, get_issue_authors_update_safe) |>
+                progressify::progressify () |>
+                futurize::futurize ()
+        }
+
+        batch_tbl <- dplyr::bind_rows (batch_tbl)
+
+        if (nrow (batch_tbl) > 0) {
+            issue_authors_tbl <- issue_authors_tbl |>
+                dplyr::anti_join (
+                    batch_tbl,
+                    by = c ("repo_url", "issue_number")
+                ) |>
+                dplyr::bind_rows (batch_tbl)
+        }
+
+        readr::write_csv (issue_authors_tbl, issue_authors_csv)
+    }
+
+    msg <- stringr::str_glue (
+        "Issue authors: update wrote {nrow(issue_authors_tbl)} rows to ",
         "{issue_authors_csv}"
     )
     cli::cli_alert_success (msg)

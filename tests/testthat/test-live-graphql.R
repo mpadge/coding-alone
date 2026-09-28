@@ -53,7 +53,7 @@ test_that ("github_issue_authors composes real contributors + issues", {
         out,
         c (
             "repo_url", "issue_number", "author", "created_at",
-            "n_comments", "contribution", "repo_created_at"
+            "n_comments", "contribution", "repo_created_at", "last_updated"
         )
     )
     expect_true (all (out$repo_url == "https://github.com/hypertidy/ncmeta"))

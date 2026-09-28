@@ -63,13 +63,24 @@ github_issues_page_size <- function () {
 #' this package, e.g. `build_stars_query()` in extract-data-joss.R) rather
 #' than passed as separate GraphQL variables, since `gh::gh_gql()` has no
 #' support for the latter.
+#' @param since If not `NULL`, an ISO-8601 timestamp string passed as the
+#' issues connection's `filterBy: {{since: ...}}`, restricting results to
+#' issues updated (including new comments, not just newly opened) at or
+#' after that time - used to fetch only what has changed since a previous
+#' fetch, rather than every issue again.
 #' @noRd
-build_issues_query <- function (owner, repo, cursor = NULL) {
+build_issues_query <- function (owner, repo, cursor = NULL, since = NULL) {
 
     after <- if (is.null (cursor)) {
         ""
     } else {
         stringr::str_glue (', after: "{cursor}"')
+    }
+
+    filter_by <- if (is.null (since)) {
+        ""
+    } else {
+        stringr::str_glue (', filterBy: {{since: "{since}"}}')
     }
 
     first <- github_issues_page_size ()
@@ -78,7 +89,7 @@ build_issues_query <- function (owner, repo, cursor = NULL) {
         'query {{
             repository(owner: "{owner}", name: "{repo}") {{
                 createdAt
-                issues(first: {first}{after}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
+                issues(first: {first}{after}{filter_by}, orderBy: {{field: CREATED_AT, direction: ASC}}) {{
                     pageInfo {{ hasNextPage endCursor }}
                     nodes {{ number createdAt author {{ login }} comments {{ totalCount }} }}
                 }}
@@ -94,11 +105,13 @@ build_issues_query <- function (owner, repo, cursor = NULL) {
 #' GitHub creation timestamp (fetched in the same query, cheaper than a
 #' separate REST `/repos/{owner}/{repo}` call just for that one field).
 #' Pages via GraphQL cursors until `hasNextPage` is `FALSE`.
+#' @param since If not `NULL`, an ISO-8601 timestamp string restricting
+#' results to issues updated at or after that time (see `build_issues_query()`).
 #' @return A list with `repo_created_at` (an ISO-8601 timestamp string) and
 #' `issues` (a tibble with `issue_number`, `author`, `created_at`,
 #' `n_comments`).
 #' @noRd
-github_repo_issues_graphql <- function (owner, repo) {
+github_repo_issues_graphql <- function (owner, repo, since = NULL) {
 
     cursor <- NULL
     repo_created_at <- NULL
@@ -107,7 +120,7 @@ github_repo_issues_graphql <- function (owner, repo) {
 
     repeat {
 
-        body <- gh::gh_gql (build_issues_query (owner, repo, cursor))
+        body <- gh::gh_gql (build_issues_query (owner, repo, cursor, since))
         node <- body$data$repository
         if (is.null (repo_created_at)) {
             repo_created_at <- node$createdAt
@@ -158,25 +171,32 @@ github_repo_issues_graphql <- function (owner, repo) {
 #' repo's exposure window.
 #'
 #' @param repo_url A GitHub repo URL, e.g. `"https://github.com/owner/repo"`.
+#' @param since If not `NULL`, an ISO-8601 timestamp string restricting the
+#' GraphQL issues fetch to issues updated (including new comments, not just
+#' newly opened) at or after that time - used to refresh previously-fetched
+#' data rather than re-fetching every issue. The `contributors` REST call
+#' has no equivalent filter and is always fetched in full.
 #'
 #' @return A tibble with one row per issue: `repo_url`, `issue_number`,
-#' `author`, `created_at`, `n_comments`, `contribution`, and
-#' `repo_created_at` (the repo's own GitHub creation timestamp, repeated on
-#' every row).
+#' `author`, `created_at`, `n_comments`, `contribution`, `repo_created_at`
+#' (the repo's own GitHub creation timestamp, repeated on every row), and
+#' `last_updated` (this fetch's own timestamp, repeated on every row).
 #'
 #' @examples
 #' \dontrun{
 #' issue_authors <- github_issue_authors ("https://github.com/ropensci/targets")
 #' }
 #' @export
-github_issue_authors <- function (repo_url = NULL) {
+github_issue_authors <- function (repo_url = NULL, since = NULL) {
 
     issue_number <- contribution <- NULL # rm no visible binding notes
 
     repo <- parse_github_repo_url (repo_url)
 
     contributors <- github_repo_contributors (repo$owner, repo$repo)
-    result <- github_repo_issues_graphql (repo$owner, repo$repo)
+    result <- github_repo_issues_graphql (repo$owner, repo$repo, since)
+
+    last_updated <- strftime (Sys.time (), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 
     if (nrow (result$issues) == 0) {
         return (tibble::tibble (
@@ -186,7 +206,8 @@ github_issue_authors <- function (repo_url = NULL) {
             created_at = character (),
             n_comments = integer (),
             contribution = double (),
-            repo_created_at = character ()
+            repo_created_at = character (),
+            last_updated = character ()
         ))
     }
 
@@ -194,5 +215,8 @@ github_issue_authors <- function (repo_url = NULL) {
         dplyr::left_join (contributors, by = c (author = "login")) |>
         dplyr::mutate (contribution = dplyr::coalesce (contribution, 0)) |>
         dplyr::mutate (repo_url = repo_url, .before = issue_number) |>
-        dplyr::mutate (repo_created_at = result$repo_created_at)
+        dplyr::mutate (
+            repo_created_at = result$repo_created_at,
+            last_updated = last_updated
+        )
 }

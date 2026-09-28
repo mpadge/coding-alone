@@ -12,16 +12,22 @@ opened the issue"). Also carries each issue's comment count, and the
 repo's own GitHub creation timestamp, used elsewhere as the start of a
 repo's exposure window.}
 \usage{
-github_issue_authors(repo_url = NULL)
+github_issue_authors(repo_url = NULL, since = NULL)
 }
 \arguments{
 \item{repo_url}{A GitHub repo URL, e.g. \code{"https://github.com/owner/repo"}.}
+
+\item{since}{If not \code{NULL}, an ISO-8601 timestamp string restricting the
+GraphQL issues fetch to issues updated (including new comments, not just
+newly opened) at or after that time - used to refresh previously-fetched
+data rather than re-fetching every issue. The \code{contributors} REST call
+has no equivalent filter and is always fetched in full.}
 }
 \value{
 A tibble with one row per issue: \code{repo_url}, \code{issue_number},
-\code{author}, \code{created_at}, \code{n_comments}, \code{contribution}, and
-\code{repo_created_at} (the repo's own GitHub creation timestamp, repeated on
-every row).
+\code{author}, \code{created_at}, \code{n_comments}, \code{contribution}, \code{repo_created_at}
+(the repo's own GitHub creation timestamp, repeated on every row), and
+\code{last_updated} (this fetch's own timestamp, repeated on every row).
 }
 \description{
 Extract every issue (pull requests excluded) opened against a single

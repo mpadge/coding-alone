@@ -61,7 +61,7 @@ test_that ("github_issue_authors returns empty-shape tibble for 0 issues", {
         out,
         c (
             "repo_url", "issue_number", "author", "created_at",
-            "n_comments", "contribution", "repo_created_at"
+            "n_comments", "contribution", "repo_created_at", "last_updated"
         )
     )
 })

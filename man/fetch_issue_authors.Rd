@@ -18,8 +18,9 @@ first (see \code{interlace_for_even_coverage()}).}
 }
 \value{
 A tibble with columns \code{repo_url}, \code{issue_number}, \code{author},
-\code{created_at}, \code{n_comments}, \code{contribution}, \code{repo_created_at} - the full
-accumulated result, including rows from any previous run(s).
+\code{created_at}, \code{n_comments}, \code{contribution}, \code{repo_created_at},
+\code{last_updated} - the full accumulated result, including rows from any
+previous run(s).
 }
 \description{
 Completed repos are tracked in \verb{<out_dir>/issue-authors-done.rds}, and that
