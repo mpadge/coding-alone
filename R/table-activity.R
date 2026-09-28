@@ -372,6 +372,7 @@ author_density_tbl <- function (issue_authors_tbl,
 author_density_step_change_tbl <- function (issue_authors_tbl,
                                             repo_tbl,
                                             sources,
+                                            n_strata = 4L,
                                             contrib_threshold = 0.01,
                                             contrib_min = -Inf,
                                             window = 12L,
@@ -385,6 +386,7 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
             issue_authors_tbl,
             repo_tbl,
             src,
+            n_strata = n_strata,
             contrib_threshold = contrib_threshold,
             contrib_min = contrib_min,
             window = window
@@ -400,7 +402,7 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
 
         stratum_levels <- levels (rate_tbl$popularity_stratum)
 
-        purrr::map_dfr (stratum_levels, \ (stratum) {
+        out <- purrr::map_dfr (stratum_levels, \ (stratum) {
 
             stratum_tbl <- dplyr::filter (rate_tbl, popularity_stratum == stratum)
             est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
@@ -417,6 +419,11 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
                 latest_month = est$latest_month
             )
         })
+
+        if (length (stratum_levels) == 1L) {
+            out$popularity_stratum <- "all"
+        }
+        out
     })
 }
 
@@ -437,6 +444,7 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
 num_comments_step_change_tbl <- function (issue_authors_tbl,
                                           repo_tbl,
                                           sources,
+                                          n_strata = 4L,
                                           window = 12L,
                                           ref_date = as.Date ("2021-01-01")) {
 
@@ -448,6 +456,7 @@ num_comments_step_change_tbl <- function (issue_authors_tbl,
             issue_authors_tbl,
             repo_tbl,
             src,
+            n_strata = n_strata,
             contrib_threshold = 1, # Always count all commits
             metric = "comments",
             window = window
@@ -463,7 +472,7 @@ num_comments_step_change_tbl <- function (issue_authors_tbl,
 
         stratum_levels <- levels (rate_tbl$popularity_stratum)
 
-        purrr::map_dfr (stratum_levels, \ (stratum) {
+        out <- purrr::map_dfr (stratum_levels, \ (stratum) {
 
             stratum_tbl <- dplyr::filter (rate_tbl, popularity_stratum == stratum)
             est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
@@ -480,6 +489,11 @@ num_comments_step_change_tbl <- function (issue_authors_tbl,
                 latest_month = est$latest_month
             )
         })
+
+        if (length (stratum_levels) == 1L) {
+            out$popularity_stratum <- "all"
+        }
+        out
     })
 }
 

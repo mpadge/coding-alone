@@ -8,6 +8,7 @@ step_change_tbl(
   issue_authors_tbl,
   repo_tbl,
   sources,
+  n_strata = 4L,
   metric = "issues",
   contrib_threshold = 0.01,
   window = 12L,
@@ -21,6 +22,10 @@ step_change_tbl(
 
 \item{sources}{Character vector of \code{source_name} values to include (see
 \code{issue_rate_tbl()}).}
+
+\item{n_strata}{Number of popularity strata, passed to \code{issue_rate_tbl()}.
+\code{n_strata = 1} pools every repo into a single, unstratified rate and
+drops \code{popularity_stratum} from the returned tibble.}
 
 \item{metric, contrib_threshold, window}{Passed to \code{issue_rate_tbl()}.}
 

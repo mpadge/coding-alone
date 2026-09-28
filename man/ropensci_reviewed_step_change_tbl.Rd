@@ -7,7 +7,9 @@
 ropensci_reviewed_step_change_tbl(tbl, ref_date = as.Date("2021-01-01"))
 }
 \arguments{
-\item{tbl}{As returned by \code{ropensci_reviewed_activity_tbl()}.}
+\item{tbl}{As returned by \code{ropensci_reviewed_activity_tbl()}. If it was
+built with \code{n_strata = 1}, \code{popularity_stratum} is dropped from the
+returned tibble too, matching \code{step_change_tbl()}.}
 
 \item{ref_date}{As in \code{step_change_tbl()}.}
 }

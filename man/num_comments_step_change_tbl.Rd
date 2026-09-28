@@ -8,6 +8,7 @@ num_comments_step_change_tbl(
   issue_authors_tbl,
   repo_tbl,
   sources,
+  n_strata = 4L,
   window = 12L,
   ref_date = as.Date("2021-01-01")
 )
@@ -19,6 +20,10 @@ num_comments_step_change_tbl(
 
 \item{sources}{Character vector of \code{source_name} values to include (see
 \code{issue_rate_tbl()}).}
+
+\item{n_strata}{Number of popularity strata, passed to \code{issue_rate_tbl()}.
+\code{n_strata = 1} pools every repo into a single, unstratified rate and
+drops \code{popularity_stratum} from the returned tibble.}
 
 \item{window}{Passed to \code{issue_rate_tbl()}.}
 

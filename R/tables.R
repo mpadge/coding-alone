@@ -23,6 +23,9 @@
 #' @param repo_tbl As returned by `build_repo_tbl()`.
 #' @param sources Character vector of `source_name` values to include (see
 #' `issue_rate_tbl()`).
+#' @param n_strata Number of popularity strata, passed to `issue_rate_tbl()`.
+#' `n_strata = 1` pools every repo into a single, unstratified rate and
+#' drops `popularity_stratum` from the returned tibble.
 #' @param metric,contrib_threshold,window Passed to `issue_rate_tbl()`.
 #' @param ref_date Reference `Date` (first-of-month) to compare against the
 #' latest available month.
@@ -36,6 +39,7 @@
 #' }
 #' @export
 step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
+                             n_strata = 4L,
                              metric = "issues", contrib_threshold = 0.01,
                              window = 12L,
                              ref_date = as.Date ("2021-01-01")) {
@@ -46,6 +50,7 @@ step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
 
         rate_tbl <- issue_rate_tbl (
             issue_authors_tbl, repo_tbl, src,
+            n_strata = n_strata,
             contrib_threshold = contrib_threshold, metric = metric,
             window = window
         )
@@ -58,18 +63,25 @@ step_change_tbl <- function (issue_authors_tbl, repo_tbl, sources,
             ))
         }
 
+        stratum_levels <- levels (rate_tbl$popularity_stratum)
+
         latest_month <- max (rate_tbl$month)
         ref <- dplyr::filter (rate_tbl, month == ref_date) |>
             dplyr::select (popularity_stratum, rate_ref = rate)
         latest <- dplyr::filter (rate_tbl, month == latest_month) |>
             dplyr::select (popularity_stratum, rate_latest = rate)
 
-        dplyr::inner_join (ref, latest, by = "popularity_stratum") |>
+        out <- dplyr::inner_join (ref, latest, by = "popularity_stratum") |>
             dplyr::mutate (
                 source = src,
                 step_change = rate_latest / rate_ref,
                 latest_month = latest_month
             )
+
+        if (length (stratum_levels) == 1L) {
+            out$popularity_stratum <- "all"
+        }
+        out
     })
 }
 
@@ -336,7 +348,9 @@ ropensci_reviewed_activity_tbl <- function (issue_authors_tbl, repo_tbl, ropensc
 #' reviewed status) rather than by (source x popularity stratum) as in
 #' `step_change_tbl()`.
 #'
-#' @param tbl As returned by `ropensci_reviewed_activity_tbl()`.
+#' @param tbl As returned by `ropensci_reviewed_activity_tbl()`. If it was
+#' built with `n_strata = 1`, `popularity_stratum` is dropped from the
+#' returned tibble too, matching `step_change_tbl()`.
 #' @param ref_date As in `step_change_tbl()`.
 #' @return A tibble: `popularity_stratum`, `reviewed`, `rate_ref`,
 #' `rate_latest`, `step_change`, `latest_month`.
@@ -356,14 +370,21 @@ ropensci_reviewed_step_change_tbl <- function (tbl, ref_date = as.Date ("2021-01
     tbl <- dplyr::filter (tbl, !is.na (rate))
     latest_month <- max (tbl$month)
 
+    stratum_levels <- levels (tbl$popularity_stratum)
+
     ref <- dplyr::filter (tbl, month == ref_date) |>
         dplyr::select (popularity_stratum, reviewed, rate_ref = rate)
     latest <- dplyr::filter (tbl, month == latest_month) |>
         dplyr::select (popularity_stratum, reviewed, rate_latest = rate)
 
-    dplyr::inner_join (ref, latest, by = c ("popularity_stratum", "reviewed")) |>
+    out <- dplyr::inner_join (ref, latest, by = c ("popularity_stratum", "reviewed")) |>
         dplyr::mutate (
             step_change = rate_latest / rate_ref,
             latest_month = latest_month
         )
+
+    if (length (stratum_levels) == 1L) {
+        out$popularity_stratum <- "all"
+    }
+    out
 }
