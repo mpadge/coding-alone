@@ -351,10 +351,7 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
         ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
         ggplot2::labs (
             x = NULL,
-            y = stringr::str_glue (
-                "New (non-founding) authors per repo-month ",
-                "({window}-month trailing avg)"
-            ),
+            y = "New authors per repo-month",
             colour = "Popularity\nstratum"
         ) +
         ggplot2::theme_minimal () +

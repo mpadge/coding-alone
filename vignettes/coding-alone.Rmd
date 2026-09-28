@@ -136,7 +136,7 @@ also at lower rates than equivalent declines in rates of repository creation.
 These declines in commit rates are genuine declines observed among those people
 still active on GitHub.
 
-## Finding 2: Fewer contributors
+## Finding 2: There Are Fewer Contributors
 
 There are several ways to measures numbers of contributors to open-source
 software. Source code itself provides one of the most direct measures,
@@ -151,16 +151,12 @@ The following graphs show numbers of unique people opening new issues on
 repositories for the five software ecosystems. All counts are standardised to
 numbers of new issues per repository. All of these patterns reveal consistent
 changes either side of around 2020. And all of them have progressively
-decreased since that time. All times series show from here on start from Jan
-2021, with patterns prior to that date generally reflecting those shown in Fig
-2.
-
+decreased since that time.
 
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"  />
 <p class="caption">Fig 2: Numbers of distinct authors opening new issues</p>
 </div>
-
 
 For each software source, lines are shown for the four distributional quartiles
 described above. "Q4" represents the relatively few extremely popular packages,
@@ -203,111 +199,87 @@ influences.)
 
 Table: Percentage changes in statistics of Figs. 1-4, estimated from linear regressions fitted to all data from Jan 2021 across all popularity strata
 
-|Source   | Repo creation (%)| Commits (%)| Distinct Authors (%)| Issue Comments (%)| New Authors (%)| New Authors (core, %)| New Authors (non-core, %)|
-|:--------|-----------------:|-----------:|--------------------:|------------------:|---------------:|---------------------:|-------------------------:|
-|JOSS     |              -73%|        -56%|                 -61%|               -83%|            -69%|                  -58%|                      -69%|
-|rOpenSci |              -78%|        -54%|                 -61%|               -71%|            -71%|                  -61%|                      -73%|
-|CRAN     |              -38%|        -49%|                 -64%|               -78%|            -74%|                  -43%|                      -76%|
-|npm      |              -55%|        -22%|                 -63%|               -70%|            -63%|                  -60%|                      -68%|
-|PyPI     |              -29%|        -18%|                 -36%|               -50%|            -38%|                  -38%|                      -48%|
+|Source   | Repo creation (%)| Commits (%)| Distinct Authors (%)| Issue Comments (%)|
+|:--------|-----------------:|-----------:|--------------------:|------------------:|
+|JOSS     |              -73%|        -56%|                 -61%|               -83%|
+|rOpenSci |              -78%|        -54%|                 -61%|               -71%|
+|CRAN     |              -38%|        -49%|                 -64%|               -78%|
+|npm      |              -55%|        -22%|                 -63%|               -70%|
+|PyPI     |              -29%|        -18%|                 -36%|               -50%|
 
 ----
----
 
-Every one of the 25 (source, stratum) cells in this
-figure sits below its January-2021 level -
-24 out of 25, with no exceptions.
-That includes rOpenSci's least-popular quartile, the one cell in the
-companion vignette's event-count figure that rose rather than fell:
-counted by issues, it reached
-124%
-of its 2021 rate; counted by distinct authors, the same cell manages only
-108%
-- essentially flat, not growth. Whatever rOpenSci's peer-review process is
-doing for its most obscure packages, it isn't attracting a widening
-circle of new people; at best, on this measure, it's holding the existing
-circle from shrinking.
+## Finding #3: New Authors Are Not Arriving
 
-Beyond that one cell, the two measures mostly move together, but not
-identically: in 4 of the 25 cells,
-the distinct-author count has fallen by *more* than the issue count has,
-meaning the average non-core author isn't opening noticeably more issues
-to compensate for fewer of them showing up - if anything, the opposite.
 
-Distinct-author density, though, still blends two different populations
-together: people who've been showing up for years and just keep at it,
-and people interacting with a repository for the very first time.
-Separating the two needs identifying each author's first-ever appearance
-in a repository's issue tracker, and setting aside the very first such
-appearance for each repo - its founding author, typically the maintainer
-opening the repo's own first issue - as not itself community growth.
-What's left is the closest thing this dataset offers to new members
-joining a bowling league, tracked the same way as every rate above:
-normalised by repo-months of exposure and reported as a 12-month trailing
-average.
+
+The rates at which new authors of GitHub issues appear have also progressively
+decreased across all software systems (Fig. 5). In 17 of those
+20 combinations of software source-by-popularity stratum, the
+new-arrival rate has fallen by *more* than overall author density has, meaning
+the decline documented above isn't simply existing regulars posting a little
+less often; it's disproportionately a shrinking supply of people showing up for
+the first time at all.
+
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="plot of chunk new-author-rate-plot"  />
-<p class="caption">plot of chunk new-author-rate-plot</p>
+<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="Fig 5: Rates of arrival of new issue authors per repo-month "  />
+<p class="caption">Fig 5: Rates of arrival of new issue authors per repo-month </p>
+</div>
+
+The following plot converts those absolute measures to relative scales, to
+enable comparison of relative rates of change across the popularity quartiles
+for each software source. In almost all cases, decreases in arrival rates of
+new authors are most severe for the most popular packages.
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/new-author-step-change-plot-1.png" alt="Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures."  />
+<p class="caption">Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures.</p>
+</div>
+
+An alternative way of examining these decreases in rates of arrival are in
+terms of intervals between the arrival of each sequential pair of new authors
+(Fig. 7).
+
+
+
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/author-interval-plot-1.png" alt="Fig. 7: Intervals in days between successive arrival of new authors."  />
+<p class="caption">Fig. 7: Intervals in days between successive arrival of new authors.</p>
+</div>
+
+## Finding 4: the core is thinning too
+
+For each person contributing to a repository, GitHub also provides a measure of
+their relative overall contribution, measured as numbers of commits to source
+code. These relative contribution values were used to arbitrarily distinguish
+core contributors to a repository as those contributing a cumulative total of
+99% of all commits. Non-core contributors were then identified as those
+contributing less than 1% of the cumulative total. While this threshold is
+arbitrary, none of the results or conclusions that follow are qualitatively
+affected by different values.
+
+First, relative decreases in numbers of distinct authors have decreased more
+for non-core than for core authors for all software sources (Fig. 8).
+
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"  />
+<p class="caption">Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories</p>
 </div>
 
 
+Table: Percentage changes in rates of new author arrival, estimated from Jan 2021 across all popularity strata
 
-The new-arrival rate has fallen in
-20 of 20 (source, stratum) cells since
-January 2021 - the same near-universal decline Finding 1 found in overall
-density. In 17 of those 20 cells, the
-new-arrival rate has fallen by *more* than overall density has, meaning
-the decline documented above isn't simply existing regulars posting a
-little less often; it's disproportionately a shrinking supply of people
-showing up for the first time at all.
-
-A monthly rate is still an average over a whole population of
-repositories, though, which can make a slow-moving shift feel abstract.
-The same underlying events - each repository's authors, ordered by their
-own first-ever appearance - support a more direct, and more visceral,
-reframing: not "how many new arrivals per month" but "how many days does
-a repository actually wait between one new arrival and the next".
-Measuring the gap between each first-time author and the one before them,
-time-stamped at the moment the *later* one shows up, turns the same
-decline into units of elapsed time rather than frequency.
-
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/author-interval-plot-1.png" alt="plot of chunk author-interval-plot"  />
-<p class="caption">plot of chunk author-interval-plot</p>
-</div>
+|Source   | Total (%)| Core (%)| Non-Core (%)|
+|:--------|---------:|--------:|------------:|
+|CRAN     |      -74%|     -43%|         -76%|
+|JOSS     |      -69%|     -58%|         -69%|
+|npm      |      -63%|     -60%|         -68%|
+|PyPI     |      -38%|     -38%|         -48%|
+|rOpenSci |      -71%|     -61%|         -73%|
 
 
-
-The wait has lengthened in 16 of
-20 (source, stratum) cells since January 2021 - the same
-near-universal direction as the rate-based measures above, just expressed
-as time instead of frequency. The least-popular quartile shows this most
-starkly, since it's the one with the fewest events to begin with:
-npm's bottom quartile now waits
-4.6x as long between
-first-time authors as it did in January 2021, the largest lengthening of
-any source in that quartile. A repository's least visible corner isn't
-just accumulating new outsiders more slowly - it's going measurably
-longer stretches of calendar time hearing from no one new at all.
-
-## Finding 2: the core is thinning too
-
-Everything so far is about the outer circle - the people a project's own
-regulars are least likely to notice losing. Putnam's story was never just
-about casual drop-in members drifting away, though; league bowling's
-membership rolls shrank at every level, core organisers included. The
-same `contribution` field this dataset already uses to draw the non-core
-line can just as easily draw the opposite one: **core** authors
-(`contribution > 0.01`) are the people a project would recognise by name,
-and **total** is core and non-core combined, with no threshold at all -
-counting literally everyone this dataset can see interacting with a
-repository through its issues.
-
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="plot of chunk step-change-plot-bytype"  />
-<p class="caption">plot of chunk step-change-plot-bytype</p>
-</div>
 
 Core headcounts have fallen in every one of the five sources -
 5 out of 5 - and so has total headcount, core and
