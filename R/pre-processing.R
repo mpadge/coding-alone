@@ -92,13 +92,24 @@ pre_process_author_densities <- function (issue_authors, repos, contrib_threshol
     primary_sources <- unique (repos$source)
 
     purrr::map_dfr (primary_sources, \ (src) {
-        author_density_tbl (
-            issue_authors,
-            repos,
-            source_name = src,
-            contrib_threshold = contrib_threshold
-        ) |>
-            dplyr::mutate (src = src, contrib_threshold = contrib_threshold)
+        dplyr::bind_rows (
+            author_density_tbl (
+                issue_authors,
+                repos,
+                source_name = src,
+                n_strata = 4L,
+                contrib_threshold = contrib_threshold
+            ) |>
+                dplyr::mutate (src = src, contrib_threshold = contrib_threshold),
+            author_density_tbl (
+                issue_authors,
+                repos,
+                source_name = src,
+                n_strata = 1L,
+                contrib_threshold = contrib_threshold
+            ) |>
+                dplyr::mutate (src = src, contrib_threshold = contrib_threshold)
+        )
     })
 }
 

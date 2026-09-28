@@ -180,22 +180,29 @@ n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_cha
 ```
 
 ```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+step_change_regression <- getFromNamespace (
+    "step_change_regression", "codingAlone"
+)
+
 # Wait-time (interval) step-change: geometric-mean days between
 # consecutive first-time authors, now vs. Jan 2021 - the interval-based
 # analogue of new_arrival_sc above, expressing the same shrinking-pipeline
-# finding as elapsed time rather than a monthly rate.
+# finding as elapsed time rather than a monthly rate. Endpoints estimated
+# from linear regressions fitted from Jan 2021, per (source, stratum), like
+# the other step-change tables in this section.
 interval_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src)
-    ir <- dplyr::filter (ir, !is.na (geo_mean_days))
-    ref <- dplyr::filter (ir, month == as.Date ("2021-01-01"))
-    latest_month <- max (ir$month)
-    latest <- dplyr::filter (ir, month == latest_month)
-    dplyr::inner_join (
-        dplyr::select (ref, popularity_stratum, days_ref = geo_mean_days),
-        dplyr::select (latest, popularity_stratum, days_latest = geo_mean_days),
-        by = "popularity_stratum"
-    ) |>
-        dplyr::mutate (source = src, step_change = days_latest / days_ref)
+    ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src) |>
+        dplyr::filter (!is.na (geo_mean_days))
+    stratum_levels <- levels (ir$popularity_stratum)
+    purrr::map_dfr (stratum_levels, \ (stratum) {
+        est <- dplyr::filter (ir, popularity_stratum == stratum) |>
+            step_change_regression ("geo_mean_days")
+        tibble::tibble (
+            source = src, popularity_stratum = stratum,
+            days_ref = est$ref, days_latest = est$latest,
+            step_change = est$latest / est$ref, latest_month = est$latest_month
+        )
+    })
 })
 n_interval_cells <- nrow (interval_sc)
 n_interval_lengthened <- sum (interval_sc$step_change > 1)
@@ -210,9 +217,6 @@ interval_q1 <- interval_sc |>
 # commit_rate_tbl() isn't stratified by popularity (no material
 # difference between strata), so this is already the whole story per
 # source, not a pooled-down version of a finer table.
-step_change_regression <- getFromNamespace (
-    "step_change_regression", "codingAlone"
-)
 commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
 
     est <- dplyr::filter (commit_rates, src == !!src) |>
@@ -246,6 +250,22 @@ repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
 n_repo_creation_declined <- sum (repo_creation_sc$step_change < 1)
 n_repo_creation_risen <- sum (repo_creation_sc$step_change >= 1)
 
+a_all <- author_densities_tbl |>
+    dplyr::filter (popularity_stratum == "all")
+authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
+
+    est <- dplyr::filter (a_all, src == !!src) |>
+        dplyr::filter (!is.na (rate)) |>
+        step_change_regression ("rate")
+
+    tibble::tibble (
+        source = src,
+        rate_ref = est$ref,
+        rate_latest = est$latest,
+        step_change = est$latest / est$ref,
+        latest_month = est$latest_month
+    )
+})
 # Combined (repo-creation, commits) percentage-change table, one row per
 # source - the single table requested to sit under the two-panel figure
 # in place of separate per-metric tables.
@@ -254,6 +274,10 @@ combined_sc_display <- dplyr::inner_join (
     dplyr::transmute (commit_sc, source, commit_change = step_change - 1),
     by = "source"
 ) |>
+    dplyr::inner_join (
+        dplyr::transmute (authors_all_step_change, source, distinct_authors_change = step_change - 1),
+        by = "source"
+    ) |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     dplyr::arrange (commit_change)
 ```
@@ -445,28 +469,31 @@ necessarily end up directly contributing to code at all, and so data on issues
 offers more inclusive insights into larger communities beyond direct code
 contributors.
 
-The following graph shows numbers of unique people opening new issues on
+The following graphs show numbers of unique people opening new issues on
 repositories for the five software ecosystems. All counts are standardised to
 numbers of new issues per repository. All of these patterns reveal consistent
-changes either side of around 2020. From here on, all times series start from
-Jan 2021, with patterns prior to that date generally reflecting those shown 
-in Fig 2.
+changes either side of around 2020. And all of them have progressively
+decreased since that time. All times series show from here on start from Jan
+2021, with patterns prior to that date generally reflecting those shown in Fig
+2.
 
 
 ```{r trend-plots, fig.height=10, cache = FALSE, fig.cap="Fig 2: Numbers of distinct authors opening new issues"}
-p1 <- dplyr::filter (author_densities_tbl, src == "cran") |>
+a_strata <- author_densities_tbl |>
+    dplyr::filter (popularity_stratum != "all")
+p1 <- dplyr::filter (a_strata, src == "cran") |>
     plot_activity (start_year = 2016, "CRAN") +
     ggplot2::theme (legend.position = "none")
-p2 <- dplyr::filter (author_densities_tbl, src == "joss") |>
+p2 <- dplyr::filter (a_strata, src == "joss") |>
     plot_activity (start_year = 2016, "JOSS") +
     ggplot2::theme (legend.position = "none")
-p3 <- dplyr::filter (author_densities_tbl, src == "npm") |>
+p3 <- dplyr::filter (a_strata, src == "npm") |>
     plot_activity (start_year = 2016, "npm") +
     ggplot2::theme (legend.position = "none")
-p4 <- dplyr::filter (author_densities_tbl, src == "pypi") |>
+p4 <- dplyr::filter (a_strata, src == "pypi") |>
     plot_activity (start_year = 2016, "PyPI") +
     ggplot2::theme (legend.position = "none")
-p5 <- dplyr::filter (author_densities_tbl, src == "ropensci") |>
+p5 <- dplyr::filter (a_strata, src == "ropensci") |>
     plot_activity (start_year = 2016, "rOpenSci") +
     ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
@@ -475,6 +502,25 @@ patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
         title = "Numbers of distinct authors opening repository issues"
     )
 ```
+
+```{r comparative-decreases, echo = FALSE}
+combined_sc_display |>
+    dplyr::transmute (
+        Source = source,
+        `Repo creation (%)` = scales::percent (repo_creation_change, accuracy = 1),
+        `Commits (%)` = scales::percent (commit_change, accuracy = 1),
+        `Distinct Authors (%)` = scales::percent (distinct_authors_change, accuracy = 1)
+    ) |>
+    knitr::kable (
+        align = c ("l", "r", "r", "r"),
+        caption = paste0 (
+            "Percentage change in repo-creation rate and commit rate, ",
+            "estimated from linear regressions fitted from Jan 2021."
+        )
+    )
+```
+
+
 
 For each software source, lines are shown for the four distributional quartiles
 described above. "Q4" represents the relatively few extremely popular packages,

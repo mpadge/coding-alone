@@ -339,6 +339,10 @@ author_density_tbl <- function (issue_authors_tbl,
             )
         )
 
+    if (length (stratum_levels) == 1L) {
+        result$popularity_stratum <- "all"
+    }
+
     attr (result, "metric") <- "issues"
     attr (result, "window") <- window
     attr (result, "contrib_threshold") <- contrib_threshold
