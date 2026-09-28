@@ -46,338 +46,6 @@ knitr::opts_chunk$set (
 library (codingAlone)
 ```
 
-```{r initial-data-load, cache = TRUE}
-out_dir <- "../repo-data-out"
-f <- fs::dir_ls (out_dir, regexp = "pre-process", fixed = TRUE)
-dat <- readRDS (f)
-repo_tbl <- dat$repo_tbl
-issue_authors_tbl <- dat$issue_authors_tbl
-commit_counts_tbl <- dat$commit_counts_tbl
-
-commit_rates <- dat$commit_rates
-repo_creation_rates <- dat$repo_creation_rates
-author_densities_tbl <- dat$author_densities_ctb100
-sc_authors <- dat$author_dens_step_change100
-sc_comments <- dat$issue_comments_step_change
-
-primary_sources <- unique (repo_tbl$source)
-n_repos_primary <- length (unique (
-    repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
-))
-date_range <- range (as.Date (issue_authors_tbl$created_at), na.rm = TRUE)
-```
-
-```{r generate-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-contrib_threshold <- 0.01
-
-# Event-count step-change (rate now vs. Jan 2021), for comparison against
-# the person-count version below.
-sc_issues <- step_change_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources,
-    metric = "issues", contrib_threshold = contrib_threshold
-)
-
-sc_compare <- dplyr::inner_join (
-    sc_issues, sc_authors,
-    by = c ("source", "popularity_stratum"),
-    suffix = c ("_issues", "_authors")
-)
-n_authors_declined <- sum (sc_authors$step_change < 1)
-n_authors_cells <- nrow (sc_authors)
-n_issues_declined <- sum (sc_issues$step_change < 1)
-n_authors_fell_more <- sum (sc_compare$step_change_authors < sc_compare$step_change_issues)
-```
-
-```{r generate-step-change-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Non-core / core / total distinct-author step-change, pooled across
-# popularity strata (n_strata = 1) per source - is the shrinkage confined
-# to the outer circle, or does it reach the inner one too?
-pooled_step_change <- function (src, contrib_min, contrib_threshold, label,
-                                ref_date = as.Date ("2021-01-01")) {
-    ad <- author_density_tbl (
-        issue_authors_tbl, repo_tbl, src,
-        n_strata = 1L, contrib_min = contrib_min, contrib_threshold = contrib_threshold
-    )
-    ad <- dplyr::filter (ad, !is.na (rate))
-    ref <- dplyr::filter (ad, month == ref_date)$rate
-    latest_month <- max (ad$month)
-    latest <- dplyr::filter (ad, month == latest_month)$rate
-    tibble::tibble (source = src, type = label, step_change = latest / ref)
-}
-contributor_type_specs <- list (
-    list (cmin = -Inf, cmax = contrib_threshold, label = "Non-core"),
-    list (cmin = contrib_threshold, cmax = Inf, label = "Core"),
-    list (cmin = -Inf, cmax = Inf, label = "Total")
-)
-sc_by_type <- purrr::map_dfr (primary_sources, \ (src) {
-    purrr::map_dfr (contributor_type_specs, \ (spec) {
-        pooled_step_change (src, spec$cmin, spec$cmax, spec$label)
-    })
-})
-sc_by_type$type <- factor (sc_by_type$type, levels = c ("Non-core", "Core", "Total"))
-n_core_declined <- sum (sc_by_type$step_change [sc_by_type$type == "Core"] < 1)
-n_total_declined <- sum (sc_by_type$step_change [sc_by_type$type == "Total"] < 1)
-n_core_less_than_noncore <- sum (
-    sc_by_type$step_change [sc_by_type$type == "Core"] >
-        sc_by_type$step_change [sc_by_type$type == "Non-core"]
-)
-```
-
-```{r generate-solo-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Share of active repositories with exactly one distinct person present in
-# the trailing 12 months - the most direct measure this dataset offers of
-# "coding alone".
-solo_tbl <- solo_repo_share_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources, date_start = as.Date ("2021-01-01")
-)
-solo_ref <- dplyr::filter (solo_tbl, month == as.Date ("2021-01-01"))$solo_share
-solo_latest_month <- max (solo_tbl$month)
-solo_latest <- dplyr::filter (solo_tbl, month == solo_latest_month)$solo_share
-
-# Same measure as solo_tbl above, computed separately per source rather
-# than pooled - the full time series feeds the per-source lines in
-# solo-share-plot below, and is filtered down to just the two comparison
-# months for the solo-share-table further down.
-solo_by_source <- purrr::map_dfr (primary_sources, \ (src) {
-    solo_repo_share_tbl (
-        issue_authors_tbl, repo_tbl, src, date_start = as.Date ("2021-01-01")
-    ) |>
-        dplyr::mutate (source = src)
-})
-n_solo_sources_risen <- solo_by_source |>
-    dplyr::filter (month %in% as.Date (c ("2021-01-01", as.character (solo_latest_month)))) |>
-    dplyr::group_by (source) |>
-    dplyr::summarise (
-        rose = solo_share [month == solo_latest_month] > solo_share [month == as.Date ("2021-01-01")],
-        .groups = "drop"
-    ) |>
-    dplyr::pull (rose) |>
-    sum ()
-```
-
-```{r generate-new-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# New (non-founding) author arrival-rate step-change, computed the same
-# way as sc_authors above but for new_author_rate_tbl() - lets Finding 1
-# separate "existing regulars posting a bit less" from "fewer people
-# showing up for the very first time".
-new_arrival_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    na_tbl <- new_author_rate_tbl (issue_authors_tbl, repo_tbl, src)
-    na_tbl <- dplyr::filter (na_tbl, !is.na (rate))
-    ref <- dplyr::filter (na_tbl, month == as.Date ("2021-01-01"))
-    latest_month <- max (na_tbl$month)
-    latest <- dplyr::filter (na_tbl, month == latest_month)
-    dplyr::inner_join (
-        dplyr::select (ref, popularity_stratum, rate_ref = rate),
-        dplyr::select (latest, popularity_stratum, rate_latest = rate),
-        by = "popularity_stratum"
-    ) |>
-        dplyr::mutate (source = src, step_change = rate_latest / rate_ref)
-})
-n_new_declined <- sum (new_arrival_sc$step_change < 1)
-n_new_cells <- nrow (new_arrival_sc)
-new_vs_density <- dplyr::inner_join (
-    new_arrival_sc, sc_authors,
-    by = c ("source", "popularity_stratum"),
-    suffix = c ("_new", "_density")
-)
-n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_change_density)
-```
-
-```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-step_change_regression <- getFromNamespace (
-    "step_change_regression", "codingAlone"
-)
-
-# Wait-time (interval) step-change: geometric-mean days between
-# consecutive first-time authors, now vs. Jan 2021 - the interval-based
-# analogue of new_arrival_sc above, expressing the same shrinking-pipeline
-# finding as elapsed time rather than a monthly rate. Endpoints estimated
-# from linear regressions fitted from Jan 2021, per (source, stratum), like
-# the other step-change tables in this section.
-interval_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src) |>
-        dplyr::filter (!is.na (geo_mean_days))
-    stratum_levels <- levels (ir$popularity_stratum)
-    purrr::map_dfr (stratum_levels, \ (stratum) {
-        est <- dplyr::filter (ir, popularity_stratum == stratum) |>
-            step_change_regression ("geo_mean_days")
-        tibble::tibble (
-            source = src, popularity_stratum = stratum,
-            days_ref = est$ref, days_latest = est$latest,
-            step_change = est$latest / est$ref, latest_month = est$latest_month
-        )
-    })
-})
-n_interval_cells <- nrow (interval_sc)
-n_interval_lengthened <- sum (interval_sc$step_change > 1)
-interval_q1 <- interval_sc |>
-    dplyr::filter (popularity_stratum == "Q1") |>
-    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
-    dplyr::arrange (dplyr::desc (step_change))
-
-# Commit-rate step-change (rate now vs. Jan 2021), per source - the
-# direct, commit-history-based check on everything above, which counts
-# code landed on the default branch rather than issues filed against it.
-# commit_rate_tbl() isn't stratified by popularity (no material
-# difference between strata), so this is already the whole story per
-# source, not a pooled-down version of a finer table.
-commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
-
-    est <- dplyr::filter (commit_rates, src == !!src) |>
-        dplyr::filter (!is.na (rate)) |>
-        step_change_regression ("rate")
-
-    tibble::tibble (
-        source = src, rate_ref = est$ref, rate_latest = est$latest,
-        step_change = est$latest / est$ref, latest_month = est$latest_month
-    )
-})
-n_commit_declined <- sum (commit_sc$step_change < 1)
-n_commit_risen <- sum (commit_sc$step_change >= 1)
-commit_sc_display <- commit_sc |>
-    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
-    dplyr::arrange (step_change)
-
-# Repo-creation-rate step-change (rate now vs. Jan 2021), per source - the
-# other direct measure shown alongside commit_sc in the two-panel figure
-# above (commit_rate_tbl()/repo_creation_tbl()), tracking how many new
-# repos are entering each ecosystem rather than how much commit activity
-# lands on the ones that already exist.
-repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
-    est <- dplyr::filter (repo_creation_rates, src == !!src) |>
-        step_change_regression ("n_created")
-    tibble::tibble (
-        source = src, n_created_ref = est$ref, n_created_latest = est$latest,
-        step_change = est$latest / est$ref, latest_month = est$latest_month
-    )
-})
-n_repo_creation_declined <- sum (repo_creation_sc$step_change < 1)
-n_repo_creation_risen <- sum (repo_creation_sc$step_change >= 1)
-
-a_all <- author_densities_tbl |>
-    dplyr::filter (popularity_stratum == "all")
-authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
-
-    est <- dplyr::filter (a_all, src == !!src) |>
-        dplyr::filter (!is.na (rate)) |>
-        step_change_regression ("rate")
-
-    tibble::tibble (
-        source = src,
-        rate_ref = est$ref,
-        rate_latest = est$latest,
-        step_change = est$latest / est$ref,
-        latest_month = est$latest_month
-    )
-})
-# Issue-comment step-change, pooled across popularity strata (n_strata = 1),
-# the comments analogue of authors_all_step_change above - sc_comments
-# itself is only pre-computed per-stratum (n_strata = 4), so the pooled
-# version is generated here directly via the same exported function.
-comments_all_step_change <- num_comments_step_change_tbl (
-    issue_authors_tbl, repo_tbl, primary_sources, n_strata = 1L
-)
-# New-author arrival-rate step-change, pooled across popularity strata
-# (n_strata = 1) - the arrival-rate analogue of authors_all_step_change
-# above, using the same new_author_rate_tbl() as new_arrival_sc in the
-# "generate-new-authors-data" chunk, but pooled rather than per-stratum.
-new_authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
-
-    na_tbl <- new_author_rate_tbl (
-        issue_authors_tbl, repo_tbl, src, n_strata = 1L
-    ) |>
-        dplyr::filter (!is.na (rate))
-    est <- step_change_regression (na_tbl, "rate")
-
-    tibble::tibble (
-        source = src,
-        rate_ref = est$ref,
-        rate_latest = est$latest,
-        step_change = est$latest / est$ref,
-        latest_month = est$latest_month
-    )
-})
-# Combined (repo-creation, commits) percentage-change table, one row per
-# source - the single table requested to sit under the two-panel figure
-# in place of separate per-metric tables.
-combined_sc_display <- dplyr::inner_join (
-    dplyr::transmute (repo_creation_sc, source, repo_creation_change = step_change - 1),
-    dplyr::transmute (commit_sc, source, commit_change = step_change - 1),
-    by = "source"
-) |>
-    dplyr::inner_join (
-        dplyr::transmute (authors_all_step_change, source, distinct_authors_change = step_change - 1),
-        by = "source"
-    ) |>
-    dplyr::inner_join (
-        dplyr::transmute (comments_all_step_change, source, comments_change = step_change - 1),
-        by = "source"
-    ) |>
-    dplyr::inner_join (
-        dplyr::transmute (new_authors_all_step_change, source, new_authors_change = step_change - 1),
-        by = "source"
-    ) |>
-    dplyr::inner_join (
-        dplyr::filter (sc_by_type, type == "Core") |>
-            dplyr::transmute (source, new_authors_core_change = step_change - 1),
-        by = "source"
-    ) |>
-    dplyr::inner_join (
-        dplyr::filter (sc_by_type, type == "Non-core") |>
-            dplyr::transmute (source, new_authors_noncore_change = step_change - 1),
-        by = "source"
-    ) |>
-    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
-    dplyr::arrange (commit_change)
-```
-
-```{r generate-cohort-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Matched-cohort age-vs-calendar-time analysis (same construction as in
-# review-dividend, re-run here so this document stands on its own).
-cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
-
-# Q1-vs-Q4 comparison table for the "no corner spared" section.
-q1q4_tbl <- sc_authors |>
-    dplyr::filter (popularity_stratum %in% c ("Q1", "Q4")) |>
-    dplyr::select (source, popularity_stratum, step_change) |>
-    tidyr::pivot_wider (names_from = popularity_stratum, values_from = step_change) |>
-    dplyr::mutate (
-        source = unname (SOURCE_DISPLAY_NAME [source]),
-        gap = Q4 - Q1
-    ) |>
-    dplyr::arrange (gap)
-```
-
-```{r generate-repo-created-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
-# Raw (non-normalised) combined participation, and how much of its
-# comparative resilience against the per-repo rate is just more repos
-# existing now than in 2021 - referenced in the caveats below.
-repo_created <- issue_authors_tbl |>
-    dplyr::filter (!is.na (repo_created_at)) |>
-    dplyr::distinct (repo_url, repo_created_at) |>
-    dplyr::mutate (repo_created_at = codingAlone:::floor_month (repo_created_at))
-repos_primary <- repo_tbl |>
-    dplyr::filter (source %in% primary_sources) |>
-    dplyr::distinct (repo_url, .keep_all = TRUE) |>
-    dplyr::inner_join (repo_created, by = "repo_url")
-n_repos_ref <- sum (repos_primary$repo_created_at <= as.Date ("2021-01-01"), na.rm = TRUE)
-n_repos_now <- nrow (repos_primary)
-repo_growth_factor <- n_repos_now / n_repos_ref
-
-raw_monthly <- issue_authors_tbl |>
-    dplyr::filter (
-        repo_url %in% repos_primary$repo_url, contribution <= contrib_threshold
-    ) |>
-    dplyr::mutate (month = codingAlone:::floor_month (created_at)) |>
-    dplyr::filter (month >= as.Date ("2016-01-01")) |>
-    dplyr::distinct (month, repo_url, author) |>
-    dplyr::count (month, name = "n_authors") |>
-    dplyr::arrange (month) |>
-    dplyr::mutate (roll = codingAlone:::trailing_roll_sum (n_authors, 12L))
-raw_step_change <- dplyr::filter (raw_monthly, month == max (month))$roll /
-    dplyr::filter (raw_monthly, month == as.Date ("2021-01-01"))$roll
-```
-
 <style>
 .callout {
     border-left: 4px solid #2c3e50;
@@ -413,6 +81,26 @@ changing from places of social coherence and cohesion to become more like mere
 mirrors of a single person's work.
 
 ## What was measured
+
+```{r initial-data-load, cache = TRUE}
+out_dir <- "../repo-data-out"
+f <- fs::dir_ls (out_dir, regexp = "pre-process", fixed = TRUE)
+dat <- readRDS (f)
+repo_tbl <- dat$repo_tbl
+issue_authors_tbl <- dat$issue_authors_tbl
+commit_counts_tbl <- dat$commit_counts_tbl
+
+commit_rates <- dat$commit_rates
+repo_creation_rates <- dat$repo_creation_rates
+author_densities_tbl <- dat$author_densities_ctb100
+sc_authors <- dat$author_dens_step_change100
+sc_comments <- dat$issue_comments_step_change
+
+primary_sources <- unique (repo_tbl$source)
+n_repos_primary <- length (unique (
+    repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
+))
+```
 
 All data are taken from GitHub, primarily as measures of interaction with
 software repositories through "issues". Issues are the place for anybody to ask
@@ -562,6 +250,178 @@ plot_step_change (sc_comments, SOURCE_DISPLAY_NAME) +
     )
 ```
 
+```{r generate-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# This is the value used to define "core" vs "non-core" in the "core is
+# thinning" section
+contrib_threshold <- 0.01
+
+# Event-count step-change (rate now vs. Jan 2021), for comparison against
+# the person-count version below.
+sc_issues <- step_change_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources,
+    metric = "issues", contrib_threshold = contrib_threshold
+)
+
+sc_compare <- dplyr::inner_join (
+    sc_issues, sc_authors,
+    by = c ("source", "popularity_stratum"),
+    suffix = c ("_issues", "_authors")
+)
+n_authors_declined <- sum (sc_authors$step_change < 1)
+n_authors_cells <- nrow (sc_authors)
+n_authors_fell_more <- sum (sc_compare$step_change_authors < sc_compare$step_change_issues)
+```
+
+```{r generate-step-change-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# Non-core / core / total distinct-author step-change, pooled across
+# popularity strata (n_strata = 1) per source - is the shrinkage confined
+# to the outer circle, or does it reach the inner one too?
+pooled_step_change <- function (src, contrib_min, contrib_threshold, label,
+                                ref_date = as.Date ("2021-01-01")) {
+    ad <- author_density_tbl (
+        issue_authors_tbl, repo_tbl, src,
+        n_strata = 1L, contrib_min = contrib_min, contrib_threshold = contrib_threshold
+    )
+    ad <- dplyr::filter (ad, !is.na (rate))
+    ref <- dplyr::filter (ad, month == ref_date)$rate
+    latest_month <- max (ad$month)
+    latest <- dplyr::filter (ad, month == latest_month)$rate
+    tibble::tibble (source = src, type = label, step_change = latest / ref)
+}
+contributor_type_specs <- list (
+    list (cmin = -Inf, cmax = contrib_threshold, label = "Non-core"),
+    list (cmin = contrib_threshold, cmax = Inf, label = "Core"),
+    list (cmin = -Inf, cmax = Inf, label = "Total")
+)
+sc_by_type <- purrr::map_dfr (primary_sources, \ (src) {
+    purrr::map_dfr (contributor_type_specs, \ (spec) {
+        pooled_step_change (src, spec$cmin, spec$cmax, spec$label)
+    })
+})
+sc_by_type$type <- factor (sc_by_type$type, levels = c ("Non-core", "Core", "Total"))
+n_core_declined <- sum (sc_by_type$step_change [sc_by_type$type == "Core"] < 1)
+n_total_declined <- sum (sc_by_type$step_change [sc_by_type$type == "Total"] < 1)
+n_core_less_than_noncore <- sum (
+    sc_by_type$step_change [sc_by_type$type == "Core"] >
+        sc_by_type$step_change [sc_by_type$type == "Non-core"]
+)
+```
+
+```{r generate-combined-sc-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+step_change_regression <- getFromNamespace (
+    "step_change_regression", "codingAlone"
+)
+
+# Commit-rate step-change (rate now vs. Jan 2021), per source - the
+# direct, commit-history-based check on everything above, which counts
+# code landed on the default branch rather than issues filed against it.
+# commit_rate_tbl() isn't stratified by popularity (no material
+# difference between strata), so this is already the whole story per
+# source, not a pooled-down version of a finer table.
+commit_sc <- purrr::map_dfr (primary_sources, \ (src) {
+
+    est <- dplyr::filter (commit_rates, src == !!src) |>
+        dplyr::filter (!is.na (rate)) |>
+        step_change_regression ("rate")
+
+    tibble::tibble (
+        source = src, rate_ref = est$ref, rate_latest = est$latest,
+        step_change = est$latest / est$ref, latest_month = est$latest_month
+    )
+})
+
+# Repo-creation-rate step-change (rate now vs. Jan 2021), per source - the
+# other direct measure shown alongside commit_sc in the two-panel figure
+# above (commit_rate_tbl()/repo_creation_tbl()), tracking how many new
+# repos are entering each ecosystem rather than how much commit activity
+# lands on the ones that already exist.
+repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
+    est <- dplyr::filter (repo_creation_rates, src == !!src) |>
+        step_change_regression ("n_created")
+    tibble::tibble (
+        source = src, n_created_ref = est$ref, n_created_latest = est$latest,
+        step_change = est$latest / est$ref, latest_month = est$latest_month
+    )
+})
+
+a_all <- author_densities_tbl |>
+    dplyr::filter (popularity_stratum == "all")
+authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
+
+    est <- dplyr::filter (a_all, src == !!src) |>
+        dplyr::filter (!is.na (rate)) |>
+        step_change_regression ("rate")
+
+    tibble::tibble (
+        source = src,
+        rate_ref = est$ref,
+        rate_latest = est$latest,
+        step_change = est$latest / est$ref,
+        latest_month = est$latest_month
+    )
+})
+# Issue-comment step-change, pooled across popularity strata (n_strata = 1),
+# the comments analogue of authors_all_step_change above - sc_comments
+# itself is only pre-computed per-stratum (n_strata = 4), so the pooled
+# version is generated here directly via the same exported function.
+comments_all_step_change <- num_comments_step_change_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources, n_strata = 1L
+)
+# New-author arrival-rate step-change, pooled across popularity strata
+# (n_strata = 1) - the arrival-rate analogue of authors_all_step_change
+# above, using the same new_author_rate_tbl() as new_arrival_sc in the
+# "generate-new-authors-data" chunk below, but pooled rather than
+# per-stratum.
+new_authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
+
+    na_tbl <- new_author_rate_tbl (
+        issue_authors_tbl, repo_tbl, src, n_strata = 1L
+    ) |>
+        dplyr::filter (!is.na (rate))
+    est <- step_change_regression (na_tbl, "rate")
+
+    tibble::tibble (
+        source = src,
+        rate_ref = est$ref,
+        rate_latest = est$latest,
+        step_change = est$latest / est$ref,
+        latest_month = est$latest_month
+    )
+})
+# Combined (repo-creation, commits) percentage-change table, one row per
+# source - the single table requested to sit under the two-panel figure
+# in place of separate per-metric tables.
+combined_sc_display <- dplyr::inner_join (
+    dplyr::transmute (repo_creation_sc, source, repo_creation_change = step_change - 1),
+    dplyr::transmute (commit_sc, source, commit_change = step_change - 1),
+    by = "source"
+) |>
+    dplyr::inner_join (
+        dplyr::transmute (authors_all_step_change, source, distinct_authors_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::transmute (comments_all_step_change, source, comments_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::transmute (new_authors_all_step_change, source, new_authors_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::filter (sc_by_type, type == "Core") |>
+            dplyr::transmute (source, new_authors_core_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::filter (sc_by_type, type == "Non-core") |>
+            dplyr::transmute (source, new_authors_noncore_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    dplyr::arrange (commit_change)
+```
+
 Relative differences in all statistics to this point are quantified in the
 following table of percentage change in both rates from Jan 2021. (Repository
 creation for both JOSS and rOpenSci generally only occurs following rigorous
@@ -633,6 +493,34 @@ plot_new_author_rate (
 )
 ```
 
+```{r generate-new-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# New (non-founding) author arrival-rate step-change, computed the same
+# way as sc_authors above but for new_author_rate_tbl() - lets Finding 1
+# separate "existing regulars posting a bit less" from "fewer people
+# showing up for the very first time".
+new_arrival_sc <- purrr::map_dfr (primary_sources, \ (src) {
+    na_tbl <- new_author_rate_tbl (issue_authors_tbl, repo_tbl, src)
+    na_tbl <- dplyr::filter (na_tbl, !is.na (rate))
+    ref <- dplyr::filter (na_tbl, month == as.Date ("2021-01-01"))
+    latest_month <- max (na_tbl$month)
+    latest <- dplyr::filter (na_tbl, month == latest_month)
+    dplyr::inner_join (
+        dplyr::select (ref, popularity_stratum, rate_ref = rate),
+        dplyr::select (latest, popularity_stratum, rate_latest = rate),
+        by = "popularity_stratum"
+    ) |>
+        dplyr::mutate (source = src, step_change = rate_latest / rate_ref)
+})
+n_new_declined <- sum (new_arrival_sc$step_change < 1)
+n_new_cells <- nrow (new_arrival_sc)
+new_vs_density <- dplyr::inner_join (
+    new_arrival_sc, sc_authors,
+    by = c ("source", "popularity_stratum"),
+    suffix = c ("_new", "_density")
+)
+n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_change_density)
+```
+
 The new-arrival rate has fallen in
 `r n_new_declined` of `r n_new_cells` (source, stratum) cells since
 January 2021 - the same near-universal decline Finding 1 found in overall
@@ -657,6 +545,37 @@ plot_author_interval (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
 )
+```
+
+```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# Wait-time (interval) step-change: geometric-mean days between
+# consecutive first-time authors, now vs. Jan 2021 - the interval-based
+# analogue of new_arrival_sc above, expressing the same shrinking-pipeline
+# finding as elapsed time rather than a monthly rate. Endpoints estimated
+# from linear regressions fitted from Jan 2021, per (source, stratum), like
+# the other step-change tables in this section. Uses step_change_regression(),
+# already loaded via getFromNamespace() in the "generate-combined-sc-data"
+# chunk above.
+interval_sc <- purrr::map_dfr (primary_sources, \ (src) {
+    ir <- author_interval_trend_tbl (issue_authors_tbl, repo_tbl, src) |>
+        dplyr::filter (!is.na (geo_mean_days))
+    stratum_levels <- levels (ir$popularity_stratum)
+    purrr::map_dfr (stratum_levels, \ (stratum) {
+        est <- dplyr::filter (ir, popularity_stratum == stratum) |>
+            step_change_regression ("geo_mean_days")
+        tibble::tibble (
+            source = src, popularity_stratum = stratum,
+            days_ref = est$ref, days_latest = est$latest,
+            step_change = est$latest / est$ref, latest_month = est$latest_month
+        )
+    })
+})
+n_interval_cells <- nrow (interval_sc)
+n_interval_lengthened <- sum (interval_sc$step_change > 1)
+interval_q1 <- interval_sc |>
+    dplyr::filter (popularity_stratum == "Q1") |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    dplyr::arrange (dplyr::desc (step_change))
 ```
 
 The wait has lengthened in `r n_interval_lengthened` of
@@ -726,6 +645,27 @@ plainer, Putnam-shaped question is a repo-count one: out of the
 repositories that heard from *anyone* at all in the last year, how many
 heard from only one person?
 
+```{r generate-solo-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# Share of active repositories with exactly one distinct person present in
+# the trailing 12 months - the most direct measure this dataset offers of
+# "coding alone".
+solo_tbl <- solo_repo_share_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources, date_start = as.Date ("2021-01-01")
+)
+solo_ref <- dplyr::filter (solo_tbl, month == as.Date ("2021-01-01"))$solo_share
+solo_latest_month <- max (solo_tbl$month)
+solo_latest <- dplyr::filter (solo_tbl, month == solo_latest_month)$solo_share
+
+# Same measure as solo_tbl above, computed separately per source rather
+# than pooled - feeds the per-source lines in solo-share-plot below.
+solo_by_source <- purrr::map_dfr (primary_sources, \ (src) {
+    solo_repo_share_tbl (
+        issue_authors_tbl, repo_tbl, src, date_start = as.Date ("2021-01-01")
+    ) |>
+        dplyr::mutate (source = src)
+})
+```
+
 ```{r solo-share-plot, fig.cap = "Share ot active repositories with only one person active"}
 solo_by_source |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
@@ -764,6 +704,12 @@ same age/period/cohort trick: fix a repository's *age* and let *cohort*
 flat lines at a given age regardless of which year that age happened to
 fall in, while a shared calendar-time effect predicts later cohorts
 showing a lower rate at that same fixed age than earlier ones did.
+
+```{r generate-cohort-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
+# Matched-cohort age-vs-calendar-time analysis (same construction as in
+# review-dividend, re-run here so this document stands on its own).
+cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
+```
 
 ```{r cohort-age-plot, fig.height=6.5, cache = TRUE}
 plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
