@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.042</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.046</span>
       </span>
     </div>
 
@@ -211,7 +211,7 @@ declines in commit rates are genuine declines observed among those
 people still active on GitHub.</p>
 </div>
 <div class="section level2">
-<h2 id="finding-2-fewer-contributors">Finding 2: Fewer contributors<a class="anchor" aria-label="anchor" href="#finding-2-fewer-contributors"></a>
+<h2 id="finding-2-there-are-fewer-contributors">Finding 2: There Are Fewer Contributors<a class="anchor" aria-label="anchor" href="#finding-2-there-are-fewer-contributors"></a>
 </h2>
 <p>There are several ways to measures numbers of contributors to
 open-source software. Source code itself provides one of the most direct
@@ -225,83 +225,12 @@ into larger communities beyond direct code contributors.</p>
 on repositories for the five software ecosystems. All counts are
 standardised to numbers of new issues per repository. All of these
 patterns reveal consistent changes either side of around 2020. And all
-of them have progressively decreased since that time. All times series
-show from here on start from Jan 2021, with patterns prior to that date
-generally reflecting those shown in Fig 2.</p>
+of them have progressively decreased since that time.</p>
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"><p class="caption">
 Fig 2: Numbers of distinct authors opening new issues
 </p>
 </div>
-<p>These relative differences are quantified in the following table of
-percentage change in both rates from Jan 2021. (Repository creation for
-both JOSS and rOpenSci generally only occurs following rigorous review
-processes, and so values for these two can’t really be directly compared
-with the other sources, and are likely affected by additional
-constraints and influences.)</p>
-<table style="width:100%;" class="table">
-<caption>Percentage change in repo-creation rate and commit rate,
-estimated from linear regressions fitted from Jan 2021.</caption>
-<colgroup>
-<col width="9%">
-<col width="18%">
-<col width="12%">
-<col width="22%">
-<col width="20%">
-<col width="16%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Repo creation (%)</th>
-<th align="right">Commits (%)</th>
-<th align="right">Distinct Authors (%)</th>
-<th align="right">Issue Comments (%)</th>
-<th align="right">New Authors (%)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">JOSS</td>
-<td align="right">-73%</td>
-<td align="right">-56%</td>
-<td align="right">-61%</td>
-<td align="right">-83%</td>
-<td align="right">-69%</td>
-</tr>
-<tr class="even">
-<td align="left">rOpenSci</td>
-<td align="right">-78%</td>
-<td align="right">-54%</td>
-<td align="right">-61%</td>
-<td align="right">-71%</td>
-<td align="right">-71%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">-38%</td>
-<td align="right">-49%</td>
-<td align="right">-64%</td>
-<td align="right">-78%</td>
-<td align="right">-74%</td>
-</tr>
-<tr class="even">
-<td align="left">npm</td>
-<td align="right">-55%</td>
-<td align="right">-22%</td>
-<td align="right">-63%</td>
-<td align="right">-70%</td>
-<td align="right">-63%</td>
-</tr>
-<tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">-29%</td>
-<td align="right">-18%</td>
-<td align="right">-36%</td>
-<td align="right">-50%</td>
-<td align="right">-38%</td>
-</tr>
-</tbody>
-</table>
-<hr>
 <p>For each software source, lines are shown for the four distributional
 quartiles described above. “Q4” represents the relatively few extremely
 popular packages, while “Q1” is the quartile of lowest popularity. (And
@@ -327,88 +256,168 @@ Fig 4: Changes in numbers of comments since 2021, as for previous
 figure.
 </p>
 </div>
+<p>Relative differences in all statistics to this point are quantified
+in the following table of percentage change in both rates from Jan 2021.
+(Repository creation for both JOSS and rOpenSci generally only occurs
+following rigorous review processes, and so values for these two can’t
+really be directly compared with the other sources, and are likely
+affected by additional constraints and influences.)</p>
+<table class="table">
+<caption>Percentage changes in statistics of Figs. 1-4, estimated from
+linear regressions fitted to all data from Jan 2021 across all
+popularity strata</caption>
+<colgroup>
+<col width="11%">
+<col width="22%">
+<col width="15%">
+<col width="26%">
+<col width="24%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Source</th>
+<th align="right">Repo creation (%)</th>
+<th align="right">Commits (%)</th>
+<th align="right">Distinct Authors (%)</th>
+<th align="right">Issue Comments (%)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOSS</td>
+<td align="right">-73%</td>
+<td align="right">-56%</td>
+<td align="right">-61%</td>
+<td align="right">-83%</td>
+</tr>
+<tr class="even">
+<td align="left">rOpenSci</td>
+<td align="right">-78%</td>
+<td align="right">-54%</td>
+<td align="right">-61%</td>
+<td align="right">-71%</td>
+</tr>
+<tr class="odd">
+<td align="left">CRAN</td>
+<td align="right">-38%</td>
+<td align="right">-49%</td>
+<td align="right">-64%</td>
+<td align="right">-78%</td>
+</tr>
+<tr class="even">
+<td align="left">npm</td>
+<td align="right">-55%</td>
+<td align="right">-22%</td>
+<td align="right">-63%</td>
+<td align="right">-70%</td>
+</tr>
+<tr class="odd">
+<td align="left">PyPI</td>
+<td align="right">-29%</td>
+<td align="right">-18%</td>
+<td align="right">-36%</td>
+<td align="right">-50%</td>
+</tr>
+</tbody>
+</table>
 <hr>
-<p>Every one of the 25 (source, stratum) cells in this figure sits below
-its January-2021 level - 24 out of 25, with no exceptions. That includes
-rOpenSci’s least-popular quartile, the one cell in the companion
-vignette’s event-count figure that rose rather than fell: counted by
-issues, it reached 124% of its 2021 rate; counted by distinct authors,
-the same cell manages only 108% - essentially flat, not growth. Whatever
-rOpenSci’s peer-review process is doing for its most obscure packages,
-it isn’t attracting a widening circle of new people; at best, on this
-measure, it’s holding the existing circle from shrinking.</p>
-<p>Beyond that one cell, the two measures mostly move together, but not
-identically: in 4 of the 25 cells, the distinct-author count has fallen
-by <em>more</em> than the issue count has, meaning the average non-core
-author isn’t opening noticeably more issues to compensate for fewer of
-them showing up - if anything, the opposite.</p>
-<p>Distinct-author density, though, still blends two different
-populations together: people who’ve been showing up for years and just
-keep at it, and people interacting with a repository for the very first
-time. Separating the two needs identifying each author’s first-ever
-appearance in a repository’s issue tracker, and setting aside the very
-first such appearance for each repo - its founding author, typically the
-maintainer opening the repo’s own first issue - as not itself community
-growth. What’s left is the closest thing this dataset offers to new
-members joining a bowling league, tracked the same way as every rate
-above: normalised by repo-months of exposure and reported as a 12-month
-trailing average.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="plot of chunk new-author-rate-plot"><p class="caption">
-plot of chunk new-author-rate-plot
-</p>
-</div>
-<p>The new-arrival rate has fallen in 20 of 20 (source, stratum) cells
-since January 2021 - the same near-universal decline Finding 1 found in
-overall density. In 17 of those 20 cells, the new-arrival rate has
-fallen by <em>more</em> than overall density has, meaning the decline
-documented above isn’t simply existing regulars posting a little less
-often; it’s disproportionately a shrinking supply of people showing up
-for the first time at all.</p>
-<p>A monthly rate is still an average over a whole population of
-repositories, though, which can make a slow-moving shift feel abstract.
-The same underlying events - each repository’s authors, ordered by their
-own first-ever appearance - support a more direct, and more visceral,
-reframing: not “how many new arrivals per month” but “how many days does
-a repository actually wait between one new arrival and the next”.
-Measuring the gap between each first-time author and the one before
-them, time-stamped at the moment the <em>later</em> one shows up, turns
-the same decline into units of elapsed time rather than frequency.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/author-interval-plot-1.png" alt="plot of chunk author-interval-plot"><p class="caption">
-plot of chunk author-interval-plot
-</p>
-</div>
-<p>The wait has lengthened in 16 of 20 (source, stratum) cells since
-January 2021 - the same near-universal direction as the rate-based
-measures above, just expressed as time instead of frequency. The
-least-popular quartile shows this most starkly, since it’s the one with
-the fewest events to begin with: npm’s bottom quartile now waits 4.6x as
-long between first-time authors as it did in January 2021, the largest
-lengthening of any source in that quartile. A repository’s least visible
-corner isn’t just accumulating new outsiders more slowly - it’s going
-measurably longer stretches of calendar time hearing from no one new at
-all.</p>
 </div>
 <div class="section level2">
-<h2 id="finding-2-the-core-is-thinning-too">Finding 2: the core is thinning too<a class="anchor" aria-label="anchor" href="#finding-2-the-core-is-thinning-too"></a>
+<h2 id="finding-3-new-authors-are-not-arriving">Finding #3: New Authors Are Not Arriving<a class="anchor" aria-label="anchor" href="#finding-3-new-authors-are-not-arriving"></a>
 </h2>
-<p>Everything so far is about the outer circle - the people a project’s
-own regulars are least likely to notice losing. Putnam’s story was never
-just about casual drop-in members drifting away, though; league
-bowling’s membership rolls shrank at every level, core organisers
-included. The same <code>contribution</code> field this dataset already
-uses to draw the non-core line can just as easily draw the opposite one:
-<strong>core</strong> authors (<code>contribution &gt; 0.01</code>) are
-the people a project would recognise by name, and <strong>total</strong>
-is core and non-core combined, with no threshold at all - counting
-literally everyone this dataset can see interacting with a repository
-through its issues.</p>
+<p>The rates at which new authors of GitHub issues appear have also
+progressively decreased across all software systems (Fig. 5). In 17 of
+those 20 combinations of software source-by-popularity stratum, the
+new-arrival rate has fallen by <em>more</em> than overall author density
+has, meaning the decline documented above isn’t simply existing regulars
+posting a little less often; it’s disproportionately a shrinking supply
+of people showing up for the first time at all.</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="plot of chunk step-change-plot-bytype"><p class="caption">
-plot of chunk step-change-plot-bytype
+<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="Fig 5: Rates of arrival of new issue authors per repo-month "><p class="caption">
+Fig 5: Rates of arrival of new issue authors per repo-month
 </p>
 </div>
+<p>The following plot converts those absolute measures to relative
+scales, to enable comparison of relative rates of change across the
+popularity quartiles for each software source. In almost all cases,
+decreases in arrival rates of new authors are most severe for the most
+popular packages.</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/new-author-step-change-plot-1.png" alt="Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures."><p class="caption">
+Fig 6: Changes in rates of new-author arrival since 2021, as for
+previous figures.
+</p>
+</div>
+<p>An alternative way of examining these decreases in rates of arrival
+are in terms of intervals between the arrival of each sequential pair of
+new authors (Fig. 7).</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/author-interval-plot-1.png" alt="Fig. 7: Intervals in days between successive arrival of new authors."><p class="caption">
+Fig. 7: Intervals in days between successive arrival of new authors.
+</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="finding-4-the-core-is-thinning-too">Finding 4: the core is thinning too<a class="anchor" aria-label="anchor" href="#finding-4-the-core-is-thinning-too"></a>
+</h2>
+<p>For each person contributing to a repository, GitHub also provides a
+measure of their relative overall contribution, measured as numbers of
+commits to source code. These relative contribution values were used to
+arbitrarily distinguish core contributors to a repository as those
+contributing a cumulative total of 99% of all commits. Non-core
+contributors were then identified as those contributing less than 1% of
+the cumulative total. While this threshold is arbitrary, none of the
+results or conclusions that follow are qualitatively affected by
+different values.</p>
+<p>First, relative decreases in numbers of distinct authors have
+decreased more for non-core than for core authors for all software
+sources (Fig. 8).</p>
+<div class="figure" style="text-align: center">
+<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"><p class="caption">
+Fig. 8: Relative decreases since Jan 2021 in numbers of core and
+non-core contributors to repositories
+</p>
+</div>
+<table class="table">
+<caption>Percentage changes in rates of new author arrival, estimated
+from Jan 2021 across all popularity strata</caption>
+<thead><tr class="header">
+<th align="left">Source</th>
+<th align="right">Total (%)</th>
+<th align="right">Core (%)</th>
+<th align="right">Non-Core (%)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">CRAN</td>
+<td align="right">-74%</td>
+<td align="right">-43%</td>
+<td align="right">-76%</td>
+</tr>
+<tr class="even">
+<td align="left">JOSS</td>
+<td align="right">-69%</td>
+<td align="right">-58%</td>
+<td align="right">-69%</td>
+</tr>
+<tr class="odd">
+<td align="left">npm</td>
+<td align="right">-63%</td>
+<td align="right">-60%</td>
+<td align="right">-68%</td>
+</tr>
+<tr class="even">
+<td align="left">PyPI</td>
+<td align="right">-38%</td>
+<td align="right">-38%</td>
+<td align="right">-48%</td>
+</tr>
+<tr class="odd">
+<td align="left">rOpenSci</td>
+<td align="right">-71%</td>
+<td align="right">-61%</td>
+<td align="right">-73%</td>
+</tr>
+</tbody>
+</table>
 <p>Core headcounts have fallen in every one of the five sources - 5 out
 of 5 - and so has total headcount, core and non-core combined - 5 out of
 5. Nobody’s circle is exempt. What does differ is degree: in every one
@@ -429,61 +438,16 @@ plainer, Putnam-shaped question is a repo-count one: out of the
 repositories that heard from <em>anyone</em> at all in the last year,
 how many heard from only one person?</p>
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/solo-share-plot-1.png" alt="plot of chunk solo-share-plot"><p class="caption">
-plot of chunk solo-share-plot
+<img src="coding-alone-figures/solo-share-plot-1.png" alt="Share ot active repositories with only one person active"><p class="caption">
+Share ot active repositories with only one person active
 </p>
 </div>
-<p>In January 2021, 27% of repositories with any issue-based activity at
-all in the preceding year had that activity coming from a single person.
-By September 2026, that share had risen to 43% - not a fixed population
-getting quieter across the board, but a growing fraction of it crossing
-all the way over into having no visible second person at all. The share
-was roughly flat, drifting between about a quarter and a third, from
-2016 through 2021; essentially the entire rise has happened since.
-Broken out by source, every one of the five moves the same direction - 5
-out of 5 rose:</p>
-<table class="table">
-<caption>Share of active repositories with exactly one distinct author,
-by source</caption>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Jan 2021</th>
-<th align="right">Latest</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">36%</td>
-<td align="right">56%</td>
-</tr>
-<tr class="even">
-<td align="left">JOSS</td>
-<td align="right">25%</td>
-<td align="right">35%</td>
-</tr>
-<tr class="odd">
-<td align="left">npm</td>
-<td align="right">19%</td>
-<td align="right">29%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">18%</td>
-<td align="right">31%</td>
-</tr>
-<tr class="odd">
-<td align="left">rOpenSci</td>
-<td align="right">22%</td>
-<td align="right">48%</td>
-</tr>
-</tbody>
-</table>
-<p>rOpenSci shows the largest relative jump of the five - not the
-smallest, despite housing this dataset’s one instance of formal review
-sustaining outside engagement in its most obscure packages. Whatever
-peer review is doing for a thin slice of rOpenSci’s Q1, it hasn’t
-stopped a majority of rOpenSci repositories overall from crossing into
-solo territory by the most recent data.</p>
+<p>Overall in January 2021, 27% of repositories with any issue-based
+activity at all in the preceding year had that activity coming from a
+single person. By September 2026, that share had risen to 43% - not a
+fixed population getting quieter across the board, but a growing
+fraction of it crossing all the way over into having no visible second
+person at all.</p>
 </div>
 <div class="section level2">
 <h2 id="finding-4-not-simply-projects-settling-down-with-age">Finding 4: not simply projects settling down with age<a class="anchor" aria-label="anchor" href="#finding-4-not-simply-projects-settling-down-with-age"></a>
@@ -514,64 +478,6 @@ over: whatever combination of forces is driving the broader pattern
 doesn’t touch every source through quite the same channel, even though
 the <em>outcome</em> - fewer people showing up now than five years ago -
 turns out to be shared by all five.</p>
-</div>
-<div class="section level2">
-<h2 id="finding-5-popularity-offers-no-protection---if-anything-the-opposite">Finding 5: popularity offers no protection - if anything the
-opposite<a class="anchor" aria-label="anchor" href="#finding-5-popularity-offers-no-protection---if-anything-the-opposite"></a>
-</h2>
-<p>If the decline were simply outsiders losing interest in open source
-generally, it should land on popular and obscure software alike. It
-doesn’t:</p>
-<table class="table">
-<caption>Distinct-author step-change since Jan 2021, least vs. most
-popular quartile</caption>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Least popular (Q1)</th>
-<th align="right">Most popular (Q4)</th>
-<th align="right">Gap (Q4 − Q1)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">rOpenSci</td>
-<td align="right">108%</td>
-<td align="right">36%</td>
-<td align="right">-72%</td>
-</tr>
-<tr class="even">
-<td align="left">JOSS</td>
-<td align="right">98%</td>
-<td align="right">47%</td>
-<td align="right">-52%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">73%</td>
-<td align="right">39%</td>
-<td align="right">-33%</td>
-</tr>
-<tr class="even">
-<td align="left">npm</td>
-<td align="right">26%</td>
-<td align="right">30%</td>
-<td align="right">5%</td>
-</tr>
-<tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">55%</td>
-<td align="right">77%</td>
-<td align="right">23%</td>
-</tr>
-</tbody>
-</table>
-<p>In every one of the five sources, the most popular quartile’s
-headcount has fallen further below its 2021 baseline than the least
-popular quartile’s has - the same direction the companion vignette
-reports for issue counts, but here without a single source running the
-other way. Popularity buys a project more absolute traffic, but it
-hasn’t bought insulation from this trend; the software with the most
-outside visibility to lose is losing proportionally more of it than the
-software that barely had any to begin with.</p>
 </div>
 <div class="section level2">
 <h2 id="what-this-looks-like-from-outside-this-dataset">What this looks like from outside this dataset<a class="anchor" aria-label="anchor" href="#what-this-looks-like-from-outside-this-dataset"></a>
@@ -635,66 +541,6 @@ associational decline he documented: generational turnover, two-career
 households leaving less unscheduled time, and, well before social media,
 the privatising pull of television <span class="citation">(Putnam
 2000)</span>.</p>
-</div>
-<div class="section level2">
-<h2 id="caveats">Caveats<a class="anchor" aria-label="anchor" href="#caveats"></a>
-</h2>
-<div class="callout">
-<ul>
-<li>
-<strong>Every count in this document depends on issue-filing, not
-commit history</strong>, as explained above - core, non-core and total
-headcounts alike miss anyone who contributes code without ever opening
-an issue. A planned update to this analysis will substitute real
-commit-based contributor timelines for this proxy; the numbers here
-should be read as a plausible lower bound, not an exact census, though
-there’s no obvious mechanism by which fixing this would turn any of the
-declines reported above into a rise.</li>
-<li>
-<strong>Distinct-author density counts author-months, not
-lifetime-unique people.</strong> Someone active in three different
-months within a trailing 12-month window is counted three times, once
-per month - the same construction as the underlying issue-rate metric,
-chosen so the two stay directly comparable. This measure can’t
-distinguish a shrinking pool of <em>regulars</em> from a shrinking
-stream of one-time drive-by contributors; both would produce the same
-falling density.</li>
-<li>
-<strong>The per-repo decline is steeper than the decline in total
-participation</strong>, because the population of repositories itself
-grew over the same period: 21,613 primary-source repositories exist in
-this dataset now, against 13,083 that already existed by January 2021 -
-a 1.7x increase. Raw, unnormalised monthly non-core author counts across
-all five sources combined have fallen only to about 76% of their
-January-2021 level, well short of the roughly 55% median seen per
-repository. More repositories now compete for a shrinking amount of
-attention per repository - the total pool of people engaging with open
-source hasn’t collapsed nearly as sharply as any individual project’s
-own share of it has.</li>
-<li>
-<strong>The solo-repository share (Finding 3) is a repo-count share,
-not normalised by exposure at all</strong>, unlike every other measure
-in this document - it doesn’t correct for the same repo-count growth
-just described. It answers a different question on purpose (how many
-repositories, not how much activity per repository), but that also means
-it isn’t directly comparable in magnitude to the step-changes reported
-elsewhere.</li>
-<li>
-<strong><code>contribution</code> is a lifetime measure, not a
-point-in-time one</strong>, so an issue filed by someone who later
-became a core maintainer is excluded from “non-core” counts even for
-that earlier issue.</li>
-<li>
-<strong>Popularity strata reflect current downloads/stars, not
-historical popularity</strong> - stratification here doesn’t track a
-repository’s popularity trajectory, only its current standing.</li>
-<li>
-<strong>No direct measure of <em>why</em> any individual stopped
-participating.</strong> Nothing here distinguishes burnout, disinterest,
-AI substitution, or simply moving on to other things - the external
-context above is context, not measurement.</li>
-</ul>
-</div>
 </div>
 <div class="section level2">
 <h2 id="where-this-leaves-things">Where this leaves things<a class="anchor" aria-label="anchor" href="#where-this-leaves-things"></a>
