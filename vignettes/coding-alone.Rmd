@@ -335,11 +335,11 @@ repositories that heard from *anyone* at all in the last year, how many
 heard from only one person?
 
 <div class="figure" style="text-align: center">
-<img src="coding-alone-figures/solo-share-plot-1.png" alt="plot of chunk solo-share-plot"  />
-<p class="caption">plot of chunk solo-share-plot</p>
+<img src="coding-alone-figures/solo-share-plot-1.png" alt="Share ot active repositories with only one person active"  />
+<p class="caption">Share ot active repositories with only one person active</p>
 </div>
 
-In January 2021,
+Overall in January 2021,
 27%
 of repositories with any issue-based activity at all in the preceding
 year had that activity coming from a single person. By
@@ -347,29 +347,7 @@ September 2026, that share had risen to
 43%
 - not a fixed population getting quieter across the board, but a growing
 fraction of it crossing all the way over into having no visible second
-person at all. The share was roughly flat, drifting between about a
-quarter and a third, from 2016 through 2021; essentially the entire rise
-has happened since. Broken out by source, every one of the five moves the
-same direction -
-5 out of 5 rose:
-
-
-Table: Share of active repositories with exactly one distinct author, by source
-
-|Source   | Jan 2021| Latest|
-|:--------|--------:|------:|
-|CRAN     |      36%|    56%|
-|JOSS     |      25%|    35%|
-|npm      |      19%|    29%|
-|PyPI     |      18%|    31%|
-|rOpenSci |      22%|    48%|
-
-rOpenSci shows the largest relative jump of the five - not the smallest,
-despite housing this dataset's one instance of formal review sustaining
-outside engagement in its most obscure packages. Whatever peer review is
-doing for a thin slice of rOpenSci's Q1, it hasn't stopped a majority of
-rOpenSci repositories overall from crossing into solo territory by the
-most recent data.
+person at all.
 
 ## Finding 4: not simply projects settling down with age
 
@@ -398,32 +376,6 @@ which is worth flagging rather than smoothing over: whatever combination
 of forces is driving the broader pattern doesn't touch every source
 through quite the same channel, even though the *outcome* - fewer people
 showing up now than five years ago - turns out to be shared by all five.
-
-## Finding 5: popularity offers no protection - if anything the opposite
-
-If the decline were simply outsiders losing interest in open source
-generally, it should land on popular and obscure software alike. It
-doesn't:
-
-
-Table: Distinct-author step-change since Jan 2021, least vs. most popular quartile
-
-|Source   | Least popular (Q1)| Most popular (Q4)| Gap (Q4 − Q1)|
-|:--------|------------------:|-----------------:|-------------:|
-|rOpenSci |               108%|               36%|          -72%|
-|JOSS     |                98%|               47%|          -52%|
-|CRAN     |                73%|               39%|          -33%|
-|npm      |                26%|               30%|            5%|
-|PyPI     |                55%|               77%|           23%|
-
-In every one of the five sources, the most popular quartile's headcount
-has fallen further below its 2021 baseline than the least popular
-quartile's has - the same direction the companion vignette reports for
-issue counts, but here without a single source running the other way.
-Popularity buys a project more absolute traffic, but it hasn't bought
-insulation from this trend; the software with the most outside visibility
-to lose is losing proportionally more of it than the software that barely
-had any to begin with.
 
 ## What this looks like from outside this dataset
 
@@ -487,58 +439,6 @@ own preferred explanations for the associational decline he documented:
 generational turnover, two-career households leaving less unscheduled
 time, and, well before social media, the privatising pull of television
 [@putnam2000bowlingalone].
-
-## Caveats
-
-<div class="callout">
-- **Every count in this document depends on issue-filing, not commit
-  history**, as explained above - core, non-core and total headcounts
-  alike miss anyone who contributes code without ever opening an issue.
-  A planned update to this analysis will substitute real commit-based
-  contributor timelines for this proxy; the numbers here should be read
-  as a plausible lower bound, not an exact census, though there's no
-  obvious mechanism by which fixing this would turn any of the declines
-  reported above into a rise.
-- **Distinct-author density counts author-months, not lifetime-unique
-  people.** Someone active in three different months within a trailing
-  12-month window is counted three times, once per month - the same
-  construction as the underlying issue-rate metric, chosen so the two
-  stay directly comparable. This measure can't distinguish a shrinking
-  pool of *regulars* from a shrinking stream of one-time drive-by
-  contributors; both would produce the same falling density.
-- **The per-repo decline is steeper than the decline in total
-  participation**, because the population of repositories itself grew
-  over the same period: 21,613 primary-source
-  repositories exist in this dataset now, against
-  13,083 that already existed by January 2021 -
-  a 1.7x increase. Raw, unnormalised
-  monthly non-core author counts across all five sources combined have
-  fallen only to about
-  76%
-  of their January-2021 level, well short of the roughly
-  55%
-  median seen per repository. More repositories now compete for a
-  shrinking amount of attention per repository - the total pool of
-  people engaging with open source hasn't collapsed nearly as sharply as
-  any individual project's own share of it has.
-- **The solo-repository share (Finding 3) is a repo-count share, not
-  normalised by exposure at all**, unlike every other measure in this
-  document - it doesn't correct for the same repo-count growth just
-  described. It answers a different question on purpose (how many
-  repositories, not how much activity per repository), but that also
-  means it isn't directly comparable in magnitude to the step-changes
-  reported elsewhere.
-- **`contribution` is a lifetime measure, not a point-in-time one**, so
-  an issue filed by someone who later became a core maintainer is
-  excluded from "non-core" counts even for that earlier issue.
-- **Popularity strata reflect current downloads/stars, not historical
-  popularity** - stratification here doesn't track a repository's
-  popularity trajectory, only its current standing.
-- **No direct measure of *why* any individual stopped participating.**
-  Nothing here distinguishes burnout, disinterest, AI substitution, or
-  simply moving on to other things - the external context above is
-  context, not measurement.
-</div>
 
 ## Where this leaves things
 
