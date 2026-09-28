@@ -266,6 +266,13 @@ authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
         latest_month = est$latest_month
     )
 })
+# Issue-comment step-change, pooled across popularity strata (n_strata = 1),
+# the comments analogue of authors_all_step_change above - sc_comments
+# itself is only pre-computed per-stratum (n_strata = 4), so the pooled
+# version is generated here directly via the same exported function.
+comments_all_step_change <- num_comments_step_change_tbl (
+    issue_authors_tbl, repo_tbl, primary_sources, n_strata = 1L
+)
 # Combined (repo-creation, commits) percentage-change table, one row per
 # source - the single table requested to sit under the two-panel figure
 # in place of separate per-metric tables.
@@ -276,6 +283,10 @@ combined_sc_display <- dplyr::inner_join (
 ) |>
     dplyr::inner_join (
         dplyr::transmute (authors_all_step_change, source, distinct_authors_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::transmute (comments_all_step_change, source, comments_change = step_change - 1),
         by = "source"
     ) |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
@@ -436,28 +447,6 @@ also at lower rates than equivalent declines in rates of repository creation.
 These declines in commit rates are genuine declines observed among those people
 still active on GitHub.
 
-These relative differences are quantified in the following table of percentage
-change in both rates from Jan 2021. (Repository creation for both JOSS and
-rOpenSci generally only occurs following rigorous review processes, and so
-values for these two can't really be directly compared with the other sources,
-and are likely affected by additional constraints and influences.)
-
-```{r commit-rate-table, cache = TRUE}
-combined_sc_display |>
-    dplyr::transmute (
-        Source = source,
-        `Repo creation (%)` = scales::percent (repo_creation_change, accuracy = 1),
-        `Commits (%)` = scales::percent (commit_change, accuracy = 1)
-    ) |>
-    knitr::kable (
-        align = c ("l", "r", "r"),
-        caption = paste0 (
-            "Percentage change in repo-creation rate and commit rate, ",
-            "estimated from linear regressions fitted from Jan 2021."
-        )
-    )
-```
-
 ## Finding 2: Fewer contributors
 
 There are several ways to measures numbers of contributors to open-source
@@ -503,16 +492,23 @@ patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
     )
 ```
 
+These relative differences are quantified in the following table of percentage
+change in both rates from Jan 2021. (Repository creation for both JOSS and
+rOpenSci generally only occurs following rigorous review processes, and so
+values for these two can't really be directly compared with the other sources,
+and are likely affected by additional constraints and influences.)
+
 ```{r comparative-decreases, echo = FALSE}
 combined_sc_display |>
     dplyr::transmute (
         Source = source,
         `Repo creation (%)` = scales::percent (repo_creation_change, accuracy = 1),
         `Commits (%)` = scales::percent (commit_change, accuracy = 1),
-        `Distinct Authors (%)` = scales::percent (distinct_authors_change, accuracy = 1)
+        `Distinct Authors (%)` = scales::percent (distinct_authors_change, accuracy = 1),
+        `Issue Comments (%)` = scales::percent (comments_change, accuracy = 1)
     ) |>
     knitr::kable (
-        align = c ("l", "r", "r", "r"),
+        align = c ("l", "r", "r", "r", "r"),
         caption = paste0 (
             "Percentage change in repo-creation rate and commit rate, ",
             "estimated from linear regressions fitted from Jan 2021."
@@ -520,7 +516,7 @@ combined_sc_display |>
     )
 ```
 
-
+----
 
 For each software source, lines are shown for the four distributional quartiles
 described above. "Q4" represents the relatively few extremely popular packages,
