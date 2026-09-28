@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.034</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.042</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ favour of coding alone.</h3>
                         <h4 data-toc-skip class="author">Mark
 Padgham</h4>
             
-            <h4 data-toc-skip class="date">21 September 2026</h4>
+            <h4 data-toc-skip class="date">28 September 2026</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
       <div class="hidden name"><code>coding-alone.Rmd</code></div>
@@ -159,7 +159,7 @@ Software)</a>, and <a href="https://ropensci.org" class="external-link">rOpenSci
 <p>Analyses included every repository reviewed by <a href="https://joss.theoj.org" class="external-link">JOSS</a> and <a href="https://ropensci.org" class="external-link">rOpenSci</a>, and samples from the other
 three. Samples were stratified by popularity (measured as downloads) to
 ensure even sampling and representation regardless of popularity. In
-total, 3,135,960 issues were analysed across 52,461 repositories.</p>
+total, 3,139,779 issues were analysed across 52,461 repositories.</p>
 <p>More popular or prominent repositories attract greater interaction,
 resulting in issues being opened more frequently, and from a wider
 community. To account for the effects of repository popularity, most of
@@ -209,48 +209,6 @@ example. All of these rates generally decline, although also at lower
 rates than equivalent declines in rates of repository creation. These
 declines in commit rates are genuine declines observed among those
 people still active on GitHub.</p>
-<p>These relative differences are quantified in the following table of
-percentage change in both rates from Jan 2021. (Repository creation for
-both JOSS and rOpenSci generally only occurs following rigorous review
-processes, and so values for these two can’t really be directly compared
-with the other sources, and are likely affected by additional
-constraints and influences.)</p>
-<table class="table">
-<caption>Percentage change in repo-creation rate and commit rate,
-estimated from linear regressions fitted from Jan 2021.</caption>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Repo creation (%)</th>
-<th align="right">Commits (%)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">JOSS</td>
-<td align="right">-73%</td>
-<td align="right">-56%</td>
-</tr>
-<tr class="even">
-<td align="left">rOpenSci</td>
-<td align="right">-78%</td>
-<td align="right">-54%</td>
-</tr>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">-38%</td>
-<td align="right">-49%</td>
-</tr>
-<tr class="even">
-<td align="left">npm</td>
-<td align="right">-55%</td>
-<td align="right">-22%</td>
-</tr>
-<tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">-29%</td>
-<td align="right">-17%</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="section level2">
 <h2 id="finding-2-fewer-contributors">Finding 2: Fewer contributors<a class="anchor" aria-label="anchor" href="#finding-2-fewer-contributors"></a>
@@ -263,17 +221,87 @@ issues. Anybody (with an account) can open an issue to ask a simple
 question. Many who do may not necessarily end up directly contributing
 to code at all, and so data on issues offers more inclusive insights
 into larger communities beyond direct code contributors.</p>
-<p>The following graph shows numbers of unique people opening new issues
+<p>The following graphs show numbers of unique people opening new issues
 on repositories for the five software ecosystems. All counts are
 standardised to numbers of new issues per repository. All of these
-patterns reveal consistent changes either side of around 2020. From here
-on, all times series start from Jan 2021, with patterns prior to that
-date generally reflecting those shown in Fig 2.</p>
+patterns reveal consistent changes either side of around 2020. And all
+of them have progressively decreased since that time. All times series
+show from here on start from Jan 2021, with patterns prior to that date
+generally reflecting those shown in Fig 2.</p>
 <div class="figure" style="text-align: center">
 <img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"><p class="caption">
 Fig 2: Numbers of distinct authors opening new issues
 </p>
 </div>
+<p>These relative differences are quantified in the following table of
+percentage change in both rates from Jan 2021. (Repository creation for
+both JOSS and rOpenSci generally only occurs following rigorous review
+processes, and so values for these two can’t really be directly compared
+with the other sources, and are likely affected by additional
+constraints and influences.)</p>
+<table style="width:100%;" class="table">
+<caption>Percentage change in repo-creation rate and commit rate,
+estimated from linear regressions fitted from Jan 2021.</caption>
+<colgroup>
+<col width="9%">
+<col width="18%">
+<col width="12%">
+<col width="22%">
+<col width="20%">
+<col width="16%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Source</th>
+<th align="right">Repo creation (%)</th>
+<th align="right">Commits (%)</th>
+<th align="right">Distinct Authors (%)</th>
+<th align="right">Issue Comments (%)</th>
+<th align="right">New Authors (%)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOSS</td>
+<td align="right">-73%</td>
+<td align="right">-56%</td>
+<td align="right">-61%</td>
+<td align="right">-83%</td>
+<td align="right">-69%</td>
+</tr>
+<tr class="even">
+<td align="left">rOpenSci</td>
+<td align="right">-78%</td>
+<td align="right">-54%</td>
+<td align="right">-61%</td>
+<td align="right">-71%</td>
+<td align="right">-71%</td>
+</tr>
+<tr class="odd">
+<td align="left">CRAN</td>
+<td align="right">-38%</td>
+<td align="right">-49%</td>
+<td align="right">-64%</td>
+<td align="right">-78%</td>
+<td align="right">-74%</td>
+</tr>
+<tr class="even">
+<td align="left">npm</td>
+<td align="right">-55%</td>
+<td align="right">-22%</td>
+<td align="right">-63%</td>
+<td align="right">-70%</td>
+<td align="right">-63%</td>
+</tr>
+<tr class="odd">
+<td align="left">PyPI</td>
+<td align="right">-29%</td>
+<td align="right">-18%</td>
+<td align="right">-36%</td>
+<td align="right">-50%</td>
+<td align="right">-38%</td>
+</tr>
+</tbody>
+</table>
+<hr>
 <p>For each software source, lines are shown for the four distributional
 quartiles described above. “Q4” represents the relatively few extremely
 popular packages, while “Q1” is the quartile of lowest popularity. (And
@@ -300,8 +328,8 @@ figure.
 </p>
 </div>
 <hr>
-<p>Every one of the 20 (source, stratum) cells in this figure sits below
-its January-2021 level - 19 out of 20, with no exceptions. That includes
+<p>Every one of the 25 (source, stratum) cells in this figure sits below
+its January-2021 level - 24 out of 25, with no exceptions. That includes
 rOpenSci’s least-popular quartile, the one cell in the companion
 vignette’s event-count figure that rose rather than fell: counted by
 issues, it reached 124% of its 2021 rate; counted by distinct authors,
@@ -310,7 +338,7 @@ rOpenSci’s peer-review process is doing for its most obscure packages,
 it isn’t attracting a widening circle of new people; at best, on this
 measure, it’s holding the existing circle from shrinking.</p>
 <p>Beyond that one cell, the two measures mostly move together, but not
-identically: in 4 of the 20 cells, the distinct-author count has fallen
+identically: in 4 of the 25 cells, the distinct-author count has fallen
 by <em>more</em> than the issue count has, meaning the average non-core
 author isn’t opening noticeably more issues to compensate for fewer of
 them showing up - if anything, the opposite.</p>
@@ -351,16 +379,16 @@ the same decline into units of elapsed time rather than frequency.</p>
 plot of chunk author-interval-plot
 </p>
 </div>
-<p>The wait has lengthened in 17 of 20 (source, stratum) cells since
+<p>The wait has lengthened in 16 of 20 (source, stratum) cells since
 January 2021 - the same near-universal direction as the rate-based
 measures above, just expressed as time instead of frequency. The
 least-popular quartile shows this most starkly, since it’s the one with
-the fewest events to begin with: CRAN’s bottom quartile now waits 2.9x
-as long between first-time authors as it did in January 2021, the
-largest lengthening of any source in that quartile. A repository’s least
-visible corner isn’t just accumulating new outsiders more slowly - it’s
-going measurably longer stretches of calendar time hearing from no one
-new at all.</p>
+the fewest events to begin with: npm’s bottom quartile now waits 4.6x as
+long between first-time authors as it did in January 2021, the largest
+lengthening of any source in that quartile. A repository’s least visible
+corner isn’t just accumulating new outsiders more slowly - it’s going
+measurably longer stretches of calendar time hearing from no one new at
+all.</p>
 </div>
 <div class="section level2">
 <h2 id="finding-2-the-core-is-thinning-too">Finding 2: the core is thinning too<a class="anchor" aria-label="anchor" href="#finding-2-the-core-is-thinning-too"></a>
@@ -530,7 +558,7 @@ popular quartile</caption>
 </tr>
 <tr class="odd">
 <td align="left">PyPI</td>
-<td align="right">54%</td>
+<td align="right">55%</td>
 <td align="right">77%</td>
 <td align="right">23%</td>
 </tr>
@@ -634,11 +662,11 @@ falling density.</li>
 <li>
 <strong>The per-repo decline is steeper than the decline in total
 participation</strong>, because the population of repositories itself
-grew over the same period: 21,548 primary-source repositories exist in
-this dataset now, against 13,043 that already existed by January 2021 -
+grew over the same period: 21,613 primary-source repositories exist in
+this dataset now, against 13,083 that already existed by January 2021 -
 a 1.7x increase. Raw, unnormalised monthly non-core author counts across
-all five sources combined have fallen only to about 75% of their
-January-2021 level, well short of the roughly 59% median seen per
+all five sources combined have fallen only to about 76% of their
+January-2021 level, well short of the roughly 55% median seen per
 repository. More repositories now compete for a shrinking amount of
 attention per repository - the total pool of people engaging with open
 source hasn’t collapsed nearly as sharply as any individual project’s

@@ -25,7 +25,7 @@ repo's exposure window."><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.034</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.042</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ repo's exposure window.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">github_issue_authors</span><span class="op">(</span>repo_url <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">github_issue_authors</span><span class="op">(</span>repo_url <span class="op">=</span> <span class="cn">NULL</span>, since <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -92,13 +92,21 @@ repo's exposure window.</p>
 <dl><dt id="arg-repo-url">repo_url<a class="anchor" aria-label="anchor" href="#arg-repo-url"></a></dt>
 <dd><p>A GitHub repo URL, e.g. <code>"https://github.com/owner/repo"</code>.</p></dd>
 
+
+<dt id="arg-since">since<a class="anchor" aria-label="anchor" href="#arg-since"></a></dt>
+<dd><p>If not <code>NULL</code>, an ISO-8601 timestamp string restricting the
+GraphQL issues fetch to issues updated (including new comments, not just
+newly opened) at or after that time - used to refresh previously-fetched
+data rather than re-fetching every issue. The <code>contributors</code> REST call
+has no equivalent filter and is always fetched in full.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>A tibble with one row per issue: <code>repo_url</code>, <code>issue_number</code>,
-<code>author</code>, <code>created_at</code>, <code>n_comments</code>, <code>contribution</code>, and
-<code>repo_created_at</code> (the repo's own GitHub creation timestamp, repeated on
-every row).</p>
+<code>author</code>, <code>created_at</code>, <code>n_comments</code>, <code>contribution</code>, <code>repo_created_at</code>
+(the repo's own GitHub creation timestamp, repeated on every row), and
+<code>last_updated</code> (this fetch's own timestamp, repeated on every row).</p>
     </div>
 
     <div id="ref-examples">

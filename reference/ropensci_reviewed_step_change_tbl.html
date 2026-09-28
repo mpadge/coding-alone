@@ -20,7 +20,7 @@ step_change_tbl()."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.034</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.042</span>
       </span>
     </div>
 
@@ -80,7 +80,9 @@ reviewed status) rather than by (source x popularity stratum) as in
 
 
 <dl><dt id="arg-tbl">tbl<a class="anchor" aria-label="anchor" href="#arg-tbl"></a></dt>
-<dd><p>As returned by <code><a href="ropensci_reviewed_activity_tbl.html">ropensci_reviewed_activity_tbl()</a></code>.</p></dd>
+<dd><p>As returned by <code><a href="ropensci_reviewed_activity_tbl.html">ropensci_reviewed_activity_tbl()</a></code>. If it was
+built with <code>n_strata = 1</code>, <code>popularity_stratum</code> is dropped from the
+returned tibble too, matching <code><a href="step_change_tbl.html">step_change_tbl()</a></code>.</p></dd>
 
 
 <dt id="arg-ref-date">ref_date<a class="anchor" aria-label="anchor" href="#arg-ref-date"></a></dt>

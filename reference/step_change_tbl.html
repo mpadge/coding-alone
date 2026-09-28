@@ -23,7 +23,7 @@ both avoids cherry-picking and keeps strata/sources comparable."><!-- mathjax --
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.034</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.042</span>
       </span>
     </div>
 
@@ -82,6 +82,7 @@ both avoids cherry-picking and keeps strata/sources comparable.</p>
 <span>  <span class="va">issue_authors_tbl</span>,</span>
 <span>  <span class="va">repo_tbl</span>,</span>
 <span>  <span class="va">sources</span>,</span>
+<span>  n_strata <span class="op">=</span> <span class="fl">4L</span>,</span>
 <span>  metric <span class="op">=</span> <span class="st">"issues"</span>,</span>
 <span>  contrib_threshold <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  window <span class="op">=</span> <span class="fl">12L</span>,</span>
@@ -104,6 +105,12 @@ both avoids cherry-picking and keeps strata/sources comparable.</p>
 <dt id="arg-sources">sources<a class="anchor" aria-label="anchor" href="#arg-sources"></a></dt>
 <dd><p>Character vector of <code>source_name</code> values to include (see
 <code><a href="issue_rate_tbl.html">issue_rate_tbl()</a></code>).</p></dd>
+
+
+<dt id="arg-n-strata">n_strata<a class="anchor" aria-label="anchor" href="#arg-n-strata"></a></dt>
+<dd><p>Number of popularity strata, passed to <code><a href="issue_rate_tbl.html">issue_rate_tbl()</a></code>.
+<code>n_strata = 1</code> pools every repo into a single, unstratified rate and
+drops <code>popularity_stratum</code> from the returned tibble.</p></dd>
 
 
 <dt id="arg-metric-contrib-threshold-window">metric, contrib_threshold, window<a class="anchor" aria-label="anchor" href="#arg-metric-contrib-threshold-window"></a></dt>
