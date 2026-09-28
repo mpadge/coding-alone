@@ -184,13 +184,13 @@ and are likely affected by additional constraints and influences.)
 
 Table: Percentage change in repo-creation rate and commit rate, estimated from linear regressions fitted from Jan 2021.
 
-|Source   | Repo creation (%)| Commits (%)| Distinct Authors (%)| Issue Comments (%)|
-|:--------|-----------------:|-----------:|--------------------:|------------------:|
-|JOSS     |              -73%|        -56%|                 -61%|               -83%|
-|rOpenSci |              -78%|        -54%|                 -61%|               -71%|
-|CRAN     |              -38%|        -49%|                 -64%|               -78%|
-|npm      |              -55%|        -22%|                 -63%|               -70%|
-|PyPI     |              -29%|        -18%|                 -36%|               -50%|
+|Source   | Repo creation (%)| Commits (%)| Distinct Authors (%)| Issue Comments (%)| New Authors (%)|
+|:--------|-----------------:|-----------:|--------------------:|------------------:|---------------:|
+|JOSS     |              -73%|        -56%|                 -61%|               -83%|            -69%|
+|rOpenSci |              -78%|        -54%|                 -61%|               -71%|            -71%|
+|CRAN     |              -38%|        -49%|                 -64%|               -78%|            -74%|
+|npm      |              -55%|        -22%|                 -63%|               -70%|            -63%|
+|PyPI     |              -29%|        -18%|                 -36%|               -50%|            -38%|
 
 ----
 

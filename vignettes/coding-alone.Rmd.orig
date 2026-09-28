@@ -273,6 +273,26 @@ authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
 comments_all_step_change <- num_comments_step_change_tbl (
     issue_authors_tbl, repo_tbl, primary_sources, n_strata = 1L
 )
+# New-author arrival-rate step-change, pooled across popularity strata
+# (n_strata = 1) - the arrival-rate analogue of authors_all_step_change
+# above, using the same new_author_rate_tbl() as new_arrival_sc in the
+# "generate-new-authors-data" chunk, but pooled rather than per-stratum.
+new_authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
+
+    na_tbl <- new_author_rate_tbl (
+        issue_authors_tbl, repo_tbl, src, n_strata = 1L
+    ) |>
+        dplyr::filter (!is.na (rate))
+    est <- step_change_regression (na_tbl, "rate")
+
+    tibble::tibble (
+        source = src,
+        rate_ref = est$ref,
+        rate_latest = est$latest,
+        step_change = est$latest / est$ref,
+        latest_month = est$latest_month
+    )
+})
 # Combined (repo-creation, commits) percentage-change table, one row per
 # source - the single table requested to sit under the two-panel figure
 # in place of separate per-metric tables.
@@ -287,6 +307,10 @@ combined_sc_display <- dplyr::inner_join (
     ) |>
     dplyr::inner_join (
         dplyr::transmute (comments_all_step_change, source, comments_change = step_change - 1),
+        by = "source"
+    ) |>
+    dplyr::inner_join (
+        dplyr::transmute (new_authors_all_step_change, source, new_authors_change = step_change - 1),
         by = "source"
     ) |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
@@ -505,10 +529,11 @@ combined_sc_display |>
         `Repo creation (%)` = scales::percent (repo_creation_change, accuracy = 1),
         `Commits (%)` = scales::percent (commit_change, accuracy = 1),
         `Distinct Authors (%)` = scales::percent (distinct_authors_change, accuracy = 1),
-        `Issue Comments (%)` = scales::percent (comments_change, accuracy = 1)
+        `Issue Comments (%)` = scales::percent (comments_change, accuracy = 1),
+        `New Authors (%)` = scales::percent (new_authors_change, accuracy = 1)
     ) |>
     knitr::kable (
-        align = c ("l", "r", "r", "r", "r"),
+        align = c ("l", "r", "r", "r", "r", "r"),
         caption = paste0 (
             "Percentage change in repo-creation rate and commit rate, ",
             "estimated from linear regressions fitted from Jan 2021."
