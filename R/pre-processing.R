@@ -39,12 +39,14 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     thresholds <- c (0.01, 1)
     ad <- lapply (thresholds, function (thr) {
         cli::cli_alert_info ("Author densities for ctb threshold = {thr}")
-        pre_process_author_densities (issue_authors_tbl, repo_tbl, 0.01)
+        pre_process_author_densities (issue_authors_tbl, repo_tbl, thr)
     })
     sc <- lapply (thresholds, function (thr) {
         cli::cli_alert_info ("Author step changes for ctb threshold = {thr}")
         author_density_step_change_tbl (
-            issue_authors_tbl, repo_tbl, primary_sources,
+            issue_authors_tbl,
+            repo_tbl,
+            primary_sources,
             contrib_threshold = thr
         )
     })
