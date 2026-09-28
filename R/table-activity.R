@@ -739,6 +739,10 @@ new_author_rate_tbl <- function (issue_authors_tbl,
             )
         )
 
+    if (length (stratum_levels) == 1L) {
+        result$popularity_stratum <- "all"
+    }
+
     attr (result, "metric") <- "issues"
     attr (result, "window") <- window
     attr (result, "source_name") <- source_name
@@ -873,6 +877,10 @@ author_interval_tbl <- function (issue_authors_tbl,
             event_time = created_at, interval_days
         )
 
+    if (length (levels (result$popularity_stratum)) == 1L) {
+        result$popularity_stratum <- "all"
+    }
+
     attr (result, "source_name") <- source_name
 
     result
@@ -973,6 +981,10 @@ author_interval_trend_tbl <- function (issue_authors_tbl,
             )
         ) |>
         dplyr::select (popularity_stratum, month, n_events, geo_mean_days)
+
+    if (length (levels (result$popularity_stratum)) == 1L) {
+        result$popularity_stratum <- "all"
+    }
 
     attr (result, "window") <- window
     attr (result, "source_name") <- source_name

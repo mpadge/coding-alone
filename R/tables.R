@@ -386,5 +386,6 @@ ropensci_reviewed_step_change_tbl <- function (tbl, ref_date = as.Date ("2021-01
     if (length (stratum_levels) == 1L) {
         out$popularity_stratum <- "all"
     }
+
     out
 }

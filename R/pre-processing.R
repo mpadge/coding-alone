@@ -43,11 +43,21 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     })
     sc <- lapply (thresholds, function (thr) {
         cli::cli_alert_info ("Author step changes for ctb threshold = {thr}")
-        author_density_step_change_tbl (
-            issue_authors_tbl,
-            repo_tbl,
-            primary_sources,
-            contrib_threshold = thr
+        dplyr::bind_rows (
+            author_density_step_change_tbl (
+                issue_authors_tbl,
+                repo_tbl,
+                primary_sources,
+                n_strata = 4L,
+                contrib_threshold = thr
+            ),
+            author_density_step_change_tbl (
+                issue_authors_tbl,
+                repo_tbl,
+                primary_sources,
+                n_strata = 1L, # All strata together
+                contrib_threshold = thr
+            )
         )
     })
     cmts <- num_comments_step_change_tbl (
