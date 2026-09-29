@@ -429,10 +429,7 @@ plot_author_interval <- function (issue_authors_tbl, repo_tbl,
         ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
         ggplot2::labs (
             x = NULL,
-            y = stringr::str_glue (
-                "Days between consecutive first-time authors ",
-                "(geometric mean, {window}-month trailing window)"
-            ),
+            y = NULL,
             colour = "Popularity\nstratum"
         ) +
         ggplot2::theme_minimal () +

@@ -39,6 +39,7 @@ knitr::opts_chunk$set (
     cache.path = "coding-alone-cache/",
     autodep = TRUE
 )
+options (knitr.kable.NA = "-")
 
 # `knitr::knit()`'s default plot hook wraps figures in raw HTML
 # (<div class="figure">...<img>...</div>), which carries no crossref
@@ -329,7 +330,13 @@ plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
 
 Total numbers of comments on each issue show a similar pattern
 (@fig-step-change-commits), with similarly reversed trends for PyPi as well as
-npm.
+npm. Taken together, these two figures reveal both numbers of issue authors and
+numbers of comments per issue have declined severely in all software systems
+over the past few years. Only for python packages in PyPI have declines been
+less severe for the most popular packages. In all other systems, declines have
+either been uniformly more severe for more popular packages or, for npm,
+displayed mixed patterns with the most severe declines at both ends of the
+popularity spectrum.
 
 ```{r}
 #| label: fig-step-change-commits
@@ -481,13 +488,15 @@ combined_sc_display <- dplyr::inner_join (
 ```
 
 Relative differences in all statistics to this point are quantified in the
-following table of percentage change in both rates from Jan 2021. (Repository
-creation for both JOSS and rOpenSci generally only occurs following rigorous
-review processes, and so values for these two can't really be directly compared
-with the other sources, and are likely affected by additional constraints and
-influences.)
+following table of percentage changes since Jan 2021. Although these values
+show clear declines in coding itself, both in rates of repository creation and
+commits, declines are considerably more severe for metrics of community size.
+Coding is decreasing, but community interactions are shrinking even faster.
 
 ```{r comparative-decreases, echo = FALSE}
+index <- which (combined_sc_display$source %in% c ("JOSS", "rOpenSci"))
+combined_sc_display$repo_creation_change [index] <- NA
+
 combined_sc_display |>
     dplyr::transmute (
         Source = source,
@@ -501,7 +510,11 @@ combined_sc_display |>
         caption = paste0 (
             "Percentage changes in statistics of Figs. 1-4, estimated ",
             "from linear regressions fitted to all data from Jan 2021 ",
-            "across all popularity strata"
+            "across all popularity strata (Repository creation for both JOSS ",
+            "and rOpenSci generally only occurs following rigorous review ",
+            "processes, and so values for these two can't really be directly ",
+            "compared with the other sources, and are likely affected by ",
+            "additional constraints and influences.)"
         )
     )
 ```
@@ -627,6 +640,14 @@ plot_author_interval (
 )
 ```
 
+These rates have also uniformly increased over the past few years. They are
+also notably far higher for [CRAN](https://cran.r-project.org),
+[JOSS](https://joss.theoj.org), and [rOpenSci](https://ropensci.org), in which
+new authors now arrive more than once per month only for the most popular
+packages. Only PyPi appears to not suffer this trend, with intervals between
+the arrival of new authors progressively decreasing over the past couple of
+years.
+
 ## Finding #4: The Core Is Thinning Too
 
 For each person contributing to a repository, GitHub also provides a measure of
@@ -640,7 +661,9 @@ affected by different values.
 
 First, relative decreases in numbers of distinct authors have decreased more
 for non-core than for core authors for all software sources
-(@fig-step-change-bytype).
+(@fig-step-change-bytype). In all cases, most of the decreases in contributions
+observed in @fig-step-change-authors and @fig-step-change-commits reflect
+non-core contributors decreasing at faster rates than core contributors.
 
 ```{r}
 #| label: fig-step-change-bytype
@@ -665,23 +688,6 @@ dplyr::filter (sc_by_type, type != "Total") |>
     ) +
     ggplot2::theme_minimal () +
     ggplot2::theme (legend.position = "top")
-```
-
-```{r comparative-decreases-authors, echo = FALSE}
-new_authors_sc_display |>
-    dplyr::transmute (
-        Source = source,
-        `Total (%)` = scales::percent (new_authors_change, accuracy = 1),
-        `Core (%)` = scales::percent (new_authors_core_change, accuracy = 1),
-        `Non-Core (%)` = scales::percent (new_authors_noncore_change, accuracy = 1)
-    ) |>
-    knitr::kable (
-        align = c ("l", "r", "r", "r"),
-        caption = paste0 (
-            "Percentage changes in rates of new author arrival, estimated ",
-            "from Jan 2021 across all popularity strata"
-        )
-    )
 ```
 
 ```{r generate-interval-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
@@ -715,27 +721,6 @@ interval_q1 <- interval_sc |>
     dplyr::arrange (dplyr::desc (step_change))
 ```
 
-Core headcounts have fallen in every one of the five sources -
-`r n_core_declined` out of 5 - and so has total headcount, core and
-non-core combined -
-`r n_total_declined` out of 5. Nobody's circle is exempt. What does
-differ is degree: in every one of the five sources, the core headcount
-has fallen by *less* than the non-core headcount did over the same
-period (`r n_core_less_than_noncore` out of 5) - consistent with
-attrition working its way inward from a project's edges rather than
-hitting the whole population evenly at once, but not with the core being
-insulated from it altogether. A repository's inner circle is shrinking
-more slowly than its outer one, not staying put while the outer one
-empties around it.
-
-## Finding #5: more repositories now hold exactly one person
-
-Findings 1 and 2 are both rate-based: fewer distinct people per
-repo-month, averaged across a whole population of repositories. The
-plainer, Putnam-shaped question is a repo-count one: out of the
-repositories that heard from *anyone* at all in the last year, how many
-heard from only one person?
-
 ```{r generate-solo-authors-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
 # Share of active repositories with exactly one distinct person present in
 # the trailing 12 months - the most direct measure this dataset offers of
@@ -757,6 +742,15 @@ solo_by_source <- purrr::map_dfr (primary_sources, \ (src) {
 })
 ```
 
+The combined effect of these decreases must of course be a progression towards
+increasing numbers of repositories being maintained by one person only. This is
+exactly what @fig-solo-share-plot shows. Taken collectively, 
+`r scales::percent (solo_ref, accuracy = 1)` of repositories were effectively
+maintained by a single person in January 2021.
+By `r format (solo_latest_month, "%B %Y")`, that share had risen to
+`r scales::percent (solo_latest, accuracy = 1)`.
+
+
 ```{r}
 #| label: fig-solo-share-plot
 #| fig-cap: "Share ot active repositories with only one person active"
@@ -776,16 +770,6 @@ solo_by_source |>
     ggplot2::theme_minimal () +
     ggplot2::theme (legend.position = "top")
 ```
-
-Overall in January 2021,
-`r scales::percent (solo_ref, accuracy = 1)`
-of repositories with any issue-based activity at all in the preceding
-year had that activity coming from a single person. By
-`r format (solo_latest_month, "%B %Y")`, that share had risen to
-`r scales::percent (solo_latest, accuracy = 1)`
-- not a fixed population getting quieter across the board, but a growing
-fraction of it crossing all the way over into having no visible second
-person at all.
 
 ## Finding 4: not simply projects settling down with age
 
