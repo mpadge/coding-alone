@@ -190,25 +190,23 @@ less popular. This suggests that any decreases in the sizes of communities
 producing software will likely be associated with decreases in software
 popularity, quite possibly because of decreases in software quality.
 
-Why do all of the following analyses matter? Because good software requires
-large communities.
+Why do all of the following analyses matter? Because good software emerges from
+-- and possibly even requires -- large communities.
 
 ## What was measured
 
 All data are taken from GitHub, primarily as measures of interaction with
 software repositories through "issues". Issues are the place for anybody to ask
 questions of software authors, to report bugs, or to request new features.
-A corpus of repositories was taken from five sources: three
-package-distribution systems of [npm for Javascript](https://npmjs.com), [PyPI
-for Python](pypi.org), [CRAN for R](https://cran.r-project.org), and two
-GitHub-based software review organizations, [JOSS (the Journal of Open-Source
-Software)](https://joss.theoj.org), and [rOpenSci](https://ropensci.org).
+A corpus of repositories was taken from the five sources described above.
+
 
 Analyses included every repository reviewed by [JOSS](https://joss.theoj.org)
-and [rOpenSci](https://ropensci.org), and samples from the other three. Samples
-were stratified by popularity (measured as downloads) to ensure even sampling
-and representation regardless of popularity. In total,
-`r scales::comma (nrow (issue_authors_tbl))` issues were analysed across
+and [rOpenSci](https://ropensci.org), every package currently on
+[CRAN](https://cran.r-project.org), and samples from the other three. Samples
+were stratified by popularity to ensure even sampling and representation
+regardless of popularity. In total, `r scales::comma (nrow
+(issue_authors_tbl))` issues were analysed across
 `r scales::comma (n_repos_primary)` repositories.
 
 More popular or prominent repositories attract greater interaction, resulting
@@ -219,18 +217,10 @@ scale. The lowest quartile, denoted "Q1", represents the least popular
 repositories. Because these generally strongly outnumber popular repositories,
 these Q1 values may be generally interpreted to reflect the majority of all
 repositories. The "Q4" repositories are the outlying superstar repositories
-downloaded millions of times, and with hundreds of people opening issues.
-
-The only other important distinct in the data analysed here is between "core"
-and "non-core" contributors. Core contributors were identified as the cohort
-accounting for 99% of the cumulative share of all commits to a repository.
-The none-core contributors which are the focus of this analyses were taken as
-the cohort who collectively contributing less than 1%. This 1% threshold was
-arbitrarily set, but changing to alternative values like 2 or even 5% has no
-qualitative impact of any of the results or conclusions drawn.
+with enormous numbers of downloads and hundreds of people opening issues.
 
 A few additional statistics were also extracted, and are described alongside
-the main analysis.
+the main analyses.
 
 ## Finding #1: People are coding less
 
@@ -243,9 +233,8 @@ repositories, and numbers of commits in each. Time series of these two
 statistics are shown in the following two panels. Both of these show trends
 common to most results that follow, with variable development up until
 2020-2021, followed by more progressive trends. For that reason, many of the
-results shown below only show time series from the January 2021 onwards.
-Comparisons are also made as "step changes" between January 2021 and the
-present (`r now`)
+results shown below only show time series from 2021 onwards. Comparisons are
+also made as "step changes" between January 2021 and the present (`r now`)
 
 ```{r}
 #| label: fig-commit-rate-plot
@@ -268,7 +257,10 @@ also at lower rates than equivalent declines in rates of repository creation.
 These declines in commit rates are genuine declines observed among those people
 still active on GitHub.
 
-## Finding 2: There Are Fewer Contributors
+All results that follow are independent of whether or not people are actively
+abandoning GitHub in favour of alternative code hosting systems.
+
+## Finding #2: There Are Fewer Contributors
 
 There are several ways to measures numbers of contributors to open-source
 software. Source code itself provides one of the most direct measures,
@@ -279,7 +271,7 @@ necessarily end up directly contributing to code at all, and so data on issues
 offers more inclusive insights into larger communities beyond direct code
 contributors.
 
-The following graphs show numbers of unique people opening new issues on
+@fig-trend-plots shows numbers of unique people opening new issues on
 repositories for the five software ecosystems. All counts are standardised to
 numbers of new issues per repository. All of these patterns reveal consistent
 changes either side of around 2020. And all of them have progressively
@@ -340,7 +332,7 @@ Total numbers of comments on each issue show a similar pattern
 npm.
 
 ```{r}
-#| label: fig-step-change-commmits
+#| label: fig-step-change-commits
 #| fig-cap: "Changes in numbers of comments since 2021, as for previous figure."
 #| fig-height: 4
 
@@ -635,7 +627,7 @@ plot_author_interval (
 )
 ```
 
-## Finding 4: the core is thinning too
+## Finding #4: The Core Is Thinning Too
 
 For each person contributing to a repository, GitHub also provides a measure of
 their relative overall contribution, measured as numbers of commits to source
@@ -736,7 +728,7 @@ insulated from it altogether. A repository's inner circle is shrinking
 more slowly than its outer one, not staying put while the outer one
 empties around it.
 
-## Finding 3: more repositories now hold exactly one person
+## Finding #5: more repositories now hold exactly one person
 
 Findings 1 and 2 are both rate-based: fewer distinct people per
 repo-month, averaged across a whole population of repositories. The
