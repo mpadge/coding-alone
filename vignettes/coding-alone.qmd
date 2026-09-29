@@ -3,10 +3,9 @@ title: "Coding Alone"
 subtitle: "Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone."
 author: "Mark Padgham"
 date: "29 September 2026"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
@@ -16,14 +15,15 @@ This is the LIVE source for the "coding-alone" vignette. It is not built
 directly by R CMD build/check - it requires repo-data-out/, which is far
 too large to ship with the package (see the data-access note in the
 vignette itself). Instead it's precompiled once, on a machine that has that
-data, into the static vignettes/coding-alone.Rmd that actually ships:
+data, into the static vignettes/coding-alone.qmd that actually ships:
 
-    knitr::knit ("vignettes/coding-alone.Rmd.orig", output = "vignettes/coding-alone.Rmd")
+    knitr::knit ("vignettes/coding-alone.qmd.orig", output = "vignettes/coding-alone.qmd")
 
 run with the working directory set to vignettes/, so relative paths below
-resolve correctly. That committed .Rmd has every chunk already evaluated
+resolve correctly. That committed .qmd has every chunk already evaluated
 (text and figures baked in as static markdown/images), so re-building it
-via the usual vignette machinery never needs the data again.
+via the usual vignette machinery (now the `quarto::html` vignette engine)
+never needs the data again.
 -->
 
 

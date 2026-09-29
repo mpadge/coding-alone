@@ -15,3 +15,5 @@ inst/WORDLIST
 .*.swp
 /Meta/
 /doc/
+# intermediate quarto resources
+vignettes/*_files

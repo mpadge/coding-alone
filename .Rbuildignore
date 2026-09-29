@@ -2,9 +2,11 @@
 ^\.github$
 ^\.hooks$
 ^\.pre-commit-config\.yaml$
+^_pkgdown\.yml$
 ^doc$
 ^docs$
 ^repo-data-out$
+^vignettes/.*_files$
 ^vignettes/coding-alone-cache
-^vignettes/coding-alone\.Rmd\.orig$
+^vignettes/coding-alone\.qmd\.orig$
 ^vignettes/review-dividend\.Rmd\.orig$
