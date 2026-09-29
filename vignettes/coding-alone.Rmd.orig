@@ -80,6 +80,41 @@ that writing are changing dramtically. Public software repositories are
 changing from places of social coherence and cohesion to become more like mere
 mirrors of a single person's work.
 
+## Why does this matter?
+
+Maybe software coded by increasingly isolated individuals will be just a good
+as previous software coded by communities building on one another's ideas.
+Maybe a bunch of individuals with large enough budgets for billions on AI
+tokens will be able to usher in a new golden age of genius software. It's
+obviously helpful at the outset to try to figure out whether that's likely to
+happen or not.
+
+The first problem in doing that is that good software is not easy to define.
+But at least for open-source software, popularity can generally be presumed to
+reflect quality. Popular open-source software can be generally presumed to be
+good (even though an awful lot of good software may go unnoticed). And
+popularity can be measured, generally by numbers of downloads, as well as by
+metrics like the number of times people have "starred" software repositories on
+GitHub.
+
+All of the following analyses use random selections of repositories from
+several common software distribution systems, including [npm for
+Javascript](https://npmjs.com), [PyPI for Python](pypi.org), [CRAN for
+R](https://cran.r-project.org), and two GitHub-based software review
+organizations, [JOSS (the Journal of Open-Source
+Software)](https://joss.theoj.org), and [rOpenSci](https://ropensci.org). Data
+extracted for each of these can show whether larger communities help produce
+better software, as measured through popularity.
+
+Relationships between community size and popularity are of course complicated
+by the fact that both tend to change and interact over time (ideally through
+growing together). Such mutual interactions can easily be statistically
+accounted for, to estimate the effects of community size on repository
+popularity independent of any influence of repository age on either of those
+measures. And doing that reveals the relationships shown in the following
+figure:
+
+
 ## What was measured
 
 ```{r initial-data-load, cache = TRUE}
@@ -144,8 +179,6 @@ the main analysis.
 ```{r define-now, echo = FALSE}
 now <- format (Sys.Date (), "%b %Y")
 ```
-
-
 
 The most direct measures of coding activity are the creation of new
 repositories, and numbers of commits in each. Time series of these two
