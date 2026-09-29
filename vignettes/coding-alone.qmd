@@ -154,17 +154,14 @@ results shown below only show time series from the January 2021 onwards.
 Comparisons are also made as "step changes" between January 2021 and the
 present (Sep 2026)
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."  />
-<p class="caption">Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.</p>
-</div>
+![Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.](coding-alone-figures/fig-commit-rate-plot-1.png){#fig-commit-rate-plot fig-align="center"}
 
 The decrease in repository creation could of course simply reflect people
 moving away from GitHub and towards alternative code hosting sites. Such
 effects are not considered further here, but all analyses that follow are
 derived from existing GitHub repositories, and are independent of whether or
 not people are abandoning GitHub for alternative sites. The rates of monthly
-commits of Fig. 1 are an example. All of these rates generally decline, although
+commits of @fig-commit-rate-plot are an example. All of these rates generally decline, although
 also at lower rates than equivalent declines in rates of repository creation.
 These declines in commit rates are genuine declines observed among those people
 still active on GitHub.
@@ -186,10 +183,7 @@ numbers of new issues per repository. All of these patterns reveal consistent
 changes either side of around 2020. And all of them have progressively
 decreased since that time.
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"  />
-<p class="caption">Fig 2: Numbers of distinct authors opening new issues</p>
-</div>
+![Numbers of distinct authors opening new issues.](coding-alone-figures/fig-trend-plots-1.png){#fig-trend-plots fig-align="center"}
 
 For each software source, lines are shown for the four distributional quartiles
 described above. "Q4" represents the relatively few extremely popular packages,
@@ -197,24 +191,20 @@ while "Q1" is the quartile of lowest popularity. (And these quartiles are
 defined on a logarithmic scale, so there are far more packages in Q1 than in
 Q4.)
 
-The next figure (Fig 3) shows average declines since Jan 2021 for each software
-ecosystem and for each popularity quartile. Many of these declines are more
-pronounced for the most popular software (Q4), although PyPI shows the opposite
-trend, with decreases in numbers of unique issue authors being less severe for
-the most popular packages, while npm shows an intermediate pattern.
+The next figure (@fig-step-change-authors) shows average declines since Jan
+2021 for each software ecosystem and for each popularity quartile. Many of
+these declines are more pronounced for the most popular software (Q4), although
+PyPI shows the opposite trend, with decreases in numbers of unique issue
+authors being less severe for the most popular packages, while npm shows an
+intermediate pattern.
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."  />
-<p class="caption">Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4).</p>
-</div>
+![Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4).](coding-alone-figures/fig-step-change-authors-1.png){#fig-step-change-authors fig-align="center"}
 
-Total numbers of comments on each issue show a similar pattern (Fig. 4), with
-similarly reversed trends for PyPi as well as npm.
+Total numbers of comments on each issue show a similar pattern
+(@fig-step-change-commits), with similarly reversed trends for PyPi as well as
+npm.
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-commits-1.png" alt="Fig 4: Changes in numbers of comments since 2021, as for previous figure."  />
-<p class="caption">Fig 4: Changes in numbers of comments since 2021, as for previous figure.</p>
-</div>
+![Changes in numbers of comments since 2021, as for previous figure.](coding-alone-figures/fig-step-change-commmits-1.png){#fig-step-change-commmits fig-align="center"}
 
 
 
@@ -247,40 +237,32 @@ Table: Percentage changes in statistics of Figs. 1-4, estimated from linear regr
 
 
 The rates at which new authors of GitHub issues appear have also progressively
-decreased across all software systems (Fig. 5). In 17 of those
-20 combinations of software source-by-popularity stratum, the
-new-arrival rate has fallen by *more* than overall author density has, meaning
-the decline documented above isn't simply existing regulars posting a little
-less often; it's disproportionately a shrinking supply of people showing up for
-the first time at all.
+decreased across all software systems (@fig-new-author-rate). In 
+17 of those 20 combinations of software
+source-by-popularity stratum, the new-arrival rate has fallen by *more* than
+overall author density has, meaning the decline documented above isn't simply
+existing regulars posting a little less often; it's disproportionately a
+shrinking supply of people showing up for the first time at all.
 
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="Fig 5: Rates of arrival of new issue authors per repo-month "  />
-<p class="caption">Fig 5: Rates of arrival of new issue authors per repo-month </p>
-</div>
+![Rates of arrival of new issue authors per repo-month.](coding-alone-figures/fig-new-author-rate-1.png){#fig-new-author-rate fig-align="center"}
 
 The following plot converts those absolute measures to relative scales, to
 enable comparison of relative rates of change across the popularity quartiles
 for each software source. In almost all cases, decreases in arrival rates of
 new authors are most severe for the most popular packages.
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-step-change-plot-1.png" alt="Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures."  />
-<p class="caption">Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures.</p>
-</div>
+![Changes in rates of new-author arrival since 2021, as for previous figures.](coding-alone-figures/fig-new-author-step-change-1.png){#fig-new-author-step-change fig-align="center"}
 
 An alternative way of examining these decreases in rates of arrival are in
 terms of intervals between the arrival of each sequential pair of new authors
-(Fig. 7).
+(@fig-new-author-intervals).
 
 
 
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/author-interval-plot-1.png" alt="Fig. 7: Intervals in days between successive arrival of new authors."  />
-<p class="caption">Fig. 7: Intervals in days between successive arrival of new authors.</p>
-</div>
+
+![Intervals in days between successive arrival of new authors.](coding-alone-figures/fig-new-author-intervals-1.png){#fig-new-author-intervals fig-align="center"}
 
 ## Finding 4: the core is thinning too
 
@@ -294,12 +276,10 @@ arbitrary, none of the results or conclusions that follow are qualitatively
 affected by different values.
 
 First, relative decreases in numbers of distinct authors have decreased more
-for non-core than for core authors for all software sources (Fig. 8).
+for non-core than for core authors for all software sources
+(@fig-step-change-bytype).
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"  />
-<p class="caption">Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories</p>
-</div>
+![Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories](coding-alone-figures/fig-step-change-bytype-1.png){#fig-step-change-bytype fig-align="center"}
 
 
 Table: Percentage changes in rates of new author arrival, estimated from Jan 2021 across all popularity strata
@@ -337,10 +317,7 @@ heard from only one person?
 
 
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/solo-share-plot-1.png" alt="Share ot active repositories with only one person active"  />
-<p class="caption">Share ot active repositories with only one person active</p>
-</div>
+![Share ot active repositories with only one person active](coding-alone-figures/fig-solo-share-plot-1.png){#fig-solo-share-plot fig-align="center"}
 
 Overall in January 2021,
 27%
@@ -367,10 +344,7 @@ showing a lower rate at that same fixed age than earlier ones did.
 
 
 
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/cohort-age-plot-1.png" alt="plot of chunk cohort-age-plot"  />
-<p class="caption">plot of chunk cohort-age-plot</p>
-</div>
+![Effects of cohort age on rates of new issues](coding-alone-figures/fig-cohort-age-1.png){#fig-cohort-age fig-align="center"}
 
 CRAN, JOSS and npm show the calendar-time signature clearly: at a fixed
 early age, the non-core rate falls steadily as the cohort year increases,

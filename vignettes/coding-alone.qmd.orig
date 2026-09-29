@@ -39,6 +39,29 @@ knitr::opts_chunk$set (
     cache.path = "coding-alone-cache/",
     autodep = TRUE
 )
+
+# `knitr::knit()`'s default plot hook wraps figures in raw HTML
+# (<div class="figure">...<img>...</div>), which carries no crossref
+# target. Emit plain pandoc/quarto figure markdown instead
+# (`![cap](path){#id attrs}`), so a `fig-`-prefixed chunk label survives
+# this precompilation step as a valid `@fig-*` crossref target once the
+# baked, data-free .qmd is later rendered for real by the `quarto::html`
+# vignette engine.
+knitr::knit_hooks$set (plot = function (x, options) {
+    cap <- options$fig.cap
+    if (is.null (cap) || !nzchar (cap)) {
+        cap <- paste ("plot of chunk", options$label)
+    }
+    attrs <- character ()
+    if (grepl ("^fig-", options$label)) {
+        attrs <- c (attrs, paste0 ("#", options$label))
+    }
+    if (!is.null (options$fig.align) && options$fig.align != "default") {
+        attrs <- c (attrs, sprintf ('fig-align="%s"', options$fig.align))
+    }
+    attr_str <- if (length (attrs) > 0) paste0 ("{", paste (attrs, collapse = " "), "}") else ""
+    sprintf ("![%s](%s)%s\n", cap, x, attr_str)
+})
 ```
 
 
@@ -189,7 +212,11 @@ results shown below only show time series from the January 2021 onwards.
 Comparisons are also made as "step changes" between January 2021 and the
 present (`r now`)
 
-```{r commit-rate-plot, fig.height=4.5, fig.cap = "Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.", cache = TRUE}
+```{r}
+#| label: fig-commit-rate-plot
+#| fig-cap: "Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."
+#| fig-height: 5
+
 plot_commit_rate (
     commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2016
@@ -201,7 +228,7 @@ moving away from GitHub and towards alternative code hosting sites. Such
 effects are not considered further here, but all analyses that follow are
 derived from existing GitHub repositories, and are independent of whether or
 not people are abandoning GitHub for alternative sites. The rates of monthly
-commits of Fig. 1 are an example. All of these rates generally decline, although
+commits of @fig-commit-rate-plot are an example. All of these rates generally decline, although
 also at lower rates than equivalent declines in rates of repository creation.
 These declines in commit rates are genuine declines observed among those people
 still active on GitHub.
@@ -223,7 +250,11 @@ numbers of new issues per repository. All of these patterns reveal consistent
 changes either side of around 2020. And all of them have progressively
 decreased since that time.
 
-```{r trend-plots, fig.height=10, cache = FALSE, fig.cap="Fig 2: Numbers of distinct authors opening new issues"}
+```{r}
+#| label: fig-trend-plots
+#| fig-cap: "Numbers of distinct authors opening new issues."
+#| fig-height: 10
+
 a_strata <- author_densities_tbl |>
     dplyr::filter (popularity_stratum != "all")
 p1 <- dplyr::filter (a_strata, src == "cran") |>
@@ -242,10 +273,7 @@ p5 <- dplyr::filter (a_strata, src == "ropensci") |>
     plot_activity (start_year = 2016, "rOpenSci") +
     ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
-patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2) +
-    patchwork::plot_annotation (
-        title = "Numbers of distinct authors opening repository issues"
-    )
+patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2)
 ```
 
 For each software source, lines are shown for the four distributional quartiles
@@ -254,13 +282,17 @@ while "Q1" is the quartile of lowest popularity. (And these quartiles are
 defined on a logarithmic scale, so there are far more packages in Q1 than in
 Q4.)
 
-The next figure (Fig 3) shows average declines since Jan 2021 for each software
-ecosystem and for each popularity quartile. Many of these declines are more
-pronounced for the most popular software (Q4), although PyPI shows the opposite
-trend, with decreases in numbers of unique issue authors being less severe for
-the most popular packages, while npm shows an intermediate pattern.
+The next figure (@fig-step-change-authors) shows average declines since Jan
+2021 for each software ecosystem and for each popularity quartile. Many of
+these declines are more pronounced for the most popular software (Q4), although
+PyPI shows the opposite trend, with decreases in numbers of unique issue
+authors being less severe for the most popular packages, while npm shows an
+intermediate pattern.
 
-```{r step-change-plot-authors, fig.height=3.5, fig.width=10, fig.cap = "Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."}
+```{r}
+#| label: fig-step-change-authors
+#| fig-cap: "Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."
+#| fig-height: 4
 plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
     ggplot2::labs (
         title = "Distinct issue authors",
@@ -268,10 +300,15 @@ plot_step_change (sc_authors, SOURCE_DISPLAY_NAME, metric = "issues") +
     )
 ```
 
-Total numbers of comments on each issue show a similar pattern (Fig. 4), with
-similarly reversed trends for PyPi as well as npm.
+Total numbers of comments on each issue show a similar pattern
+(@fig-step-change-commits), with similarly reversed trends for PyPi as well as
+npm.
 
-```{r step-change-plot-commits, fig.height=3.5, fig.width=10, fig.cap="Fig 4: Changes in numbers of comments since 2021, as for previous figure."}
+```{r}
+#| label: fig-step-change-commmits
+#| fig-cap: "Changes in numbers of comments since 2021, as for previous figure."
+#| fig-height: 4
+
 plot_step_change (sc_comments, SOURCE_DISPLAY_NAME) +
     ggplot2::labs (
         title = "Num. issue comments",
@@ -475,15 +512,18 @@ n_new_fell_more <- sum (new_vs_density$step_change_new < new_vs_density$step_cha
 ```
 
 The rates at which new authors of GitHub issues appear have also progressively
-decreased across all software systems (Fig. 5). In `r n_new_fell_more` of those
-`r n_new_cells` combinations of software source-by-popularity stratum, the
-new-arrival rate has fallen by *more* than overall author density has, meaning
-the decline documented above isn't simply existing regulars posting a little
-less often; it's disproportionately a shrinking supply of people showing up for
-the first time at all.
+decreased across all software systems (@fig-new-author-rate). In 
+`r n_new_fell_more` of those `r n_new_cells` combinations of software
+source-by-popularity stratum, the new-arrival rate has fallen by *more* than
+overall author density has, meaning the decline documented above isn't simply
+existing regulars posting a little less often; it's disproportionately a
+shrinking supply of people showing up for the first time at all.
 
 
-```{r new-author-rate-plot, fig.height=6, cache = TRUE, fig.cap = "Fig 5: Rates of arrival of new issue authors per repo-month "}
+```{r}
+#| label: fig-new-author-rate
+#| fig-cap: "Rates of arrival of new issue authors per repo-month."
+#| fig-height: 6
 plot_new_author_rate (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2021
@@ -495,7 +535,10 @@ enable comparison of relative rates of change across the popularity quartiles
 for each software source. In almost all cases, decreases in arrival rates of
 new authors are most severe for the most popular packages.
 
-```{r new-author-step-change-plot, fig.height=3.5, fig.width=10, fig.cap="Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures."}
+```{r}
+#| label: fig-new-author-step-change
+#| fig-cap: "Changes in rates of new-author arrival since 2021, as for previous figures."
+#| fig-height: 4
 plot_step_change (new_arrival_sc, SOURCE_DISPLAY_NAME) +
     ggplot2::labs (
         title = "New-author arrival rate",
@@ -505,7 +548,7 @@ plot_step_change (new_arrival_sc, SOURCE_DISPLAY_NAME) +
 
 An alternative way of examining these decreases in rates of arrival are in
 terms of intervals between the arrival of each sequential pair of new authors
-(Fig. 7).
+(@fig-new-author-intervals).
 
 
 ```{r generate-new-authors-sc-data, include=FALSE, cache = TRUE, dependson = "initial-data-load"}
@@ -545,7 +588,12 @@ new_authors_sc_display <- dplyr::transmute (
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source]))
 ```
 
-```{r author-interval-plot, fig.height=6, cache = TRUE, fig.cap = "Fig. 7: Intervals in days between successive arrival of new authors."}
+
+```{r}
+#| label: fig-new-author-intervals
+#| fig-cap: "Intervals in days between successive arrival of new authors."
+#| fig-height: 6
+
 plot_author_interval (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
     start_year = 2020
@@ -564,9 +612,14 @@ arbitrary, none of the results or conclusions that follow are qualitatively
 affected by different values.
 
 First, relative decreases in numbers of distinct authors have decreased more
-for non-core than for core authors for all software sources (Fig. 8).
+for non-core than for core authors for all software sources
+(@fig-step-change-bytype).
 
-```{r step-change-plot-bytype, fig.height=4.5, fig.cap = "Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"}
+```{r}
+#| label: fig-step-change-bytype
+#| fig-cap: "Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"
+#| fig-height: 5
+
 dplyr::filter (sc_by_type, type != "Total") |>
     dplyr::mutate (type = factor (type, levels = c ("Core", "Non-core"))) |>
     ggplot2::ggplot (
@@ -677,7 +730,11 @@ solo_by_source <- purrr::map_dfr (primary_sources, \ (src) {
 })
 ```
 
-```{r solo-share-plot, fig.cap = "Share ot active repositories with only one person active"}
+```{r}
+#| label: fig-solo-share-plot
+#| fig-cap: "Share ot active repositories with only one person active"
+#| fig-height: 5
+
 solo_by_source |>
     dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
     ggplot2::ggplot (ggplot2::aes (month, solo_share, colour = source)) +
@@ -722,7 +779,11 @@ showing a lower rate at that same fixed age than earlier ones did.
 cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
 ```
 
-```{r cohort-age-plot, fig.height=6.5, cache = TRUE}
+```{r}
+#| label: fig-cohort-age
+#| fig-cap: "Effects of cohort age on rates of new issues"
+#| fig-height: 7
+
 plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
 ```
 

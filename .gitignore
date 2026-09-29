@@ -17,3 +17,4 @@ inst/WORDLIST
 /doc/
 # intermediate quarto resources
 vignettes/*_files
+**/.quarto/

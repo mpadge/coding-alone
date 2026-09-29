@@ -6,7 +6,9 @@
 ^doc$
 ^docs$
 ^repo-data-out$
+^vignettes/*_files$
 ^vignettes/.*_files$
+^vignettes/\.quarto$
 ^vignettes/coding-alone-cache
 ^vignettes/coding-alone\.qmd\.orig$
 ^vignettes/review-dividend\.Rmd\.orig$
