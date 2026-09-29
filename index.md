@@ -1,0 +1,30 @@
+# codingAlone
+
+Code to analyse GitHub issue activity across open-source ecosystems
+(CRAN, npm, PyPI, JOSS, rOpenSci) in relation to repository popularity
+and, for rOpenSci, formal peer-review status.
+
+Go straight to
+[coding-alone](https://mpadge.github.io/coding-alone/articles/coding-alone.html)
+or
+[review-dividend](https://mpadge.github.io/coding-alone/articles/review-dividend.html)
+vignettes.
+
+## Installation
+
+``` r
+
+# install.packages ("remotes")
+remotes::install_github ("mpadge/coding-alone")
+```
+
+## Vignettes
+
+- [`vignette ("coding-alone", package = "codingAlone")`](articles/coding-alone.md) -
+  the main analysis on the demise of code communities.
+- [`vignette ("review-dividend", package = "codingAlone")`](articles/review-dividend.md) -
+  additional analyses of the effect of software peer review on
+  sustaining open-source community engagement.
+- [`vignette ("data-generation", package = "codingAlone")`](articles/data-generation.md) -
+  the pipeline used to fetch and assemble the underlying repository and
+  GitHub issue data.

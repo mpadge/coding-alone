@@ -4,113 +4,86 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Coding Alone • codingAlone</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Coding Alone">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="coding-alone_files/libs/quarto-html/popper.min.js"></script><script src="coding-alone_files/libs/quarto-html/tippy.umd.min.js"></script><link href="coding-alone_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="coding-alone_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Coding Alone">
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">codingAlone</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0.047</span>
-      </span>
-    </div>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
+    <a class="navbar-brand me-2" href="../index.html">codingAlone</a>
 
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/coding-alone.html">Coding Alone</a>
-    </li>
-    <li>
-      <a href="../articles/data-generation.html">Generating the Data</a>
-    </li>
-    <li>
-      <a href="../articles/review-dividend.html">The Review Dividend</a>
-    </li>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.054</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/coding-alone.html">Coding Alone</a></li>
+    <li><a class="dropdown-item" href="../articles/data-generation.html">Generating the Data</a></li>
+    <li><a class="dropdown-item" href="../articles/review-dividend.html">The Review Dividend</a></li>
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/mpadge/coding-alone/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mpadge/coding-alone/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-quarto">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
 
+      <h1>Coding Alone</h1>
+      <p class="subtitle">Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone.</p>
+      <p class="author">Mark Padgham</p>
+      <p class="date">2026-09-29</p>
 
-
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Coding Alone</h1>
-            <h3 data-toc-skip class="subtitle">Analyses of coding
-activity across GitHub reveals a stark decline in collective coding in
-favour of coding alone.</h3>
-                        <h4 data-toc-skip class="author">Mark
-Padgham</h4>
-            
-            <h4 data-toc-skip class="date">28 September 2026</h4>
-      
-      <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.Rmd" class="external-link"><code>vignettes/coding-alone.Rmd</code></a></small>
-      <div class="hidden name"><code>coding-alone.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/mpadge/coding-alone/blob/main/vignettes/coding-alone.qmd" class="external-link"><code>vignettes/coding-alone.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<!--
+
+
+
+
+
+    <!--
 This is the LIVE source for the "coding-alone" vignette. It is not built
 directly by R CMD build/check - it requires repo-data-out/, which is far
 too large to ship with the package (see the data-access note in the
 vignette itself). Instead it's precompiled once, on a machine that has that
-data, into the static vignettes/coding-alone.Rmd that actually ships:
+data, into the static vignettes/coding-alone.qmd that actually ships:
 
-    knitr::knit ("vignettes/coding-alone.Rmd.orig", output = "vignettes/coding-alone.Rmd")
+    knitr::knit ("vignettes/coding-alone.qmd.orig", output = "vignettes/coding-alone.qmd")
 
 run with the working directory set to vignettes/, so relative paths below
-resolve correctly. That committed .Rmd has every chunk already evaluated
+resolve correctly. That committed .qmd has every chunk already evaluated
 (text and figures baked in as static markdown/images), so re-building it
-via the usual vignette machinery never needs the data again.
--->
-<style>
+via the usual vignette machinery (now the `quarto::html` vignette engine)
+never needs the data again.
+--><style>
 .callout {
     border-left: 4px solid #2c3e50;
     background: #f7f9fa;
@@ -121,537 +94,344 @@ via the usual vignette machinery never needs the data again.
 .callout p:first-child { margin-top: 0; }
 .callout p:last-child { margin-bottom: 0; }
 </style>
-<div class="section level2">
-<h2 id="bowling-alone-coding-alone">Bowling alone, coding alone<a class="anchor" aria-label="anchor" href="#bowling-alone-coding-alone"></a>
+<section class="level2"><h2 id="bowling-alone-coding-alone">Bowling alone, coding alone<a class="anchor" aria-label="anchor" href="#bowling-alone-coding-alone"></a>
 </h2>
-<p>In 1995, Robert Putnam noticed that more Americans were bowling than
-ever before, but the growth was in solo or casual bowling at the expense
-of organised, collective blowing. He argued that this was reflective of
-a broader collapse of associational habits which used to knit Americans
-into overlapping social groups. Local clubs, unions, congregations,
-leagues had been quietly hollowing out for a generation, not because
-people had lost interest in the underlying activity, but because they’d
-stopped doing it <em>together</em> <span class="citation">(Putnam 1995,
-2000)</span>. The incidental organizational structure of bowling leagues
-turned out to have been key to the way a potentially solitary pastime
-contributed to social cohesion.</p>
-<p>Open-source software has its own version of a league: public
-repositories, with one or two maintainers at their centre and shifting
-casts of outsiders who file bugs, ask questions, or leave comments.
-These communities of contributors guide and nurture ongoing software
-development. People still write code, but this document shows that the
-collective structures that have supported and sustained that writing are
-changing dramtically. Public software repositories are changing from
-places of social coherence and cohesion to become more like mere mirrors
-of a single person’s work.</p>
+<p>In 1995, Robert Putnam noticed that more Americans were bowling than ever before, but the growth was in solo or casual bowling at the expense of organised, collective blowing. He argued that this was reflective of a broader collapse of associational habits which used to knit Americans into overlapping social groups. Local clubs, unions, congregations, leagues had been quietly hollowing out for a generation, not because people had lost interest in the underlying activity, but because they’d stopped doing it <em>together</em> <span class="citation" data-cites="putnam1995bowlingalone putnam2000bowlingalone">(<a href="#ref-putnam1995bowlingalone" role="doc-biblioref">Putnam 1995</a>, <a href="#ref-putnam2000bowlingalone" role="doc-biblioref">2000</a>)</span>. The incidental organizational structure of bowling leagues turned out to have been key to the way a potentially solitary pastime contributed to social cohesion.</p>
+<p>Open-source software has its own version of a league: public repositories, with one or two maintainers at their centre and shifting casts of outsiders who file bugs, ask questions, or leave comments. These communities of contributors guide and nurture ongoing software development. People still write code, but this document shows that the collective structures that have supported and sustained that writing are changing dramtically. Public software repositories are changing from places of social coherence and cohesion to become more like mere mirrors of a single person’s work.</p>
+<section class="level3"><h3 id="why-does-this-matter">Why does this matter?<a class="anchor" aria-label="anchor" href="#why-does-this-matter"></a>
+</h3>
+<p>Maybe software coded by increasingly isolated individuals will be just a good as previous software coded by communities building on one another’s ideas? Maybe a bunch of individuals with large enough budgets for billions on AI tokens will be able to usher in a new golden age of genius software? It’s obviously helpful at the outset to try to figure out whether that’s likely to happen or not.</p>
+<p>The first problem in doing that is that good software is not easy to define. But at least for open-source software, popularity can generally be presumed to reflect quality. Popular open-source software can be generally presumed to be good (even though an awful lot of good software may go unnoticed). And popularity can be measured, generally by numbers of downloads, as well as by metrics like the number of times people have “starred” software repositories on GitHub.</p>
+<p>All of the following analyses use random selections of repositories from several common software distribution systems, including <a href="https://npmjs.com" class="external-link">npm for Javascript</a>, <a href="pypi.org">PyPI for Python</a>, <a href="https://cran.r-project.org" class="external-link">CRAN for R</a>, and two GitHub-based software review organizations, <a href="https://joss.theoj.org" class="external-link">JOSS (the Journal of Open-Source Software)</a>, and <a href="https://ropensci.org" class="external-link">rOpenSci</a>. Data extracted for each of these can show whether larger communities help produce better software, as measured through popularity.</p>
+<p>Relationships between community size and popularity are of course complicated by the fact that both tend to change and interact over time (ideally through growing together). Such mutual interactions can easily be statistically accounted for, to estimate the effects of community size on repository popularity independent of any influence of repository age on either of those measures. And doing that reveals the relationships shown in the following figure:</p>
+<div id="fig-popularity-authors" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-popularity-authors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-popularity-authors-1.png" class="quarto-figure quarto-figure-center">
 </div>
-<div class="section level2">
-<h2 id="what-was-measured">What was measured<a class="anchor" aria-label="anchor" href="#what-was-measured"></a>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-popularity-authors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both.
+</figcaption></figure>
+</div>
+<p>Good software - as measured by popularity - is overwhelmingly produced by larger communities. This relationship is of course purely correlative, and can say nothing about whether larger communities actually <em>cause</em> software quality to increase. But it is nevertheless sufficient to clearly show why this matters: Software produced by smaller communities tends to be significantly less popular. This suggests that any decreases in the sizes of communities producing software will likely be associated with decreases in software popularity, quite possibly because of decreases in software quality.</p>
+<p>Why do all of the following analyses matter? Because good software emerges from – and possibly even requires – large communities.</p>
+</section><section class="level3"><h3 id="what-was-measured">What was measured<a class="anchor" aria-label="anchor" href="#what-was-measured"></a>
+</h3>
+<p>All data are taken from GitHub, primarily as measures of interaction with software repositories through “issues”. Issues are the place for anybody to ask questions of software authors, to report bugs, or to request new features. A corpus of repositories was taken from the five sources described above.</p>
+<p>Analyses included every repository reviewed by <a href="https://joss.theoj.org" class="external-link">JOSS</a> and <a href="https://ropensci.org" class="external-link">rOpenSci</a>, every package currently on <a href="https://cran.r-project.org" class="external-link">CRAN</a>, and samples from the other three. Samples were stratified by popularity to ensure even sampling and representation regardless of popularity. In total, 3,139,779 issues were analysed across 52,461 repositories.</p>
+<p>More popular or prominent repositories attract greater interaction, resulting in issues being opened more frequently, and from a wider community. To account for the effects of repository popularity, most of the results are represented for four popularity strata, taken as quartiles on a logarithmic popularity scale. The lowest quartile, denoted “Q1”, represents the least popular repositories. Because these generally strongly outnumber popular repositories, these Q1 values may be generally interpreted to reflect the majority of all repositories. The “Q4” repositories are the outlying superstar repositories with enormous numbers of downloads and hundreds of people opening issues.</p>
+<p>A few additional statistics were also extracted, and are described alongside the main analyses.</p>
+<hr></section></section><section class="level2"><h2 id="main-findings">Main Findings<a class="anchor" aria-label="anchor" href="#main-findings"></a>
 </h2>
-<p>All data are taken from GitHub, primarily as measures of interaction
-with software repositories through “issues”. Issues are the place for
-anybody to ask questions of software authors, to report bugs, or to
-request new features. A corpus of repositories was taken from five
-sources: three package-distribution systems of <a href="https://npmjs.com" class="external-link">npm for Javascript</a>, <a href="pypi.org">PyPI
-for Python</a>, <a href="https://cran.r-project.org" class="external-link">CRAN for R</a>, and
-two GitHub-based software review organizations, <a href="https://joss.theoj.org" class="external-link">JOSS (the Journal of Open-Source
-Software)</a>, and <a href="https://ropensci.org" class="external-link">rOpenSci</a>.</p>
-<p>Analyses included every repository reviewed by <a href="https://joss.theoj.org" class="external-link">JOSS</a> and <a href="https://ropensci.org" class="external-link">rOpenSci</a>, and samples from the other
-three. Samples were stratified by popularity (measured as downloads) to
-ensure even sampling and representation regardless of popularity. In
-total, 3,139,779 issues were analysed across 52,461 repositories.</p>
-<p>More popular or prominent repositories attract greater interaction,
-resulting in issues being opened more frequently, and from a wider
-community. To account for the effects of repository popularity, most of
-the results are represented for four popularity strata, taken as
-quartiles on a logarithmic popularity scale. The lowest quartile,
-denoted “Q1”, represents the least popular repositories. Because these
-generally strongly outnumber popular repositories, these Q1 values may
-be generally interpreted to reflect the majority of all repositories.
-The “Q4” repositories are the outlying superstar repositories downloaded
-millions of times, and with hundreds of people opening issues.</p>
-<p>The only other important distinct in the data analysed here is
-between “core” and “non-core” contributors. Core contributors were
-identified as the cohort accounting for 99% of the cumulative share of
-all commits to a repository. The none-core contributors which are the
-focus of this analyses were taken as the cohort who collectively
-contributing less than 1%. This 1% threshold was arbitrarily set, but
-changing to alternative values like 2 or even 5% has no qualitative
-impact of any of the results or conclusions drawn.</p>
-<p>A few additional statistics were also extracted, and are described
-alongside the main analysis.</p>
+<section class="level3"><h3 id="finding-1-people-are-coding-less">Finding #1: People are coding less<a class="anchor" aria-label="anchor" href="#finding-1-people-are-coding-less"></a>
+</h3>
+<p>The most direct measures of coding activity are the creation of new repositories, and numbers of commits in each. Time series of these two statistics are shown in the following two panels. Both of these show trends common to most results that follow, with variable development up until 2020-2021, followed by more progressive trends. For that reason, many of the results shown below only show time series from 2021 onwards. Comparisons are also made as “step changes” between January 2021 and the present (Sep 2026)</p>
+<div id="fig-commit-rate-plot" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-commit-rate-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-commit-rate-plot-1.png" class="quarto-figure quarto-figure-center">
 </div>
-<div class="section level2">
-<h2 id="finding-1-people-are-coding-less">Finding #1: People are coding less<a class="anchor" aria-label="anchor" href="#finding-1-people-are-coding-less"></a>
-</h2>
-<p>The most direct measures of coding activity are the creation of new
-repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels. Both of these show
-trends common to most results that follow, with variable development up
-until 2020-2021, followed by more progressive trends. For that reason,
-many of the results shown below only show time series from the January
-2021 onwards. Comparisons are also made as “step changes” between
-January 2021 and the present (Sep 2026)</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/commit-rate-plot-1.png" alt="Fig. 1: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages."><p class="caption">
-Fig. 1: Rates of creation of new repos (top panel, as relative monthly
-percentages) and of commits per month (bottom). All rates are 12-month
-trailing averages.
-</p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-commit-rate-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.
+</figcaption></figure>
 </div>
-<p>The decrease in repository creation could of course simply reflect
-people moving away from GitHub and towards alternative code hosting
-sites. Such effects are not considered further here, but all analyses
-that follow are derived from existing GitHub repositories, and are
-independent of whether or not people are abandoning GitHub for
-alternative sites. The rates of monthly commits of Fig. 1 are an
-example. All of these rates generally decline, although also at lower
-rates than equivalent declines in rates of repository creation. These
-declines in commit rates are genuine declines observed among those
-people still active on GitHub.</p>
+<p>The decrease in repository creation could of course simply reflect people moving away from GitHub and towards alternative code hosting sites. Such effects are not considered further here, but all analyses that follow are derived from existing GitHub repositories, and are independent of whether or not people are abandoning GitHub for alternative sites. The rates of monthly commits of <a href="#fig-commit-rate-plot" class="quarto-xref">Figure 2</a> are an example. All of these rates generally decline, although also at lower rates than equivalent declines in rates of repository creation. These declines in commit rates are genuine declines observed among those people still active on GitHub.</p>
+<p>All results that follow are independent of whether or not people are actively abandoning GitHub in favour of alternative code hosting systems.</p>
+</section><section class="level3"><h3 id="finding-2-there-are-fewer-contributors">Finding #2: There Are Fewer Contributors<a class="anchor" aria-label="anchor" href="#finding-2-there-are-fewer-contributors"></a>
+</h3>
+<p>There are several ways to measures numbers of contributors to open-source software. Source code itself provides one of the most direct measures, generally through tracking who made each change. Code-hosting platforms provide a different approach, through data on repository issues. Anybody (with an account) can open an issue to ask a simple question. Many who do may not necessarily end up directly contributing to code at all, and so data on issues offers more inclusive insights into larger communities beyond direct code contributors.</p>
+<p><a href="#fig-trend-plots" class="quarto-xref">Figure 3</a> shows numbers of unique people opening new issues on repositories for the five software ecosystems. All counts are standardised to numbers of new issues per repository. All of these patterns reveal consistent changes either side of around 2020. And all of them have progressively decreased since that time.</p>
+<div id="fig-trend-plots" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-trend-plots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-trend-plots-1.png" class="quarto-figure quarto-figure-center">
 </div>
-<div class="section level2">
-<h2 id="finding-2-there-are-fewer-contributors">Finding 2: There Are Fewer Contributors<a class="anchor" aria-label="anchor" href="#finding-2-there-are-fewer-contributors"></a>
-</h2>
-<p>There are several ways to measures numbers of contributors to
-open-source software. Source code itself provides one of the most direct
-measures, generally through tracking who made each change. Code-hosting
-platforms provide a different approach, through data on repository
-issues. Anybody (with an account) can open an issue to ask a simple
-question. Many who do may not necessarily end up directly contributing
-to code at all, and so data on issues offers more inclusive insights
-into larger communities beyond direct code contributors.</p>
-<p>The following graphs show numbers of unique people opening new issues
-on repositories for the five software ecosystems. All counts are
-standardised to numbers of new issues per repository. All of these
-patterns reveal consistent changes either side of around 2020. And all
-of them have progressively decreased since that time.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/trend-plots-1.png" alt="Fig 2: Numbers of distinct authors opening new issues"><p class="caption">
-Fig 2: Numbers of distinct authors opening new issues
-</p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trend-plots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 3: Numbers of distinct authors opening new issues.
+</figcaption></figure>
 </div>
-<p>For each software source, lines are shown for the four distributional
-quartiles described above. “Q4” represents the relatively few extremely
-popular packages, while “Q1” is the quartile of lowest popularity. (And
-these quartiles are defined on a logarithmic scale, so there are far
-more packages in Q1 than in Q4.)</p>
-<p>The next figure (Fig 3) shows average declines since Jan 2021 for
-each software ecosystem and for each popularity quartile. Many of these
-declines are more pronounced for the most popular software (Q4),
-although PyPI shows the opposite trend, with decreases in numbers of
-unique issue authors being less severe for the most popular packages,
-while npm shows an intermediate pattern.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-authors-1.png" alt="Fig 3: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4)."><p class="caption">
-Fig 3: Changes in numbers of unique issue authors since 2021. Values are
-shown for four popularity quartiles, from lowest (Q1) to highest (Q4).
-</p>
+<p>For each software source, lines are shown for the four distributional quartiles described above. “Q4” represents the relatively few extremely popular packages, while “Q1” is the quartile of lowest popularity. (And these quartiles are defined on a logarithmic scale, so there are far more packages in Q1 than in Q4.)</p>
+<p>The next figure (<a href="#fig-step-change-authors" class="quarto-xref">Figure 4</a>) shows average declines since Jan 2021 for each software ecosystem and for each popularity quartile. Many of these declines are more pronounced for the most popular software (Q4), although PyPI shows the opposite trend, with decreases in numbers of unique issue authors being less severe for the most popular packages, while npm shows an intermediate pattern.</p>
+<div id="fig-step-change-authors" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-step-change-authors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-step-change-authors-1.png" class="quarto-figure quarto-figure-center">
 </div>
-<p>Total numbers of comments on each issue show a similar pattern (Fig.
-4), with similarly reversed trends for PyPi as well as npm.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-commits-1.png" alt="Fig 4: Changes in numbers of comments since 2021, as for previous figure."><p class="caption">
-Fig 4: Changes in numbers of comments since 2021, as for previous
-figure.
-</p>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-step-change-authors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4: Changes in numbers of unique issue authors since 2021. Values are shown for four popularity quartiles, from lowest (Q1) to highest (Q4).
+</figcaption></figure>
 </div>
-<p>Relative differences in all statistics to this point are quantified
-in the following table of percentage change in both rates from Jan 2021.
-(Repository creation for both JOSS and rOpenSci generally only occurs
-following rigorous review processes, and so values for these two can’t
-really be directly compared with the other sources, and are likely
-affected by additional constraints and influences.)</p>
-<table class="table">
-<caption>Percentage changes in statistics of Figs. 1-4, estimated from
-linear regressions fitted to all data from Jan 2021 across all
-popularity strata</caption>
+<p>Total numbers of comments on each issue show a similar pattern (<a href="#fig-step-change-commits" class="quarto-xref">Figure 5</a>), with similarly reversed trends for PyPi as well as npm. Taken together, these two figures reveal both numbers of issue authors and numbers of comments per issue have declined severely in all software systems over the past few years. Only for python packages in PyPI have declines been less severe for the most popular packages. In all other systems, declines have either been uniformly more severe for more popular packages or, for npm, displayed mixed patterns with the most severe declines at both ends of the popularity spectrum.</p>
+<div id="fig-step-change-commits" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-step-change-commits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-step-change-commits-1.png" class="quarto-figure quarto-figure-center">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-step-change-commits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 5: Changes in numbers of comments since 2021, as for previous figure.
+</figcaption></figure>
+</div>
+<p>Relative differences in all statistics to this point are quantified in the following table of percentage changes since Jan 2021. Although these values show clear declines in coding itself, both in rates of repository creation and commits, declines are considerably more severe for metrics of community size. Coding is decreasing, but community interactions are shrinking even faster.</p>
+<table class="table caption-top">
+<caption>Percentage changes in statistics of Figs. 1-4, estimated from linear regressions fitted to all data from Jan 2021 across all popularity strata (Repository creation for both JOSS and rOpenSci generally only occurs following rigorous review processes, and so values for these two can’t really be directly compared with the other sources, and are likely affected by additional constraints and influences.)</caption>
 <colgroup>
-<col width="11%">
-<col width="22%">
-<col width="15%">
-<col width="26%">
-<col width="24%">
+<col style="width: 11%">
+<col style="width: 22%">
+<col style="width: 15%">
+<col style="width: 26%">
+<col style="width: 24%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Repo creation (%)</th>
-<th align="right">Commits (%)</th>
-<th align="right">Distinct Authors (%)</th>
-<th align="right">Issue Comments (%)</th>
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">Repo creation (%)</th>
+<th style="text-align: right;">Commits (%)</th>
+<th style="text-align: right;">Distinct Authors (%)</th>
+<th style="text-align: right;">Issue Comments (%)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">JOSS</td>
-<td align="right">-73%</td>
-<td align="right">-56%</td>
-<td align="right">-61%</td>
-<td align="right">-83%</td>
+<td style="text-align: left;">JOSS</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-56%</td>
+<td style="text-align: right;">-61%</td>
+<td style="text-align: right;">-83%</td>
 </tr>
 <tr class="even">
-<td align="left">rOpenSci</td>
-<td align="right">-78%</td>
-<td align="right">-54%</td>
-<td align="right">-61%</td>
-<td align="right">-71%</td>
+<td style="text-align: left;">rOpenSci</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-54%</td>
+<td style="text-align: right;">-61%</td>
+<td style="text-align: right;">-71%</td>
 </tr>
 <tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">-38%</td>
-<td align="right">-49%</td>
-<td align="right">-64%</td>
-<td align="right">-78%</td>
+<td style="text-align: left;">CRAN</td>
+<td style="text-align: right;">-38%</td>
+<td style="text-align: right;">-49%</td>
+<td style="text-align: right;">-64%</td>
+<td style="text-align: right;">-78%</td>
 </tr>
 <tr class="even">
-<td align="left">npm</td>
-<td align="right">-55%</td>
-<td align="right">-22%</td>
-<td align="right">-63%</td>
-<td align="right">-70%</td>
+<td style="text-align: left;">npm</td>
+<td style="text-align: right;">-55%</td>
+<td style="text-align: right;">-22%</td>
+<td style="text-align: right;">-63%</td>
+<td style="text-align: right;">-70%</td>
 </tr>
 <tr class="odd">
-<td align="left">PyPI</td>
-<td align="right">-29%</td>
-<td align="right">-18%</td>
-<td align="right">-36%</td>
-<td align="right">-50%</td>
+<td style="text-align: left;">PyPI</td>
+<td style="text-align: right;">-29%</td>
+<td style="text-align: right;">-18%</td>
+<td style="text-align: right;">-36%</td>
+<td style="text-align: right;">-50%</td>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr></section><section class="level3"><h3 id="finding-3-new-authors-are-not-arriving">Finding #3: New Authors Are Not Arriving<a class="anchor" aria-label="anchor" href="#finding-3-new-authors-are-not-arriving"></a>
+</h3>
+<p>The rates at which new authors of GitHub issues appear have also progressively decreased across all software systems (<a href="#fig-new-author-rate" class="quarto-xref">Figure 6</a>). In 17 of those 20 combinations of software source-by-popularity stratum, the new-arrival rate has fallen by <em>more</em> than overall author density has, meaning the decline documented above isn’t simply existing regulars posting a little less often; it’s disproportionately a shrinking supply of people showing up for the first time at all.</p>
+<div id="fig-new-author-rate" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-new-author-rate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-new-author-rate-1.png" class="quarto-figure quarto-figure-center">
 </div>
-<div class="section level2">
-<h2 id="finding-3-new-authors-are-not-arriving">Finding #3: New Authors Are Not Arriving<a class="anchor" aria-label="anchor" href="#finding-3-new-authors-are-not-arriving"></a>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-new-author-rate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 6: Rates of arrival of new issue authors per repo-month.
+</figcaption></figure>
+</div>
+<p>The following plot converts those absolute measures to relative scales, to enable comparison of relative rates of change across the popularity quartiles for each software source. In almost all cases, decreases in arrival rates of new authors are most severe for the most popular packages.</p>
+<div id="fig-new-author-step-change" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-new-author-step-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-new-author-step-change-1.png" class="quarto-figure quarto-figure-center">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-new-author-step-change-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7: Changes in rates of new-author arrival since 2021, as for previous figures.
+</figcaption></figure>
+</div>
+<p>An alternative way of examining these decreases in rates of arrival are in terms of intervals between the arrival of each sequential pair of new authors (<a href="#fig-new-author-intervals" class="quarto-xref">Figure 8</a>).</p>
+<div id="fig-new-author-intervals" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-new-author-intervals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-new-author-intervals-1.png" class="quarto-figure quarto-figure-center">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-new-author-intervals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 8: Intervals in days between successive arrival of new authors.
+</figcaption></figure>
+</div>
+<p>These rates have also uniformly increased over the past few years. They are also notably far higher for <a href="https://cran.r-project.org" class="external-link">CRAN</a>, <a href="https://joss.theoj.org" class="external-link">JOSS</a>, and <a href="https://ropensci.org" class="external-link">rOpenSci</a>, in which new authors now arrive more than once per month only for the most popular packages. Only PyPi appears to not suffer this trend, with intervals between the arrival of new authors progressively decreasing over the past couple of years.</p>
+</section><section class="level3"><h3 id="finding-4-the-core-is-thinning-too">Finding #4: The Core Is Thinning Too<a class="anchor" aria-label="anchor" href="#finding-4-the-core-is-thinning-too"></a>
+</h3>
+<p>For each person contributing to a repository, GitHub also provides a measure of their relative overall contribution, measured as numbers of commits to source code. These relative contribution values were used to arbitrarily distinguish core contributors to a repository as those contributing a cumulative total of 99% of all commits. Non-core contributors were then identified as those contributing less than 1% of the cumulative total. While this threshold is arbitrary, none of the results or conclusions that follow are qualitatively affected by different values.</p>
+<p>First, relative decreases in numbers of distinct authors have decreased more for non-core than for core authors for all software sources (<a href="#fig-step-change-bytype" class="quarto-xref">Figure 9</a>). In all cases, most of the decreases in contributions observed in <a href="#fig-step-change-authors" class="quarto-xref">Figure 4</a> and <a href="#fig-step-change-commits" class="quarto-xref">Figure 5</a> reflect non-core contributors decreasing at faster rates than core contributors.</p>
+<div id="fig-step-change-bytype" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-step-change-bytype-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-step-change-bytype-1.png" class="quarto-figure quarto-figure-center">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-step-change-bytype-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 9: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories
+</figcaption></figure>
+</div>
+<p>The combined effect of these decreases must of course be a progression towards increasing numbers of repositories being maintained by one person only. This is exactly what <a href="#fig-solo-share-plot" class="quarto-xref">Figure 10</a> shows. Taken collectively, 27% of repositories were effectively maintained by a single person in January 2021. By September 2026, that share had risen to 43%.</p>
+<div id="fig-solo-share-plot" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-solo-share-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-solo-share-plot-1.png" class="quarto-figure quarto-figure-center">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-solo-share-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 10: Share ot active repositories with only one person active
+</figcaption></figure>
+</div>
+</section></section><section class="level2"><h2 id="what-does-this-mean">What does this mean?<a class="anchor" aria-label="anchor" href="#what-does-this-mean"></a>
 </h2>
-<p>The rates at which new authors of GitHub issues appear have also
-progressively decreased across all software systems (Fig. 5). In 17 of
-those 20 combinations of software source-by-popularity stratum, the
-new-arrival rate has fallen by <em>more</em> than overall author density
-has, meaning the decline documented above isn’t simply existing regulars
-posting a little less often; it’s disproportionately a shrinking supply
-of people showing up for the first time at all.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-rate-plot-1.png" alt="Fig 5: Rates of arrival of new issue authors per repo-month "><p class="caption">
-Fig 5: Rates of arrival of new issue authors per repo-month
-</p>
-</div>
-<p>The following plot converts those absolute measures to relative
-scales, to enable comparison of relative rates of change across the
-popularity quartiles for each software source. In almost all cases,
-decreases in arrival rates of new authors are most severe for the most
-popular packages.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/new-author-step-change-plot-1.png" alt="Fig 6: Changes in rates of new-author arrival since 2021, as for previous figures."><p class="caption">
-Fig 6: Changes in rates of new-author arrival since 2021, as for
-previous figures.
-</p>
-</div>
-<p>An alternative way of examining these decreases in rates of arrival
-are in terms of intervals between the arrival of each sequential pair of
-new authors (Fig. 7).</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/author-interval-plot-1.png" alt="Fig. 7: Intervals in days between successive arrival of new authors."><p class="caption">
-Fig. 7: Intervals in days between successive arrival of new authors.
-</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="finding-4-the-core-is-thinning-too">Finding 4: the core is thinning too<a class="anchor" aria-label="anchor" href="#finding-4-the-core-is-thinning-too"></a>
+<p>Nothing in this dataset says why. But the pattern - a shrinking, and increasingly solitary, pool of participants, hitting visible and obscure projects alike, reaching core contributors as well as outsiders, unexplained by projects simply aging - lines up with what’s independently being reported about the people who keep open source running day to day, in terms that echo Putnam’s own more directly than might be expected. A 2024 survey of open-source maintainers found that 61% of them maintain their project entirely alone, and that unpaid maintainers were disproportionately likely to be the ones flying solo <span class="citation" data-cites="socket2024solomaintainers">(<a href="#ref-socket2024solomaintainers" role="doc-biblioref">Socket 2024</a>)</span>. Tidelift’s own 2024 survey of maintainers found that 60% remain entirely unpaid and nearly 60% have quit, or seriously considered quitting, a project they maintain, citing competing life demands, loss of interest, and burnout among the leading reasons <span class="citation" data-cites="tidelift2024maintainer">(<a href="#ref-tidelift2024maintainer" role="doc-biblioref">Tidelift 2024</a>)</span>. In November 2025, Kubernetes’ steering and security committees retired Ingress NGINX - one of the most widely deployed pieces of cloud-native infrastructure in existence, maintained for years by one or two people working nights and weekends - after concluding that no amount of public appeal could attract the additional help needed to keep it going <span class="citation" data-cites="kubernetes2025ingressnginx">(<a href="#ref-kubernetes2025ingressnginx" role="doc-biblioref">Kubernetes SIG Network and Security Response Committee 2025</a>)</span>. A project that visible sitting in this dataset’s own Q4 is exactly the kind of case Finding 5 describes: popularity that didn’t translate into a growing base of people ready to share the load.</p>
+<p>The newcomer side of the pipeline shows a matching strain from the supply end. Newcomers have always been hard to retain - a decade-old study of one large Apache project found fewer than one in five who showed up ever became long-term contributors, largely depending on whether their first interaction got a timely, helpful response <span class="citation" data-cites="steinmacher2013newcomers">(<a href="#ref-steinmacher2013newcomers" role="doc-biblioref">Steinmacher et al. 2013</a>)</span>. More recent evidence suggests the on-ramp meant to fix exactly that problem is itself fraying: a 2026 longitudinal study of “good first issue” labelling across 37 popular OSS projects found that after holding steady for three years, the share of issues labelled as newcomer-friendly began a statistically significant decline starting in January 2024 <span class="citation" data-cites="hoshikawa2026goodfirstissue">(<a href="#ref-hoshikawa2026goodfirstissue" role="doc-biblioref">Hoshikawa et al. 2026</a>)</span> - maintainers with less time or attention to spare evidently have less of it left over for curating an on-ramp, on top of everything else. None of this is a new problem invented by any one technology; a decade before any of it, Nadia Eghbal’s <em>Roads and Bridges</em> was already describing critical open-source infrastructure sustained by a handful of unpaid volunteers, and arguing that the fix isn’t simply money, because what these projects actually run short of is people <span class="citation" data-cites="eghbal2016roadsbridges">(<a href="#ref-eghbal2016roadsbridges" role="doc-biblioref">Eghbal 2016</a>)</span>.</p>
+<p>The decline’s timing loosely coincides with two other, independently documented shifts: GitHub Copilot’s move from limited preview to general availability in mid-2022 <span class="citation" data-cites="wikipedia2026copilot">(<a href="#ref-wikipedia2026copilot" role="doc-biblioref">Wikipedia contributors 2026</a>)</span>, and a well-documented collapse in Stack Overflow’s own new-question volume beginning around the same time <span class="citation" data-cites="orosz2025stackoverflow holscher2025stackoverflow">(<a href="#ref-orosz2025stackoverflow" role="doc-biblioref">Orosz 2025</a>; <a href="#ref-holscher2025stackoverflow" role="doc-biblioref">Holscher 2025</a>)</span> - the other major venue for the same kind of peer-to-peer technical exchange this dataset measures. One speculative mechanism worth naming, though this dataset can’t test it directly: if AI coding assistants increasingly converge developers onto similar solutions and similar code, that kind of algorithmic monoculture could itself thin out the organic variety of problems that used to generate an issue or a question in the first place <span class="citation" data-cites="bommasani2022monoculture">(<a href="#ref-bommasani2022monoculture" role="doc-biblioref">Bommasani et al. 2022</a>)</span>. That’s one candidate explanation among several plausible ones, offered as context rather than as something this dataset can adjudicate - and it would sit alongside, not replace, Putnam’s own preferred explanations for the associational decline he documented: generational turnover, two-career households leaving less unscheduled time, and, well before social media, the privatising pull of television <span class="citation" data-cites="putnam2000bowlingalone">(<a href="#ref-putnam2000bowlingalone" role="doc-biblioref">Putnam 2000</a>)</span>.</p>
+<section class="level3"><h3 id="where-this-leaves-things">Where this leaves things<a class="anchor" aria-label="anchor" href="#where-this-leaves-things"></a>
+</h3>
+<p>Putnam’s title image worked because bowling itself wasn’t disappearing - what was disappearing was the league around it, the thing that turned an individual pastime into a piece of shared civic life. This dataset can’t speak to whether people are writing less code; if anything, the tools available for writing it alone have only multiplied. What it can speak to is the collective structure built around that writing, and on every cut available - non-core outsiders, core contributors, everyone combined, and the blunter question of how many repositories now involve only one person at all - that structure has been thinning since around 2021, across five different ecosystems, unexplained by projects simply maturing, and unprotected by popularity. The one place this dataset finds a countervailing force - rOpenSci’s formal peer review, sustaining non-core engagement in its own least-visible packages - doesn’t rescue that same corner of rOpenSci from a rising solo-repository share either. None of that is proof of any single cause. What it is, is a structural, five-ecosystem-wide shift from code written and shared among a loose, overlapping circle of people toward code written and shared by one person at a time - open source’s own version of bowling alone, showing up in this dataset at almost exactly the same moment outside observers, from maintainer surveys to a retired Kubernetes component, have been reporting it from the other side.</p>
+</section></section><section class="level2 unnumbered"><h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>For each person contributing to a repository, GitHub also provides a
-measure of their relative overall contribution, measured as numbers of
-commits to source code. These relative contribution values were used to
-arbitrarily distinguish core contributors to a repository as those
-contributing a cumulative total of 99% of all commits. Non-core
-contributors were then identified as those contributing less than 1% of
-the cumulative total. While this threshold is arbitrary, none of the
-results or conclusions that follow are qualitatively affected by
-different values.</p>
-<p>First, relative decreases in numbers of distinct authors have
-decreased more for non-core than for core authors for all software
-sources (Fig. 8).</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/step-change-plot-bytype-1.png" alt="Fig. 8: Relative decreases since Jan 2021 in numbers of core and non-core contributors to repositories"><p class="caption">
-Fig. 8: Relative decreases since Jan 2021 in numbers of core and
-non-core contributors to repositories
-</p>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-bommasani2022monoculture" class="csl-entry" role="listitem">
+Bommasani, Rishi, Kathleen A. Creel, Ananya Kumar, Dan Jurafsky, and Percy Liang. 2022. <span>‘Picking on the Same Person: Does Algorithmic Monoculture Lead to Outcome Homogenization?’</span> <em>Advances in Neural Information Processing Systems (NeurIPS)</em>. <a href="https://arxiv.org/abs/2211.13972" class="external-link">https://arxiv.org/abs/2211.13972</a>.
 </div>
-<table class="table">
-<caption>Percentage changes in rates of new author arrival, estimated
-from Jan 2021 across all popularity strata</caption>
-<thead><tr class="header">
-<th align="left">Source</th>
-<th align="right">Total (%)</th>
-<th align="right">Core (%)</th>
-<th align="right">Non-Core (%)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">CRAN</td>
-<td align="right">-74%</td>
-<td align="right">-43%</td>
-<td align="right">-76%</td>
-</tr>
-<tr class="even">
-<td align="left">JOSS</td>
-<td align="right">-69%</td>
-<td align="right">-58%</td>
-<td align="right">-69%</td>
-</tr>
-<tr class="odd">
-<td align="left">npm</td>
-<td align="right">-63%</td>
-<td align="right">-60%</td>
-<td align="right">-68%</td>
-</tr>
-<tr class="even">
-<td align="left">PyPI</td>
-<td align="right">-38%</td>
-<td align="right">-38%</td>
-<td align="right">-48%</td>
-</tr>
-<tr class="odd">
-<td align="left">rOpenSci</td>
-<td align="right">-71%</td>
-<td align="right">-61%</td>
-<td align="right">-73%</td>
-</tr>
-</tbody>
-</table>
-<p>Core headcounts have fallen in every one of the five sources - 5 out
-of 5 - and so has total headcount, core and non-core combined - 5 out of
-5. Nobody’s circle is exempt. What does differ is degree: in every one
-of the five sources, the core headcount has fallen by <em>less</em> than
-the non-core headcount did over the same period (5 out of 5) -
-consistent with attrition working its way inward from a project’s edges
-rather than hitting the whole population evenly at once, but not with
-the core being insulated from it altogether. A repository’s inner circle
-is shrinking more slowly than its outer one, not staying put while the
-outer one empties around it.</p>
+<div id="ref-eghbal2016roadsbridges" class="csl-entry" role="listitem">
+Eghbal, Nadia. 2016. <em>Roads and Bridges: The Unseen Labor Behind Our Digital Infrastructure</em>. Ford Foundation. <a href="https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf" class="external-link">https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf</a>.
 </div>
-<div class="section level2">
-<h2 id="finding-3-more-repositories-now-hold-exactly-one-person">Finding 3: more repositories now hold exactly one person<a class="anchor" aria-label="anchor" href="#finding-3-more-repositories-now-hold-exactly-one-person"></a>
-</h2>
-<p>Findings 1 and 2 are both rate-based: fewer distinct people per
-repo-month, averaged across a whole population of repositories. The
-plainer, Putnam-shaped question is a repo-count one: out of the
-repositories that heard from <em>anyone</em> at all in the last year,
-how many heard from only one person?</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/solo-share-plot-1.png" alt="Share ot active repositories with only one person active"><p class="caption">
-Share ot active repositories with only one person active
-</p>
+<div id="ref-holscher2025stackoverflow" class="csl-entry" role="listitem">
+Holscher, Eric. 2025. <em>Stack Overflow’s Decline</em>. Personal blog. <a href="https://www.ericholscher.com/blog/2025/jan/21/stack-overflows-decline/" class="external-link">https://www.ericholscher.com/blog/2025/jan/21/stack-overflows-decline/</a>.
 </div>
-<p>Overall in January 2021, 27% of repositories with any issue-based
-activity at all in the preceding year had that activity coming from a
-single person. By September 2026, that share had risen to 43% - not a
-fixed population getting quieter across the board, but a growing
-fraction of it crossing all the way over into having no visible second
-person at all.</p>
+<div id="ref-hoshikawa2026goodfirstissue" class="csl-entry" role="listitem">
+Hoshikawa, Hirotatsu, Hidetake Tanaka, Kazumasa Shimari, Raula Gaikovina Kula, and Kenichi Matsumoto. 2026. <em>A Longitudinal Analysis of Good First Issue Practices and Newcomer Pull Requests in Popular OSS Projects</em>. arXiv:2604.27532, accepted at EASE 2026. <a href="https://arxiv.org/abs/2604.27532" class="external-link">https://arxiv.org/abs/2604.27532</a>.
 </div>
-<div class="section level2">
-<h2 id="finding-4-not-simply-projects-settling-down-with-age">Finding 4: not simply projects settling down with age<a class="anchor" aria-label="anchor" href="#finding-4-not-simply-projects-settling-down-with-age"></a>
-</h2>
-<p>The same alternative explanation the companion vignette rules out for
-issue counts applies here too: repositories might generate less non-core
-interest simply because they’re older - documentation accumulates, FAQs
-get answered once and closed, rough edges get sanded down - independent
-of any shared moment in calendar time. Disentangling the two needs the
-same age/period/cohort trick: fix a repository’s <em>age</em> and let
-<em>cohort</em> (the calendar year that age fell in) vary, so pure
-maturation predicts flat lines at a given age regardless of which year
-that age happened to fall in, while a shared calendar-time effect
-predicts later cohorts showing a lower rate at that same fixed age than
-earlier ones did.</p>
-<div class="figure" style="text-align: center">
-<img src="coding-alone-figures/cohort-age-plot-1.png" alt="plot of chunk cohort-age-plot"><p class="caption">
-plot of chunk cohort-age-plot
-</p>
+<div id="ref-kubernetes2025ingressnginx" class="csl-entry" role="listitem">
+Kubernetes SIG Network and Security Response Committee. 2025. <em>Ingress NGINX Retirement: What You Need to Know</em>. Kubernetes Blog. <a href="https://www.kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/" class="external-link">https://www.kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/</a>.
 </div>
-<p>CRAN, JOSS and npm show the calendar-time signature clearly: at a
-fixed early age, the non-core rate falls steadily as the cohort year
-increases, roughly halving or more between repositories born in the
-mid-2010s and those born in the early 2020s - not what pure maturation
-predicts. PyPI and rOpenSci don’t show a comparable cohort-driven
-decline at fixed age, which is worth flagging rather than smoothing
-over: whatever combination of forces is driving the broader pattern
-doesn’t touch every source through quite the same channel, even though
-the <em>outcome</em> - fewer people showing up now than five years ago -
-turns out to be shared by all five.</p>
+<div id="ref-orosz2025stackoverflow" class="csl-entry" role="listitem">
+Orosz, Gergely. 2025. <em>Stack Overflow Is Almost Dead</em>. The Pragmatic Engineer (blog). <a href="https://blog.pragmaticengineer.com/stack-overflow-is-almost-dead/" class="external-link">https://blog.pragmaticengineer.com/stack-overflow-is-almost-dead/</a>.
 </div>
-<div class="section level2">
-<h2 id="what-this-looks-like-from-outside-this-dataset">What this looks like from outside this dataset<a class="anchor" aria-label="anchor" href="#what-this-looks-like-from-outside-this-dataset"></a>
-</h2>
-<p>Nothing in this dataset says why. But the pattern - a shrinking, and
-increasingly solitary, pool of participants, hitting visible and obscure
-projects alike, reaching core contributors as well as outsiders,
-unexplained by projects simply aging - lines up with what’s
-independently being reported about the people who keep open source
-running day to day, in terms that echo Putnam’s own more directly than
-might be expected. A 2024 survey of open-source maintainers found that
-61% of them maintain their project entirely alone, and that unpaid
-maintainers were disproportionately likely to be the ones flying solo
-<span class="citation">(Socket 2024)</span>. Tidelift’s own 2024 survey
-of maintainers found that 60% remain entirely unpaid and nearly 60% have
-quit, or seriously considered quitting, a project they maintain, citing
-competing life demands, loss of interest, and burnout among the leading
-reasons <span class="citation">(Tidelift 2024)</span>. In November 2025,
-Kubernetes’ steering and security committees retired Ingress NGINX - one
-of the most widely deployed pieces of cloud-native infrastructure in
-existence, maintained for years by one or two people working nights and
-weekends - after concluding that no amount of public appeal could
-attract the additional help needed to keep it going <span class="citation">(Kubernetes SIG Network and Security Response Committee
-2025)</span>. A project that visible sitting in this dataset’s own Q4 is
-exactly the kind of case Finding 5 describes: popularity that didn’t
-translate into a growing base of people ready to share the load.</p>
-<p>The newcomer side of the pipeline shows a matching strain from the
-supply end. Newcomers have always been hard to retain - a decade-old
-study of one large Apache project found fewer than one in five who
-showed up ever became long-term contributors, largely depending on
-whether their first interaction got a timely, helpful response <span class="citation">(Steinmacher et al. 2013)</span>. More recent evidence
-suggests the on-ramp meant to fix exactly that problem is itself
-fraying: a 2026 longitudinal study of “good first issue” labelling
-across 37 popular OSS projects found that after holding steady for three
-years, the share of issues labelled as newcomer-friendly began a
-statistically significant decline starting in January 2024 <span class="citation">(Hoshikawa et al. 2026)</span> - maintainers with less
-time or attention to spare evidently have less of it left over for
-curating an on-ramp, on top of everything else. None of this is a new
-problem invented by any one technology; a decade before any of it, Nadia
-Eghbal’s <em>Roads and Bridges</em> was already describing critical
-open-source infrastructure sustained by a handful of unpaid volunteers,
-and arguing that the fix isn’t simply money, because what these projects
-actually run short of is people <span class="citation">(Eghbal
-2016)</span>.</p>
-<p>The decline’s timing loosely coincides with two other, independently
-documented shifts: GitHub Copilot’s move from limited preview to general
-availability in mid-2022 <span class="citation">(Wikipedia contributors
-2026)</span>, and a well-documented collapse in Stack Overflow’s own
-new-question volume beginning around the same time <span class="citation">(Orosz 2025; Holscher 2025)</span> - the other major
-venue for the same kind of peer-to-peer technical exchange this dataset
-measures. One speculative mechanism worth naming, though this dataset
-can’t test it directly: if AI coding assistants increasingly converge
-developers onto similar solutions and similar code, that kind of
-algorithmic monoculture could itself thin out the organic variety of
-problems that used to generate an issue or a question in the first place
-<span class="citation">(Bommasani et al. 2022)</span>. That’s one
-candidate explanation among several plausible ones, offered as context
-rather than as something this dataset can adjudicate - and it would sit
-alongside, not replace, Putnam’s own preferred explanations for the
-associational decline he documented: generational turnover, two-career
-households leaving less unscheduled time, and, well before social media,
-the privatising pull of television <span class="citation">(Putnam
-2000)</span>.</p>
+<div id="ref-putnam1995bowlingalone" class="csl-entry" role="listitem">
+Putnam, Robert D. 1995. <span>‘Bowling Alone: America’s Declining Social Capital’</span>. <em>Journal of Democracy</em> 6 (1): 65–78. <a href="https://doi.org/10.1353/jod.1995.0002" class="external-link">https://doi.org/10.1353/jod.1995.0002</a>.
 </div>
-<div class="section level2">
-<h2 id="where-this-leaves-things">Where this leaves things<a class="anchor" aria-label="anchor" href="#where-this-leaves-things"></a>
-</h2>
-<p>Putnam’s title image worked because bowling itself wasn’t
-disappearing - what was disappearing was the league around it, the thing
-that turned an individual pastime into a piece of shared civic life.
-This dataset can’t speak to whether people are writing less code; if
-anything, the tools available for writing it alone have only multiplied.
-What it can speak to is the collective structure built around that
-writing, and on every cut available - non-core outsiders, core
-contributors, everyone combined, and the blunter question of how many
-repositories now involve only one person at all - that structure has
-been thinning since around 2021, across five different ecosystems,
-unexplained by projects simply maturing, and unprotected by popularity.
-The one place this dataset finds a countervailing force - rOpenSci’s
-formal peer review, sustaining non-core engagement in its own
-least-visible packages - doesn’t rescue that same corner of rOpenSci
-from a rising solo-repository share either. None of that is proof of any
-single cause. What it is, is a structural, five-ecosystem-wide shift
-from code written and shared among a loose, overlapping circle of people
-toward code written and shared by one person at a time - open source’s
-own version of bowling alone, showing up in this dataset at almost
-exactly the same moment outside observers, from maintainer surveys to a
-retired Kubernetes component, have been reporting it from the other
-side.</p>
+<div id="ref-putnam2000bowlingalone" class="csl-entry" role="listitem">
+Putnam, Robert D. 2000. <em>Bowling Alone: The Collapse and Revival of American Community</em>. Simon &amp; Schuster.
 </div>
-<div class="section level2 unnumbered">
-<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-bommasani2022monoculture" class="csl-entry">
-Bommasani, Rishi, Kathleen A. Creel, Ananya Kumar, Dan Jurafsky, and
-Percy Liang. 2022. <span>“Picking on the Same Person: Does Algorithmic
-Monoculture Lead to Outcome Homogenization?”</span> <em>Advances in
-Neural Information Processing Systems (NeurIPS)</em>. <a href="https://arxiv.org/abs/2211.13972" class="external-link">https://arxiv.org/abs/2211.13972</a>.
+<div id="ref-socket2024solomaintainers" class="csl-entry" role="listitem">
+Socket. 2024. <em>The Unpaid Backbone of Open Source: Solo Maintainers Face Increasing Security Demands</em>. Socket Blog. <a href="https://socket.dev/blog/the-unpaid-backbone-of-open-source" class="external-link">https://socket.dev/blog/the-unpaid-backbone-of-open-source</a>.
 </div>
-<div id="ref-eghbal2016roadsbridges" class="csl-entry">
-Eghbal, Nadia. 2016. <em>Roads and Bridges: The Unseen Labor Behind Our
-Digital Infrastructure</em>. Ford Foundation. <a href="https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf" class="external-link">https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf</a>.
+<div id="ref-steinmacher2013newcomers" class="csl-entry" role="listitem">
+Steinmacher, Igor, Igor Scaliante Wiese, Ana Paula Chaves, and Marco Aurélio Gerosa. 2013. <span>‘Why Do Newcomers Abandon Open Source Software Projects?’</span> <em>2013 6th International Workshop on Cooperative and Human Aspects of Software Engineering (CHASE)</em>, 25–32. <a href="https://doi.org/10.1109/CHASE.2013.6614728" class="external-link">https://doi.org/10.1109/CHASE.2013.6614728</a>.
 </div>
-<div id="ref-holscher2025stackoverflow" class="csl-entry">
-Holscher, Eric. 2025. <em>Stack Overflow’s Decline</em>. Personal blog.
-<a href="https://www.ericholscher.com/blog/2025/jan/21/stack-overflows-decline/" class="external-link">https://www.ericholscher.com/blog/2025/jan/21/stack-overflows-decline/</a>.
+<div id="ref-tidelift2024maintainer" class="csl-entry" role="listitem">
+Tidelift. 2024. <em>The 2024 Tidelift Maintainer Impact Report</em>. Tidelift. <a href="https://www.tidelift.com/open-source-maintainer-survey-2024" class="external-link">https://www.tidelift.com/open-source-maintainer-survey-2024</a>.
 </div>
-<div id="ref-hoshikawa2026goodfirstissue" class="csl-entry">
-Hoshikawa, Hirotatsu, Hidetake Tanaka, Kazumasa Shimari, Raula Gaikovina
-Kula, and Kenichi Matsumoto. 2026. <em>A Longitudinal Analysis of Good
-First Issue Practices and Newcomer Pull Requests in Popular OSS
-Projects</em>. arXiv:2604.27532, accepted at EASE 2026. <a href="https://arxiv.org/abs/2604.27532" class="external-link">https://arxiv.org/abs/2604.27532</a>.
-</div>
-<div id="ref-kubernetes2025ingressnginx" class="csl-entry">
-Kubernetes SIG Network and Security Response Committee. 2025.
-<em>Ingress NGINX Retirement: What You Need to Know</em>. Kubernetes
-Blog. <a href="https://www.kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/" class="external-link">https://www.kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/</a>.
-</div>
-<div id="ref-orosz2025stackoverflow" class="csl-entry">
-Orosz, Gergely. 2025. <em>Stack Overflow Is Almost Dead</em>. The
-Pragmatic Engineer (blog). <a href="https://blog.pragmaticengineer.com/stack-overflow-is-almost-dead/" class="external-link">https://blog.pragmaticengineer.com/stack-overflow-is-almost-dead/</a>.
-</div>
-<div id="ref-putnam1995bowlingalone" class="csl-entry">
-Putnam, Robert D. 1995. <span>“Bowling Alone: America’s Declining Social
-Capital.”</span> <em>Journal of Democracy</em> 6 (1): 65–78. <a href="https://doi.org/10.1353/jod.1995.0002" class="external-link">https://doi.org/10.1353/jod.1995.0002</a>.
-</div>
-<div id="ref-putnam2000bowlingalone" class="csl-entry">
-Putnam, Robert D. 2000. <em>Bowling Alone: The Collapse and Revival of
-American Community</em>. Simon &amp; Schuster.
-</div>
-<div id="ref-socket2024solomaintainers" class="csl-entry">
-Socket. 2024. <em>The Unpaid Backbone of Open Source: Solo Maintainers
-Face Increasing Security Demands</em>. Socket Blog. <a href="https://socket.dev/blog/the-unpaid-backbone-of-open-source" class="external-link">https://socket.dev/blog/the-unpaid-backbone-of-open-source</a>.
-</div>
-<div id="ref-steinmacher2013newcomers" class="csl-entry">
-Steinmacher, Igor, Igor Scaliante Wiese, Ana Paula Chaves, and Marco
-Aurélio Gerosa. 2013. <span>“Why Do Newcomers Abandon Open Source
-Software Projects?”</span> <em>2013 6th International Workshop on
-Cooperative and Human Aspects of Software Engineering (CHASE)</em>,
-25–32. <a href="https://doi.org/10.1109/CHASE.2013.6614728" class="external-link">https://doi.org/10.1109/CHASE.2013.6614728</a>.
-</div>
-<div id="ref-tidelift2024maintainer" class="csl-entry">
-Tidelift. 2024. <em>The 2024 Tidelift Maintainer Impact Report</em>.
-Tidelift. <a href="https://www.tidelift.com/open-source-maintainer-survey-2024" class="external-link">https://www.tidelift.com/open-source-maintainer-survey-2024</a>.
-</div>
-<div id="ref-wikipedia2026copilot" class="csl-entry">
+<div id="ref-wikipedia2026copilot" class="csl-entry" role="listitem">
 Wikipedia contributors. 2026. <em>GitHub Copilot</em>. Wikipedia. <a href="https://en.wikipedia.org/wiki/GitHub_Copilot" class="external-link">https://en.wikipedia.org/wiki/GitHub_Copilot</a>.
 </div>
 </div>
+<hr></section><section class="level2 appendix"><h2 class="appendix" id="appendix">Appendix<a class="anchor" aria-label="anchor" href="#appendix"></a>
+</h2>
+<section class="level3"><h3 id="projects-do-not-simply-settle-down-with-age">Projects do not simply settle down with age<a class="anchor" aria-label="anchor" href="#projects-do-not-simply-settle-down-with-age"></a>
+</h3>
+<p>Of course, general interest and activity in repositories may simply decrease over time, and many of the effects observed above may simply reflect process of “settling down”: Documentation gets clarified, many questions have already been answered, and the need for engagement decreases.</p>
+<p>This appendix demonstrates that repository age does not influence the main conclusions. <a href="#fig-cohort-age" class="quarto-xref">Figure 11</a> shows two lines for each software source: One exclusively for repositories started in the indicated year, and one for repositories in their second year of life in that year. Any effects of repository age should manifest in differences between these two lines, and yet that is not what is observed. In all cases, observed rates of change remain very similar regardless of repository age. Moreover, replicating this figure for any of the metrics analysed in the main text yields qualitatively very similar results. Repository age therefore has little or no qualitative effect on any of the results shown in the main text.</p>
+<div id="fig-cohort-age" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-cohort-age-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="coding-alone-figures/fig-cohort-age-1.png" class="quarto-figure quarto-figure-center">
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-      </div>
-
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cohort-age-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 11: Effects of cohort age on rates of new issues
+</figcaption></figure>
+</div>
+</section></section><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
-
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Mark Padgham.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Mark Padgham.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
-
 
 
 
