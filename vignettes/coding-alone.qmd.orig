@@ -106,9 +106,9 @@ mirrors of a single person's work.
 ## Why does this matter?
 
 Maybe software coded by increasingly isolated individuals will be just a good
-as previous software coded by communities building on one another's ideas.
+as previous software coded by communities building on one another's ideas?
 Maybe a bunch of individuals with large enough budgets for billions on AI
-tokens will be able to usher in a new golden age of genius software. It's
+tokens will be able to usher in a new golden age of genius software? It's
 obviously helpful at the outset to try to figure out whether that's likely to
 happen or not.
 
@@ -137,9 +137,6 @@ popularity independent of any influence of repository age on either of those
 measures. And doing that reveals the relationships shown in the following
 figure:
 
-
-## What was measured
-
 ```{r initial-data-load, cache = TRUE}
 out_dir <- "../repo-data-out"
 f <- fs::dir_ls (out_dir, regexp = "pre-process", fixed = TRUE)
@@ -147,6 +144,7 @@ dat <- readRDS (f)
 repo_tbl <- dat$repo_tbl
 issue_authors_tbl <- dat$issue_authors_tbl
 commit_counts_tbl <- dat$commit_counts_tbl
+popularity_authors_tbl <- dat$popularity_authors_tbl
 
 commit_rates <- dat$commit_rates
 repo_creation_rates <- dat$repo_creation_rates
@@ -159,6 +157,43 @@ n_repos_primary <- length (unique (
     repo_tbl$repo_url [repo_tbl$source %in% primary_sources]
 ))
 ```
+
+```{r}
+#| label: fig-popularity-authors
+#| fig-cap: "Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both."
+#| fig-height: 10
+
+tbl <- popularity_authors_tbl
+tbl$source <- factor (tbl$source, levels = unique (tbl$source))
+
+ggplot2::ggplot (tbl, ggplot2::aes (n_authors, popularity_adj)) +
+    ggplot2::geom_point (alpha = 0.3, size = 0.8, colour = "gray50") +
+    ggplot2::geom_smooth (
+        method = "lm", formula = y ~ x, colour = "#c0392b", se = TRUE
+    ) +
+    ggplot2::scale_x_log10 () +
+    ggplot2::scale_y_log10 () +
+    ggplot2::facet_wrap (~source, scales = "free") +
+    ggplot2::labs (
+        x = "Total unique issue authors",
+        y = "Popularity, adjusted to source's median repo lifespan"
+    ) +
+    ggplot2::theme_minimal ()
+```
+
+Good software - as measured by popularity - is overwhelmingly produced by
+larger communities. This relationship is of course purely correlative, and can
+say nothing about whether larger communities actually _cause_ software quality
+to increase. But it is nevertheless sufficient to clearly show why this
+matters: Software produced by smaller communities tends to be significantly
+less popular. This suggests that any decreases in the sizes of communities
+producing software will likely be associated with decreases in software
+popularity, quite possibly because of decreases in software quality.
+
+Why do all of the following analyses matter? Because good software requires
+large communities.
+
+## What was measured
 
 All data are taken from GitHub, primarily as measures of interaction with
 software repositories through "issues". Issues are the place for anybody to ask

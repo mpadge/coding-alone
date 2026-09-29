@@ -23,6 +23,9 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         progress = FALSE
     )
 
+    popularity_authors_tbl <-
+        build_popularity_authors_tbl (issue_authors_tbl, repo_tbl)
+
     primary_sources <- unique (repo_tbl$source)
 
     commit_rates <- purrr::map_dfr (primary_sources, \ (src) {
@@ -72,6 +75,7 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         commit_counts_tbl = commit_counts_tbl,
         commit_rates = commit_rates,
         repo_creation_rates = repo_creation_rates,
+        popularity_authors_tbl = popularity_authors_tbl,
         author_densities_ctb001 = ad [[1]],
         author_densities_ctb100 = ad [[2]],
         author_dens_step_change001 = sc [[1]],
@@ -141,4 +145,57 @@ step_change_regression <- function (tbl,
         latest = unname (pred [2]),
         latest_month = latest_month
     )
+}
+
+build_popularity_authors_tbl <- function (issue_authors_tbl, repo_tbl) {
+
+    repo_created <- issue_authors_tbl |>
+        dplyr::filter (!is.na (repo_created_at)) |>
+        dplyr::distinct (repo_url, repo_created_at) |>
+        dplyr::mutate (repo_created_at = as.Date (repo_created_at))
+
+    n_authors_tbl <- issue_authors_tbl |>
+        dplyr::distinct (repo_url, author) |>
+        dplyr::count (repo_url, name = "n_authors")
+
+    popularity_authors_tbl <- purrr::map_dfr (names (POPULARITY_METRIC), \ (src) {
+
+        metric_col <- unname (POPULARITY_METRIC [src])
+
+        repo_tbl |>
+            dplyr::filter (source == src) |>
+            dplyr::distinct (repo_url, .keep_all = TRUE) |>
+            dplyr::mutate (popularity = .data [[metric_col]], source = src) |>
+            dplyr::inner_join (repo_created, by = "repo_url") |>
+            dplyr::inner_join (n_authors_tbl, by = "repo_url") |>
+            dplyr::mutate (
+                lifespan_years = as.numeric (
+                    difftime (Sys.Date (), repo_created_at, units = "days")
+                ) / 365.25
+            ) |>
+            dplyr::filter (!is.na (popularity), popularity > 0, lifespan_years > 0)
+    })
+
+    # One log-log lm per source: `log10 (popularity) ~ log10 (lifespan_years) +
+    # log10 (n_authors)`. `popularity_adj` re-expresses each repo's popularity
+    # at the source's median lifespan, using the fitted lifespan coefficient to
+    # shift it off its own actual lifespan.
+    popularity_authors_tbl |>
+        dplyr::group_by (source) |>
+        dplyr::group_modify (\ (tbl, ...) {
+
+            fit <- stats::lm (
+                log10 (popularity) ~ log10 (lifespan_years) + log10 (n_authors),
+                data = tbl
+            )
+            lifespan_coef <- unname (stats::coef (fit) ["log10(lifespan_years)"])
+            median_log_lifespan <- log10 (stats::median (tbl$lifespan_years))
+
+            tbl$popularity_adj <- 10^(
+                log10 (tbl$popularity) -
+                    lifespan_coef * (log10 (tbl$lifespan_years) - median_log_lifespan)
+            )
+            tbl
+        }) |>
+        dplyr::ungroup ()
 }
