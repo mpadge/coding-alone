@@ -4,12 +4,13 @@
 
 In 1995, Robert Putnam noticed that more Americans were bowling than
 ever before, but the growth was in solo or casual bowling at the expense
-of organised, collective blowing. He argued that this was reflective of
-a broader collapse of associational habits which used to knit Americans
+of organised, collective blowing He argued that this was reflective of a
+broader collapse of associational habits which used to knit Americans
 into overlapping social groups. Local clubs, unions, congregations,
 leagues had been quietly hollowing out for a generation, not because
-people had lost interest in the underlying activity, but because they’d
-stopped doing it *together* ([Putnam 1995](#ref-putnam1995bowlingalone),
+people had lost interest in the underlying activities, but because
+they’d stopped doing them together ([Putnam
+1995](#ref-putnam1995bowlingalone),
 [2000](#ref-putnam2000bowlingalone)). The incidental organizational
 structure of bowling leagues turned out to have been key to the way a
 potentially solitary pastime contributed to social cohesion.
@@ -101,9 +102,8 @@ denoted “Q1”, represents the least popular repositories. Because these
 generally strongly outnumber popular repositories, these Q1 values may
 be generally interpreted to reflect the majority of all repositories.
 The “Q4” repositories are the outlying superstar repositories with
-enormous numbers of downloads and hundreds of people opening issues.
-
-A few additional statistics were also extracted, and are described
+enormous numbers of downloads and hundreds of people opening issues. A
+few additional statistics were also extracted, and are described
 alongside the main analyses.
 
 ------------------------------------------------------------------------
@@ -130,9 +130,9 @@ trailing averages.
 The decrease in repository creation could of course simply reflect
 people moving away from GitHub and towards alternative code hosting
 sites. Such effects are not considered further here, but all analyses
-that follow are derived from existing GitHub repositories, and are
-independent of whether or not people are abandoning GitHub for
-alternative sites. The rates of monthly commits of
+that follow are derived from software which (still) identifies GitHub as
+its primary source, and are independent of whether or not people are
+abandoning GitHub for alternative sites. The rates of monthly commits of
 [Figure 2](#fig-commit-rate-plot) are an example. All of these rates
 generally decline, although also at lower rates than equivalent declines
 in rates of repository creation. These declines in commit rates are
@@ -161,7 +161,8 @@ of them have progressively decreased since that time.
 
 ![](coding-alone-figures/fig-trend-plots-1.png)
 
-Figure 3: Numbers of distinct authors opening new issues.
+Figure 3: Numbers of distinct authors opening new issues, measured per
+repository and per month.
 
 For each software source, lines are shown for the four distributional
 quartiles described above. “Q4” represents the relatively few extremely
@@ -178,9 +179,9 @@ most popular packages, while npm shows an intermediate pattern.
 
 ![](coding-alone-figures/fig-step-change-authors-1.png)
 
-Figure 4: Changes in numbers of unique issue authors since 2021. Values
-are shown for four popularity quartiles, from lowest (Q1) to highest
-(Q4).
+Figure 4: Changes in numbers of unique issue authors per
+repository-month since 2021. Values are shown for four popularity
+quartiles, from lowest (Q1) to highest (Q4).
 
 Total numbers of comments on each issue show a similar pattern
 ([Figure 5](#fig-step-change-commits)), with similarly reversed trends
@@ -236,7 +237,7 @@ for the first time at all.
 
 ![](coding-alone-figures/fig-new-author-rate-1.png)
 
-Figure 6: Rates of arrival of new issue authors per repo-month.
+Figure 6: Rates of arrival of new issue authors per repository-month.
 
 The following plot converts those absolute measures to relative scales,
 to enable comparison of relative rates of change across the popularity
@@ -277,8 +278,8 @@ the cumulative total. While this threshold is arbitrary, none of the
 results or conclusions that follow are qualitatively affected by
 different values.
 
-First, relative decreases in numbers of distinct authors have decreased
-more for non-core than for core authors for all software sources
+Relative decreases in numbers of distinct authors have decreased more
+for non-core than for core authors for all software sources
 ([Figure 9](#fig-step-change-bytype)). In all cases, most of the
 decreases in contributions observed in
 [Figure 4](#fig-step-change-authors) and
