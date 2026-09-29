@@ -134,7 +134,7 @@ plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30) {
         ggplot2::scale_colour_brewer (palette = "Dark2") +
         ggplot2::labs (
             x = "Repo creation-year cohort",
-            y = "Non-core issues per repo-month, during that fixed age (log scale)",
+            y = "Issues per repo-month (log scale)",
             colour = NULL
         ) +
         ggplot2::theme_minimal () +

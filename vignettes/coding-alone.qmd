@@ -65,7 +65,7 @@ that writing are changing dramtically. Public software repositories are
 changing from places of social coherence and cohesion to become more like mere
 mirrors of a single person's work.
 
-## Why does this matter?
+### Why does this matter?
 
 Maybe software coded by increasingly isolated individuals will be just a good
 as previous software coded by communities building on one another's ideas?
@@ -115,7 +115,7 @@ popularity, quite possibly because of decreases in software quality.
 Why do all of the following analyses matter? Because good software emerges from
 -- and possibly even requires -- large communities.
 
-## What was measured
+### What was measured
 
 All data are taken from GitHub, primarily as measures of interaction with
 software repositories through "issues". Issues are the place for anybody to ask
@@ -143,7 +143,11 @@ with enormous numbers of downloads and hundreds of people opening issues.
 A few additional statistics were also extracted, and are described alongside
 the main analyses.
 
-## Finding #1: People are coding less
+---
+
+## Main Findings
+
+### Finding #1: People are coding less
 
 
 
@@ -170,7 +174,7 @@ still active on GitHub.
 All results that follow are independent of whether or not people are actively
 abandoning GitHub in favour of alternative code hosting systems.
 
-## Finding #2: There Are Fewer Contributors
+### Finding #2: There Are Fewer Contributors
 
 There are several ways to measures numbers of contributors to open-source
 software. Source code itself provides one of the most direct measures,
@@ -241,7 +245,7 @@ Table: Percentage changes in statistics of Figs. 1-4, estimated from linear regr
 
 ----
 
-## Finding #3: New Authors Are Not Arriving
+### Finding #3: New Authors Are Not Arriving
 
 
 
@@ -281,7 +285,7 @@ packages. Only PyPi appears to not suffer this trend, with intervals between
 the arrival of new authors progressively decreasing over the past couple of
 years.
 
-## Finding #4: The Core Is Thinning Too
+### Finding #4: The Core Is Thinning Too
 
 For each person contributing to a repository, GitHub also provides a measure of
 their relative overall contribution, measured as numbers of commits to source
@@ -315,34 +319,7 @@ By September 2026, that share had risen to
 
 ![Share ot active repositories with only one person active](coding-alone-figures/fig-solo-share-plot-1.png){#fig-solo-share-plot fig-align="center"}
 
-## Finding 4: not simply projects settling down with age
-
-The same alternative explanation the companion vignette rules out for
-issue counts applies here too: repositories might generate less non-core
-interest simply because they're older - documentation accumulates, FAQs
-get answered once and closed, rough edges get sanded down - independent
-of any shared moment in calendar time. Disentangling the two needs the
-same age/period/cohort trick: fix a repository's *age* and let *cohort*
-(the calendar year that age fell in) vary, so pure maturation predicts
-flat lines at a given age regardless of which year that age happened to
-fall in, while a shared calendar-time effect predicts later cohorts
-showing a lower rate at that same fixed age than earlier ones did.
-
-
-
-![Effects of cohort age on rates of new issues](coding-alone-figures/fig-cohort-age-1.png){#fig-cohort-age fig-align="center"}
-
-CRAN, JOSS and npm show the calendar-time signature clearly: at a fixed
-early age, the non-core rate falls steadily as the cohort year increases,
-roughly halving or more between repositories born in the mid-2010s and
-those born in the early 2020s - not what pure maturation predicts. PyPI
-and rOpenSci don't show a comparable cohort-driven decline at fixed age,
-which is worth flagging rather than smoothing over: whatever combination
-of forces is driving the broader pattern doesn't touch every source
-through quite the same channel, even though the *outcome* - fewer people
-showing up now than five years ago - turns out to be shared by all five.
-
-## What this looks like from outside this dataset
+## What does this mean?
 
 Nothing in this dataset says why. But the pattern - a shrinking, and
 increasingly solitary, pool of participants, hitting visible and obscure
@@ -405,7 +382,7 @@ generational turnover, two-career households leaving less unscheduled
 time, and, well before social media, the privatising pull of television
 [@putnam2000bowlingalone].
 
-## Where this leaves things
+### Where this leaves things
 
 Putnam's title image worked because bowling itself wasn't disappearing -
 what was disappearing was the league around it, the thing that turned an
@@ -429,4 +406,34 @@ showing up in this dataset at almost exactly the same moment outside
 observers, from maintainer surveys to a retired Kubernetes component,
 have been reporting it from the other side.
 
-## References
+## References {.unnumbered}
+
+::: {#refs}
+
+:::
+
+---
+
+## Appendix {.appendix}
+
+### Projects do not simply settle down with age
+
+Of course, general interest and activity in repositories may simply decrease
+over time, and many of the effects observed above may simply reflect process of
+"settling down": Documentation gets clarified, many questions have already been
+answered, and the need for engagement decreases.
+
+This appendix demonstrates that repository age does not influence the main
+conclusions. @fig-cohort-age shows two lines for each software source: One
+exclusively for repositories started in the indicated year, and one for
+repositories in their second year of life in that year. Any effects of
+repository age should manifest in differences between these two lines, and yet
+that is not what is observed. In all cases, observed rates of change remain
+very similar regardless of repository age. Moreover, replicating this figure
+for any of the metrics analysed in the main text yields qualitatively very
+similar results. Repository age therefore has little or no qualitative effect
+on any of the results shown in the main text.
+
+
+
+![Effects of cohort age on rates of new issues](coding-alone-figures/fig-cohort-age-1.png){#fig-cohort-age fig-align="center"}
