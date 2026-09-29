@@ -4,7 +4,7 @@
 
 In 1995, Robert Putnam noticed that more Americans were bowling than
 ever before, but the growth was in solo or casual bowling at the expense
-of organised, collective blowing He argued that this was reflective of a
+of organised, collective bowling He argued that this was reflective of a
 broader collapse of associational habits which used to knit Americans
 into overlapping social groups. Local clubs, unions, congregations,
 leagues had been quietly hollowing out for a generation, not because
