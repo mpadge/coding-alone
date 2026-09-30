@@ -124,7 +124,6 @@ software repositories through "issues". Issues are the place for anybody to ask
 questions of software authors, to report bugs, or to request new features.
 A corpus of repositories was taken from the five sources described above.
 
-
 Analyses included every repository reviewed by [JOSS](https://joss.theoj.org)
 and [rOpenSci](https://ropensci.org), every package currently on
 [CRAN](https://cran.r-project.org), and samples from the other three. Samples
@@ -143,6 +142,22 @@ repositories. The "Q4" repositories are the outlying superstar repositories
 with enormous numbers of downloads and hundreds of people opening issues. A few
 additional statistics were also extracted, and are described alongside the main
 analyses.
+
+#### But what about pull requests?
+
+GitHub also implements "pull requests", which allow people to upload their own
+code changes and request that they be "merged" with the repository's code.
+Pull requests are not the place for most people who simply want to ask
+questions, or to request that software be adapted or modified for their own
+particular purposes. Pull requests from non-core contributors generally follow
+explicit requests in issues. I'll briefly examine pull requests at the end of
+this analysis. In the meantime, it's sufficient to note that pull requests
+represent a very minor portion (always < 10%) of all interactions with
+repositories on GitHub, with the rest coming through issues.
+
+The focus of these analyses is on the primary point of community interactions
+with open-source software, and these have always been issues and not pull
+requests.
 
 ---
 
@@ -285,7 +300,7 @@ packages. Only PyPi appears to not suffer this trend, with intervals between
 the arrival of new authors progressively decreasing over the past couple of
 years.
 
-### Finding #4: The Core Is Thinning Too
+### Finding #4: Spiralling Towards Solitude
 
 For each person contributing to a repository, GitHub also provides a measure of
 their relative overall contribution, measured as numbers of commits to source
