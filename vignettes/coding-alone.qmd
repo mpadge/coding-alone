@@ -152,29 +152,26 @@ analyses.
 
 
 
-The most direct measures of coding activity are the creation of new
-repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels. Both of these show trends
-common to most results that follow, with variable development up until
-2020-2021, followed by more progressive trends. For that reason, many of the
-results shown below only show time series from 2021 onwards. Comparisons are
-also made as "step changes" between January 2021 and the present (Sep 2026)
+Although the main focus here is on the demise of open-source communities, all
+data also reveal a pervasive decline in coding activity in general. The most
+direct measures of coding activity are the creation of new repositories, and
+numbers of commits in each. Time series of these two statistics are shown in
+the following two panels. Both of these show trends common to most results that
+follow, with variable development up until 2020-2021, followed by more
+progressive declines. Reflecting these general patterns, many of the results
+below only show time series from 2021 onwards. Comparisons are also made
+as "step changes" between January 2021 and the present (Sep 2026)
 
 ![Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.](coding-alone-figures/fig-commit-rate-plot-1.png){#fig-commit-rate-plot fig-align="center"}
 
-The decrease in repository creation could of course simply reflect people
-moving away from GitHub and towards alternative code hosting sites. Such
-effects are not considered further here, but all analyses that follow are
-derived from software which (still) identifies GitHub as its primary source,
-and are independent of whether or not people are abandoning GitHub for
-alternative sites. The rates of monthly commits of @fig-commit-rate-plot are an
-example. All of these rates generally decline, although also at lower rates
-than equivalent declines in rates of repository creation. These declines in
-commit rates are genuine declines observed among those people still active on
-GitHub.
-
-All results that follow are independent of whether or not people are actively
-abandoning GitHub in favour of alternative code hosting systems.
+Decreases in repository creation could of course simply reflect people moving
+towards alternative code hosting sites. other than GitHub. Such effects are not
+considered further here, but all analyses that follow are derived from software
+which (still) identifies GitHub as its primary source, and are therefore
+independent of whether or not people are abandoning GitHub for alternative
+sites. The rates of monthly commits of @fig-commit-rate-plot are an example.
+Most of these rates have declined over the past few years, and directly reflect
+genuine declines observed among those people still active on GitHub.
 
 ### Finding #2: There Are Fewer Contributors
 
@@ -183,15 +180,16 @@ software. Source code itself provides one of the most direct measures,
 generally through tracking who made each change. Code-hosting platforms provide
 a different approach, through data on repository issues. Anybody (with an
 account) can open an issue to ask a simple question. Many who do may not
-necessarily end up directly contributing to code at all, and so data on issues
-offers more inclusive insights into larger communities beyond direct code
-contributors.
+necessarily end up directly contributing to code at all, while almost all
+non-core developers who do contribute code start their first interactions via
+issues. Data on issues therefore offers more inclusive insights into
+open-source communities than data on direct code contributors.
 
 @fig-trend-plots shows numbers of unique people opening new issues on
 repositories for the five software ecosystems. All counts are standardised to
-numbers of new issues per repository. All of these patterns reveal consistent
-changes either side of around 2020. And all of them have progressively
-decreased since that time.
+numbers of new issues per repository per month. All of these patterns reveal
+consistent changes either side of around 2020. And all of them have
+progressively decreased since that time.
 
 ![Numbers of distinct authors opening new issues, measured per repository and per month.](coding-alone-figures/fig-trend-plots-1.png){#fig-trend-plots fig-align="center"}
 
