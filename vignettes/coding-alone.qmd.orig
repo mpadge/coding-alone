@@ -149,7 +149,8 @@ popularity_authors_tbl <- dat$popularity_authors_tbl
 
 commit_rates <- dat$commit_rates
 repo_creation_rates <- dat$repo_creation_rates
-author_densities_tbl <- dat$author_densities_ctb100
+author_issue_densities_tbl <- dat$author_issue_densities_ctb100
+author_pr_densities_tbl <- dat$author_pr_densities_ctb100
 sc_issue_authors <- dat$author_dens_issues_step_change100
 sc_pr_authors <- dat$author_dens_prs_step_change100
 sc_comments <- dat$issue_comments_step_change
@@ -292,7 +293,7 @@ progressively decreased since that time.
 #| fig-cap: "Numbers of distinct authors opening new issues, measured per repository and per month."
 #| fig-height: 10
 
-a_strata <- author_densities_tbl |>
+a_strata <- author_issue_densities_tbl |>
     dplyr::filter (popularity_stratum != "all")
 p1 <- dplyr::filter (a_strata, src == "cran") |>
     plot_activity (start_year = 2016, "CRAN") +
@@ -456,7 +457,7 @@ repo_creation_sc <- purrr::map_dfr (primary_sources, \ (src) {
     )
 })
 
-a_all <- author_densities_tbl |>
+a_all <- author_issue_densities_tbl |>
     dplyr::filter (popularity_stratum == "all")
 authors_all_step_change <- purrr::map_dfr (primary_sources, \ (src) {
 

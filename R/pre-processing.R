@@ -45,13 +45,18 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     cli::cli_alert_success ("Repo creation rates")
 
     thresholds <- c (0.01, 1)
-    ad <- lapply (thresholds, function (thr) {
-        cli::cli_alert_info ("Author densities for ctb threshold = {thr}")
-        pre_process_author_densities (issue_authors_tbl, repo_tbl, thr)
+    ad_issues <- lapply (thresholds, function (thr) {
+        out <- pre_process_author_densities (issue_authors_tbl, repo_tbl, thr)
+        cli::cli_alert_success ("Issue author densities for ctb threshold = {thr}")
+        out
+    })
+    ad_prs <- lapply (thresholds, function (thr) {
+        out <- pre_process_author_densities (pr_authors_tbl, repo_tbl, thr)
+        cli::cli_alert_success ("PR author densities for ctb threshold = {thr}")
+        out
     })
     sc_issues <- lapply (thresholds, function (thr) {
-        cli::cli_alert_info ("Issue author step changes for ctb threshold = {thr}")
-        dplyr::bind_rows (
+        out <- dplyr::bind_rows (
             author_density_step_change_tbl (
                 issue_authors_tbl,
                 repo_tbl,
@@ -67,10 +72,11 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
                 contrib_threshold = thr
             )
         )
+        cli::cli_alert_success ("Issue author step changes for ctb threshold = {thr}")
+        out
     })
     sc_prs <- lapply (thresholds, function (thr) {
-        cli::cli_alert_info ("PR author step changes for ctb threshold = {thr}")
-        dplyr::bind_rows (
+        out <- dplyr::bind_rows (
             author_density_step_change_tbl (
                 pr_authors_tbl,
                 repo_tbl,
@@ -86,6 +92,8 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
                 contrib_threshold = thr
             )
         )
+        cli::cli_alert_success ("PR author step changes for ctb threshold = {thr}")
+        out
     })
     cmts <- num_comments_step_change_tbl (
         issue_authors_tbl, repo_tbl, primary_sources
@@ -101,8 +109,10 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         commit_rates = commit_rates,
         repo_creation_rates = repo_creation_rates,
         popularity_authors_tbl = popularity_authors_tbl,
-        author_densities_ctb001 = ad [[1]],
-        author_densities_ctb100 = ad [[2]],
+        author_issue_densities_ctb001 = ad_issues [[1]],
+        author_issue_densities_ctb100 = ad_issues [[2]],
+        author_pr_densities_ctb001 = ad_prs [[1]],
+        author_pr_densities_ctb100 = ad_prs [[2]],
         author_dens_issues_step_change001 = sc_issues [[1]],
         author_dens_issues_step_change100 = sc_issues [[2]],
         author_dens_prs_step_change001 = sc_prs [[1]],
