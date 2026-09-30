@@ -20,6 +20,7 @@
 <url><loc>/reference/commit_rate_tbl.html</loc></url>
 <url><loc>/reference/download_repo_data.html</loc></url>
 <url><loc>/reference/fetch_issue_authors.html</loc></url>
+<url><loc>/reference/fetch_pr_authors.html</loc></url>
 <url><loc>/reference/fetch_repo_commits.html</loc></url>
 <url><loc>/reference/fit_activity_model.html</loc></url>
 <url><loc>/reference/github_commit_counts_by_month.html</loc></url>
@@ -48,5 +49,6 @@
 <url><loc>/reference/solo_repo_share_tbl.html</loc></url>
 <url><loc>/reference/step_change_tbl.html</loc></url>
 <url><loc>/reference/update_issue_authors.html</loc></url>
+<url><loc>/reference/update_pr_authors.html</loc></url>
 </urlset>
 

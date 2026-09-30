@@ -1,7 +1,5 @@
 # Coding Alone
 
-## Bowling alone, coding alone
-
 In 1995, Robert Putnam noticed that more Americans were bowling than
 ever before, but the growth was in solo or casual bowling at the expense
 of organised, collective bowling He argued that this was reflective of a
@@ -16,31 +14,31 @@ structure of bowling leagues turned out to have been key to the way a
 potentially solitary pastime contributed to social cohesion.
 
 Open-source software has its own version of a league: public
-repositories, with one or two maintainers at their centre and shifting
-casts of outsiders who file bugs, ask questions, or leave comments.
-These communities of contributors guide and nurture ongoing software
-development. People still write code, but this document shows that the
+repositories, with a few core maintainers and shifting casts of
+outsiders who ask questions, report bugs, or leave comments. These
+communities of contributors guide and nurture ongoing software
+development. People still write code, but this analysis shows that the
 collective structures that have supported and sustained that writing are
 changing dramtically. Public software repositories are changing from
 places of social coherence and cohesion to become more like mere mirrors
 of a single person’s work.
 
-### Why does this matter?
+## Why does this matter?
 
 Maybe software coded by increasingly isolated individuals will be just a
-good as previous software coded by communities building on one another’s
-ideas? Maybe a bunch of individuals with large enough budgets for
-billions on AI tokens will be able to usher in a new golden age of
+good as previous software coded by larger communities building on one
+another’s ideas? Maybe a bunch of individuals with large enough budgets
+for billions on AI tokens will be able to usher in a new golden age of
 genius software? It’s obviously helpful at the outset to try to figure
 out whether that’s likely to happen or not.
 
 The first problem in doing that is that good software is not easy to
 define. But at least for open-source software, popularity can generally
-be presumed to reflect quality. Popular open-source software can be
-generally presumed to be good (even though an awful lot of good software
-may go unnoticed). And popularity can be measured, generally by numbers
-of downloads, as well as by metrics like the number of times people have
-“starred” software repositories on GitHub.
+be presumed to reflect quality. Popular open-source software can
+generally be presumed to be good (even though lots of really good
+software may go unnoticed). And popularity can be measured, generally by
+numbers of downloads, as well as by metrics like numbers of times people
+have “starred” software repositories on GitHub.
 
 All of the following analyses use random selections of repositories from
 several common software distribution systems, including [npm for
@@ -73,10 +71,13 @@ sufficient to clearly show why this matters: Software produced by
 smaller communities tends to be significantly less popular. This
 suggests that any decreases in the sizes of communities producing
 software will likely be associated with decreases in software
-popularity, quite possibly because of decreases in software quality.
+popularity, and quite likely decreases in software quality.
 
-Why do all of the following analyses matter? Because good software
-emerges from – and possibly even requires – large communities.
+To answer the question this section posed: These analyses matter because
+good software emerges from large communities, and anything that works to
+reduce community size will also work to reduce software quality. The
+rest of this analyses provides various insights in to what appears to be
+a comprehensive collapse of open-source communities.
 
 ### What was measured
 
@@ -112,14 +113,16 @@ alongside the main analyses.
 
 ### Finding \#1: People are coding less
 
-The most direct measures of coding activity are the creation of new
-repositories, and numbers of commits in each. Time series of these two
-statistics are shown in the following two panels. Both of these show
-trends common to most results that follow, with variable development up
-until 2020-2021, followed by more progressive trends. For that reason,
-many of the results shown below only show time series from 2021 onwards.
-Comparisons are also made as “step changes” between January 2021 and the
-present (Sep 2026)
+Although the main focus here is on the demise of open-source
+communities, all data also reveal a pervasive decline in coding activity
+in general. The most direct measures of coding activity are the creation
+of new repositories, and numbers of commits in each. Time series of
+these two statistics are shown in the following two panels. Both of
+these show trends common to most results that follow, with variable
+development up until 2020-2021, followed by more progressive declines.
+Reflecting these general patterns, many of the results below only show
+time series from 2021 onwards. Comparisons are also made as “step
+changes” between January 2021 and the present (Sep 2026)
 
 ![](coding-alone-figures/fig-commit-rate-plot-1.png)
 
@@ -127,20 +130,15 @@ Figure 2: Rates of creation of new repos (top panel, as relative monthly
 percentages) and of commits per month (bottom). All rates are 12-month
 trailing averages.
 
-The decrease in repository creation could of course simply reflect
-people moving away from GitHub and towards alternative code hosting
-sites. Such effects are not considered further here, but all analyses
-that follow are derived from software which (still) identifies GitHub as
-its primary source, and are independent of whether or not people are
+Decreases in repository creation could of course simply reflect people
+moving towards alternative code hosting sites. other than GitHub. Such
+effects are not considered further here, but all analyses that follow
+are derived from software which (still) identifies GitHub as its primary
+source, and are therefore independent of whether or not people are
 abandoning GitHub for alternative sites. The rates of monthly commits of
-[Figure 2](#fig-commit-rate-plot) are an example. All of these rates
-generally decline, although also at lower rates than equivalent declines
-in rates of repository creation. These declines in commit rates are
-genuine declines observed among those people still active on GitHub.
-
-All results that follow are independent of whether or not people are
-actively abandoning GitHub in favour of alternative code hosting
-systems.
+[Figure 2](#fig-commit-rate-plot) are an example. Most of these rates
+have declined over the past few years, and directly reflect genuine
+declines observed among those people still active on GitHub.
 
 ### Finding \#2: There Are Fewer Contributors
 
@@ -150,14 +148,16 @@ measures, generally through tracking who made each change. Code-hosting
 platforms provide a different approach, through data on repository
 issues. Anybody (with an account) can open an issue to ask a simple
 question. Many who do may not necessarily end up directly contributing
-to code at all, and so data on issues offers more inclusive insights
-into larger communities beyond direct code contributors.
+to code at all, while almost all non-core developers who do contribute
+code start their first interactions via issues. Data on issues therefore
+offers more inclusive insights into open-source communities than data on
+direct code contributors.
 
 [Figure 3](#fig-trend-plots) shows numbers of unique people opening new
 issues on repositories for the five software ecosystems. All counts are
-standardised to numbers of new issues per repository. All of these
-patterns reveal consistent changes either side of around 2020. And all
-of them have progressively decreased since that time.
+standardised to numbers of new issues per repository per month. All of
+these patterns reveal consistent changes either side of around 2020. And
+all of them have progressively decreased since that time.
 
 ![](coding-alone-figures/fig-trend-plots-1.png)
 

@@ -56,6 +56,11 @@
   ([`github_issue_authors()`](../reference/github_issue_authors.md), for
   many repos, with intermediate batches dumped to disk.
 
+- [`fetch_pr_authors()`](fetch_pr_authors.md) :
+
+  Fetch pull-request-author data (`github_pr_authors()`, for many repos,
+  with intermediate batches dumped to disk.
+
 - [`fetch_repo_commits()`](fetch_repo_commits.md) :
 
   Fetch monthly commit counts
@@ -197,4 +202,10 @@
 
   Refresh previously-fetched issue-author data
   ([`fetch_issue_authors()`](../reference/fetch_issue_authors.md)'s
+  checkpoint), for repos that have already been fetched at least once.
+
+- [`update_pr_authors()`](update_pr_authors.md) :
+
+  Refresh previously-fetched pull-request-author data
+  ([`fetch_pr_authors()`](../reference/fetch_pr_authors.md)'s
   checkpoint), for repos that have already been fetched at least once.
