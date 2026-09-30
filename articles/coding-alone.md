@@ -107,6 +107,23 @@ enormous numbers of downloads and hundreds of people opening issues. A
 few additional statistics were also extracted, and are described
 alongside the main analyses.
 
+#### But what about pull requests?
+
+GitHub also implements “pull requests”, which allow people to upload
+their own code changes and request that they be “merged” with the
+repository’s code. Pull requests are not the place for most people who
+simply want to ask questions, or to request that software be adapted or
+modified for their own particular purposes. Pull requests from non-core
+contributors generally follow explicit requests in issues. I’ll briefly
+examine pull requests at the end of this analysis. In the meantime, it’s
+sufficient to note that pull requests represent a very minor portion
+(always \< 10%) of all interactions with repositories on GitHub, with
+the rest coming through issues.
+
+The focus of these analyses is on the primary point of community
+interactions with open-source software, and these have always been
+issues and not pull requests.
+
 ------------------------------------------------------------------------
 
 ## Main Findings
@@ -266,7 +283,7 @@ popular packages. Only PyPi appears to not suffer this trend, with
 intervals between the arrival of new authors progressively decreasing
 over the past couple of years.
 
-### Finding \#4: The Core Is Thinning Too
+### Finding \#4: Spiralling Towards Solitude
 
 For each person contributing to a repository, GitHub also provides a
 measure of their relative overall contribution, measured as numbers of
@@ -304,50 +321,58 @@ Figure 10: Share ot active repositories with only one person active
 
 ## What does this mean?
 
-Nothing in this dataset says why. But the pattern - a shrinking, and
-increasingly solitary, pool of participants, hitting visible and obscure
-projects alike, reaching core contributors as well as outsiders,
-unexplained by projects simply aging - lines up with what’s
-independently being reported about the people who keep open source
-running day to day, in terms that echo Putnam’s own more directly than
-might be expected. A 2024 survey of open-source maintainers found that
-61% of them maintain their project entirely alone, and that unpaid
-maintainers were disproportionately likely to be the ones flying solo
-([Socket 2024](#ref-socket2024solomaintainers)). Tidelift’s own 2024
-survey of maintainers found that 60% remain entirely unpaid and nearly
-60% have quit, or seriously considered quitting, a project they
-maintain, citing competing life demands, loss of interest, and burnout
-among the leading reasons ([Tidelift
-2024](#ref-tidelift2024maintainer)). In November 2025, Kubernetes’
-steering and security committees retired Ingress NGINX - one of the most
-widely deployed pieces of cloud-native infrastructure in existence,
-maintained for years by one or two people working nights and weekends -
-after concluding that no amount of public appeal could attract the
-additional help needed to keep it going ([Kubernetes SIG Network and
-Security Response Committee 2025](#ref-kubernetes2025ingressnginx)). A
-project that visible sitting in this dataset’s own Q4 is exactly the
-kind of case Finding 5 describes: popularity that didn’t translate into
-a growing base of people ready to share the load.
+Many aspects of these analyses align with what other people have
+reported about the people who keep open source software alive. A 2024
+survey of open-source maintainers found that 61% of them maintain their
+project entirely alone, and that unpaid maintainers were
+disproportionately likely to be the ones flying solo ([Socket
+2024](#ref-socket2024solomaintainers)). Tidelift’s own 2024 survey of
+maintainers found that 60% remain entirely unpaid and nearly 60% have
+quit, or seriously considered quitting, projects they maintain, citing
+reasons such as competing life demands, loss of interest, or burnout
+([Tidelift 2024](#ref-tidelift2024maintainer)).
 
-The newcomer side of the pipeline shows a matching strain from the
-supply end. Newcomers have always been hard to retain - a decade-old
-study of one large Apache project found fewer than one in five who
-showed up ever became long-term contributors, largely depending on
-whether their first interaction got a timely, helpful response
-([Steinmacher et al. 2013](#ref-steinmacher2013newcomers)). More recent
-evidence suggests the on-ramp meant to fix exactly that problem is
-itself fraying: a 2026 longitudinal study of “good first issue”
-labelling across 37 popular OSS projects found that after holding steady
-for three years, the share of issues labelled as newcomer-friendly began
-a statistically significant decline starting in January 2024 ([Hoshikawa
-et al. 2026](#ref-hoshikawa2026goodfirstissue)) - maintainers with less
-time or attention to spare evidently have less of it left over for
-curating an on-ramp, on top of everything else. None of this is a new
-problem invented by any one technology; a decade before any of it, Nadia
-Eghbal’s *Roads and Bridges* was already describing critical open-source
-infrastructure sustained by a handful of unpaid volunteers, and arguing
-that the fix isn’t simply money, because what these projects actually
-run short of is people ([Eghbal 2016](#ref-eghbal2016roadsbridges)).
+In November 2025, Kubernetes’ steering and security committees retired
+Ingress NGINX - one of the most widely deployed pieces of cloud-native
+infrastructure in existence, maintained for years by one or two people
+working nights and weekends - after concluding that no amount of public
+appeal could attract the additional help needed to keep it going
+([Kubernetes SIG Network and Security Response Committee
+2025](#ref-kubernetes2025ingressnginx)). NGINX is, or at least was, a
+critical piece of open-source infrastructure that would sit very high in
+all “Q4” high-popularity strata here. And the exact kinds of declines
+observed here translated in that case to a complete inability to find
+even a single person willing to maintain the project.
+
+Good software always evolves, and part of that evolution frequently
+includes maintainers finding and handing over to other people to
+continue their work. Preparatory steps for eventual maintenance
+transition always emerge from pools or streams of newcomers arriving at
+a project. GitHub made it far easier than ever before for newcomers to
+just magically appear, through opening issues to ask questions. Many
+projects actively cultivate an open and welcoming atmosphere as an
+attempt to attract as many newcomers as possible.
+
+The real difficulties begin with attempts to retain the interest of
+newcomers. A decade-old study of one large Apache project found fewer
+than one in five people who initially appeared on software repositories
+became long-term contributors ([Steinmacher et al.
+2013](#ref-steinmacher2013newcomers)). A 2026 longitudinal study of
+“good first issue” labelling across 37 popular OSS projects found that
+after holding steady for three years, the share of issues labelled as
+newcomer-friendly began a statistically significant decline starting in
+January 2024 ([Hoshikawa et al.
+2026](#ref-hoshikawa2026goodfirstissue)). The authors offer no single
+explanation for this decline, and merely refer to “*informal shifts in
+maintainer practice*.” This study thus highlights that causes for the
+declines observed here may also be endogenous, driven from changes
+within repositories themselves.
+
+A decade before any of these findings, Nadia Eghbal’s *Roads and
+Bridges* described the ways by which critical open-source infrastructure
+was sustained by a handful of unpaid volunteers, and argued that the
+true shortage was in people rather than money ([Eghbal
+2016](#ref-eghbal2016roadsbridges)).
 
 The decline’s timing loosely coincides with two other, independently
 documented shifts: GitHub Copilot’s move from limited preview to general
@@ -356,44 +381,25 @@ availability in mid-2022 ([Wikipedia contributors
 Stack Overflow’s own new-question volume beginning around the same time
 ([Orosz 2025](#ref-orosz2025stackoverflow); [Holscher
 2025](#ref-holscher2025stackoverflow)) - the other major venue for the
-same kind of peer-to-peer technical exchange this dataset measures. One
-speculative mechanism worth naming, though this dataset can’t test it
-directly: if AI coding assistants increasingly converge developers onto
-similar solutions and similar code, that kind of algorithmic monoculture
-could itself thin out the organic variety of problems that used to
-generate an issue or a question in the first place ([Bommasani et al.
-2022](#ref-bommasani2022monoculture)). That’s one candidate explanation
-among several plausible ones, offered as context rather than as
-something this dataset can adjudicate - and it would sit alongside, not
-replace, Putnam’s own preferred explanations for the associational
-decline he documented: generational turnover, two-career households
-leaving less unscheduled time, and, well before social media, the
-privatising pull of television ([Putnam
-2000](#ref-putnam2000bowlingalone)).
+same kind of peer-to-peer technical exchange this dataset measures.
 
-### Where this leaves things
+### What about AI?
 
-Putnam’s title image worked because bowling itself wasn’t disappearing -
-what was disappearing was the league around it, the thing that turned an
-individual pastime into a piece of shared civic life. This dataset can’t
-speak to whether people are writing less code; if anything, the tools
-available for writing it alone have only multiplied. What it can speak
-to is the collective structure built around that writing, and on every
-cut available - non-core outsiders, core contributors, everyone
-combined, and the blunter question of how many repositories now involve
-only one person at all - that structure has been thinning since around
-2021, across five different ecosystems, unexplained by projects simply
-maturing, and unprotected by popularity. The one place this dataset
-finds a countervailing force - rOpenSci’s formal peer review, sustaining
-non-core engagement in its own least-visible packages - doesn’t rescue
-that same corner of rOpenSci from a rising solo-repository share either.
-None of that is proof of any single cause. What it is, is a structural,
-five-ecosystem-wide shift from code written and shared among a loose,
-overlapping circle of people toward code written and shared by one
-person at a time - open source’s own version of bowling alone, showing
-up in this dataset at almost exactly the same moment outside observers,
-from maintainer surveys to a retired Kubernetes component, have been
-reporting it from the other side.
+The declines observed here began several years before the advent of AI
+as we now know it. AI has almost certainly contributed, including
+through mechanisms such as “algorithmic monoculture” ([Bommasani et al.
+2022](#ref-bommasani2022monoculture)) discouraging diverse inputs into
+software.
+
+## In Conclusion
+
+- Tools for code development have enormously multiplied through the
+  period of decline observed here, and coding has become easier than
+  ever.
+- This analysis indicates a structural shift across five distinct
+  software ecosystems, from code emerging from, and maintained by,
+  loosely overlapping communities, towards software development becoming
+  an increasingly solitary endeavour.
 
 ## References
 
