@@ -1,8 +1,8 @@
 ---
 title: "Coding Alone"
-subtitle: "Analyses of coding activity across GitHub reveals a stark decline in collective coding in favour of coding alone."
+subtitle: "Open-source communities are being progressively replaced by solo-developers."
 author: "Mark Padgham"
-date: "29 September 2026"
+date: "30 September 2026"
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
   %\VignetteEngine{quarto::html}
@@ -43,7 +43,6 @@ never needs the data again.
 .callout p:last-child { margin-bottom: 0; }
 </style>
 
-## Bowling alone, coding alone
 
 In 1995, Robert Putnam noticed that more Americans were bowling than ever
 before, but the growth was in solo or casual bowling at the expense of
@@ -57,29 +56,29 @@ organizational structure of bowling leagues turned out to have been key to the
 way a potentially solitary pastime contributed to social cohesion.
 
 Open-source software has its own version of a league: public repositories, with
-one or two maintainers at their centre and shifting casts of outsiders who file
-bugs, ask questions, or leave comments. These communities of contributors guide
-and nurture ongoing software development. People still write code, but this
-document shows that the collective structures that have supported and sustained
+a few core maintainers and shifting casts of outsiders who ask questions,
+report bugs, or leave comments. These communities of contributors guide and
+nurture ongoing software development. People still write code, but this
+analysis shows that the collective structures that have supported and sustained
 that writing are changing dramtically. Public software repositories are
 changing from places of social coherence and cohesion to become more like mere
 mirrors of a single person's work.
 
-### Why does this matter?
+## Why does this matter?
 
 Maybe software coded by increasingly isolated individuals will be just a good
-as previous software coded by communities building on one another's ideas?
-Maybe a bunch of individuals with large enough budgets for billions on AI
-tokens will be able to usher in a new golden age of genius software? It's
+as previous software coded by larger communities building on one another's
+ideas? Maybe a bunch of individuals with large enough budgets for billions on
+AI tokens will be able to usher in a new golden age of genius software? It's
 obviously helpful at the outset to try to figure out whether that's likely to
 happen or not.
 
 The first problem in doing that is that good software is not easy to define.
 But at least for open-source software, popularity can generally be presumed to
-reflect quality. Popular open-source software can be generally presumed to be
-good (even though an awful lot of good software may go unnoticed). And
+reflect quality. Popular open-source software can generally be presumed to be
+good (even though lots of really good software may go unnoticed). And
 popularity can be measured, generally by numbers of downloads, as well as by
-metrics like the number of times people have "starred" software repositories on
+metrics like numbers of times people have "starred" software repositories on
 GitHub.
 
 All of the following analyses use random selections of repositories from
@@ -110,10 +109,13 @@ to increase. But it is nevertheless sufficient to clearly show why this
 matters: Software produced by smaller communities tends to be significantly
 less popular. This suggests that any decreases in the sizes of communities
 producing software will likely be associated with decreases in software
-popularity, quite possibly because of decreases in software quality.
+popularity, and quite likely decreases in software quality.
 
-Why do all of the following analyses matter? Because good software emerges from
--- and possibly even requires -- large communities.
+To answer the question this section posed: These analyses matter because good
+software emerges from large communities, and anything that works to reduce
+community size will also work to reduce software quality. The rest of this
+analyses provides various insights in to what appears to be a comprehensive
+collapse of open-source communities. 
 
 ### What was measured
 
