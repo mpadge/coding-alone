@@ -404,12 +404,19 @@ author_density_step_change_tbl <- function (issue_authors_tbl,
             ))
         }
 
+        if (!inherits (rate_tbl$popularity_stratum, "factor")) {
+            rate_tbl$popularity_stratum <- factor (rate_tbl$popularity_stratum)
+        }
         stratum_levels <- levels (rate_tbl$popularity_stratum)
 
         out <- purrr::map_dfr (stratum_levels, \ (stratum) {
 
             stratum_tbl <- dplyr::filter (rate_tbl, popularity_stratum == stratum)
-            est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
+            if (nrow (stratum_tbl) == 0L) {
+                est <- list (ref = NA, latest = NA, latest_month = NA)
+            } else {
+                est <- step_change_regression (stratum_tbl, "rate", ref_date = ref_date)
+            }
 
             tibble::tibble (
                 source = src,

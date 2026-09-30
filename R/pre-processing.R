@@ -17,6 +17,11 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         show_col_types = FALSE,
         progress = FALSE
     )
+    pr_authors_tbl <- readr::read_csv (
+        file.path (out_dir, "pr-authors.csv"),
+        show_col_types = FALSE,
+        progress = FALSE
+    )
     commit_counts_tbl <- readr::read_csv (
         file.path (out_dir, "commit-counts.csv"),
         show_col_types = FALSE,
@@ -44,8 +49,8 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         cli::cli_alert_info ("Author densities for ctb threshold = {thr}")
         pre_process_author_densities (issue_authors_tbl, repo_tbl, thr)
     })
-    sc <- lapply (thresholds, function (thr) {
-        cli::cli_alert_info ("Author step changes for ctb threshold = {thr}")
+    sc_issues <- lapply (thresholds, function (thr) {
+        cli::cli_alert_info ("Issue author step changes for ctb threshold = {thr}")
         dplyr::bind_rows (
             author_density_step_change_tbl (
                 issue_authors_tbl,
@@ -63,6 +68,25 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
             )
         )
     })
+    sc_prs <- lapply (thresholds, function (thr) {
+        cli::cli_alert_info ("PR author step changes for ctb threshold = {thr}")
+        dplyr::bind_rows (
+            author_density_step_change_tbl (
+                pr_authors_tbl,
+                repo_tbl,
+                primary_sources,
+                n_strata = 4L,
+                contrib_threshold = thr
+            ),
+            author_density_step_change_tbl (
+                pr_authors_tbl,
+                repo_tbl,
+                primary_sources,
+                n_strata = 1L, # All strata together
+                contrib_threshold = thr
+            )
+        )
+    })
     cmts <- num_comments_step_change_tbl (
         issue_authors_tbl, repo_tbl, primary_sources
     )
@@ -72,14 +96,17 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     res <- list (
         repo_tbl = repo_tbl,
         issue_authors_tbl = issue_authors_tbl,
+        pr_authors_tbl = pr_authors_tbl,
         commit_counts_tbl = commit_counts_tbl,
         commit_rates = commit_rates,
         repo_creation_rates = repo_creation_rates,
         popularity_authors_tbl = popularity_authors_tbl,
         author_densities_ctb001 = ad [[1]],
         author_densities_ctb100 = ad [[2]],
-        author_dens_step_change001 = sc [[1]],
-        author_dens_step_change100 = sc [[2]],
+        author_dens_issues_step_change001 = sc_issues [[1]],
+        author_dens_issues_step_change100 = sc_issues [[2]],
+        author_dens_prs_step_change001 = sc_prs [[1]],
+        author_dens_prs_step_change100 = sc_prs [[2]],
         issue_comments_step_change = cmts
     )
 
