@@ -16,17 +16,20 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         file.path (out_dir, "issue-authors.csv"),
         show_col_types = FALSE,
         progress = FALSE
-    )
+    ) |>
+        canonicalise_repo_urls (repo_tbl)
     pr_authors_tbl <- readr::read_csv (
         file.path (out_dir, "pr-authors.csv"),
         show_col_types = FALSE,
         progress = FALSE
-    )
+    ) |>
+        canonicalise_repo_urls (repo_tbl)
     commit_counts_tbl <- readr::read_csv (
         file.path (out_dir, "commit-counts.csv"),
         show_col_types = FALSE,
         progress = FALSE
-    )
+    ) |>
+        canonicalise_repo_urls (repo_tbl)
 
     popularity_authors_tbl <-
         build_popularity_authors_tbl (issue_authors_tbl, repo_tbl)

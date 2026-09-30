@@ -90,3 +90,21 @@ join_repo_metadata <- function (issue_authors_tbl, repo_tbl) {
     repo_tbl_unique <- dplyr::distinct (repo_tbl, repo_url, .keep_all = TRUE)
     dplyr::left_join (issue_authors_tbl, repo_tbl_unique, by = "repo_url")
 }
+
+# Normalise GitHub repository URLs for matching: lower case, `https`, and no
+# trailing slash.
+normalise_url <- function (x) {
+    tolower (sub ("^http://", "https://", sub ("/+$", "", x)))
+}
+
+# Rewrite `repo_url` in `x` to the form used in `repo_tbl`, wherever the two
+# match after normalisation. Rows are neither added nor removed, and unmatched
+# URLs are left as they are.
+canonicalise_repo_urls <- function (x, repo_tbl) {
+
+    canonical <- unique (repo_tbl$repo_url)
+    canonical <- canonical [!duplicated (normalise_url (canonical))]
+    idx <- match (normalise_url (x$repo_url), normalise_url (canonical))
+    x$repo_url <- dplyr::coalesce (canonical [idx], x$repo_url)
+    x
+}
