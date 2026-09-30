@@ -214,7 +214,7 @@ update_issue_authors <- function (repo_urls, out_dir, batch_size = 50L) {
         tibble::tibble (repo_url = character (), since = character ())
     } else {
         issue_authors_tbl |>
-            dplyr::filter (repo_url %in% .env$repo_urls) |>
+            dplyr::filter (repo_url %in% repo_urls) |>
             dplyr::group_by (repo_url) |>
             dplyr::summarise (since = max (last_updated), .groups = "drop")
     }

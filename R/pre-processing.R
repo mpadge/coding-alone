@@ -149,6 +149,9 @@ step_change_regression <- function (tbl,
 
 build_popularity_authors_tbl <- function (issue_authors_tbl, repo_tbl) {
 
+    repo_created_at <- repo_url <- author <- .data <-
+        popularity <- lifespan_years <- NULL
+
     repo_created <- issue_authors_tbl |>
         dplyr::filter (!is.na (repo_created_at)) |>
         dplyr::distinct (repo_url, repo_created_at) |>
