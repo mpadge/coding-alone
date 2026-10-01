@@ -61,7 +61,9 @@ relationships shown in the following figure:
 ![](coding-alone-figures/fig-popularity-authors-1.png)
 
 Figure 1: Relationships between numbers of authors and repository
-popularity, accounting for the effects of repository age on both.
+popularity, accounting for the effects of repository age on both. Large
+communities are very strongly associated with software popularity in all
+cases.
 
 Good software - as measured by popularity - is overwhelmingly produced
 by larger communities. This relationship is of course purely
@@ -139,7 +141,7 @@ these show trends common to most results that follow, with variable
 development up until 2020-2021, followed by more progressive declines.
 Reflecting these general patterns, many of the results below only show
 time series from 2021 onwards. Comparisons are also made as “step
-changes” between January 2021 and the present (Sep 2026)
+changes” between January 2021 and the present (Oct 2026)
 
 ![](coding-alone-figures/fig-commit-rate-plot-1.png)
 
