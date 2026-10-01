@@ -2,7 +2,7 @@
 title: "Coding Alone"
 subtitle: "Open-source communities are being progressively replaced by solo-developers."
 author: "Mark Padgham"
-date: "30 September 2026"
+date: "01 October 2026"
 vignette: >
   %\VignetteIndexEntry{Coding Alone}
   %\VignetteEngine{quarto::html}
@@ -100,7 +100,7 @@ figure:
 
 
 
-![Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both.](coding-alone-figures/fig-popularity-authors-1.png){#fig-popularity-authors fig-align="center"}
+![Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both. Large communities are very strongly associated with software popularity in all cases.](coding-alone-figures/fig-popularity-authors-1.png){#fig-popularity-authors fig-align="center"}
 
 Good software - as measured by popularity - is overwhelmingly produced by
 larger communities. This relationship is of course purely correlative, and can
@@ -175,7 +175,7 @@ the following two panels. Both of these show trends common to most results that
 follow, with variable development up until 2020-2021, followed by more
 progressive declines. Reflecting these general patterns, many of the results
 below only show time series from 2021 onwards. Comparisons are also made
-as "step changes" between January 2021 and the present (Sep 2026)
+as "step changes" between January 2021 and the present (Oct 2026)
 
 ![Rates of creation of new repos (top panel, as relative monthly percentages) and of commits per month (bottom). All rates are 12-month trailing averages.](coding-alone-figures/fig-commit-rate-plot-1.png){#fig-commit-rate-plot fig-align="center"}
 

@@ -163,7 +163,7 @@ n_repos_primary <- length (unique (
 
 ```{r}
 #| label: fig-popularity-authors
-#| fig-cap: "Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both."
+#| fig-cap: "Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both. Large communities are very strongly associated with software popularity in all cases."
 #| fig-height: 10
 
 tbl <- popularity_authors_tbl
