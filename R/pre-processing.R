@@ -247,29 +247,56 @@ build_popularity_authors_tbl <- function (issue_authors_tbl, repo_tbl) {
 }
 
 # Count per repo per month, then sum over all repos for each month.
-count_by_month <- function (x, id_col, count_name) {
-    x |>
+#
+# Returns one series for each `repo_tbl$source`, plus aggregated values over all
+# repos with `source = "all"`.
+count_by_month <- function (x, id_col, count_name, repo_tbl) {
+
+    # Suppress no visible binding notes:
+    repo_url <- created_at <- month <- n <- source <- NULL
+
+    per_repo <- x |>
         dplyr::distinct (repo_url, .data [[id_col]], .keep_all = TRUE) |>
         dplyr::mutate (month = as.Date (format (created_at, "%Y-%m-01"))) |>
         dplyr::group_by (repo_url, month) |>
-        dplyr::summarise (n = dplyr::n (), .groups = "drop") |>
+        dplyr::summarise (n = dplyr::n (), .groups = "drop")
+
+    repo_sources <- dplyr::distinct (repo_tbl, repo_url, source)
+
+    by_source <- per_repo |>
+        dplyr::inner_join (
+            repo_sources,
+            by = "repo_url",
+            relationship = "many-to-many"
+        ) |>
+        dplyr::group_by (source, month) |>
+        dplyr::summarise (!!count_name := sum (n), .groups = "drop")
+
+    all_sources <- per_repo |>
         dplyr::group_by (month) |>
-        dplyr::summarise (
-            !!count_name := sum (n),
-            .groups = "drop"
-        )
+        dplyr::summarise (!!count_name := sum (n), .groups = "drop") |>
+        dplyr::mutate (source = "all", .before = 1L)
+
+    dplyr::bind_rows (by_source, all_sources)
 }
 
 pr_to_issues_ratio <- function (repo_tbl, issue_authors_tbl, pr_authors_tbl) {
 
-    issue_counts <- count_by_month (issue_authors_tbl, "issue_number", "num_issues")
-    pr_counts <- count_by_month (pr_authors_tbl, "pr_number", "num_prs")
+    # Suppress no visible binding notes:
+    source <- month <- num_issues <- num_prs <- NULL
 
-    dplyr::full_join (issue_counts, pr_counts, by = "month") |>
+    issue_counts <- count_by_month (
+        issue_authors_tbl, "issue_number", "num_issues", repo_tbl
+    )
+    pr_counts <- count_by_month (
+        pr_authors_tbl, "pr_number", "num_prs", repo_tbl
+    )
+
+    dplyr::full_join (issue_counts, pr_counts, by = c ("source", "month")) |>
         dplyr::mutate (dplyr::across (
             c (num_issues, num_prs),
             \(n) tidyr::replace_na (n, 0L)
         )) |>
-        dplyr::arrange (month) |>
+        dplyr::arrange (source, month) |>
         dplyr::mutate (ratio = num_prs / num_issues)
 }

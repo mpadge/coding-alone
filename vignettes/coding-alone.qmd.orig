@@ -99,7 +99,7 @@ a few core maintainers and shifting casts of outsiders who ask questions,
 report bugs, or leave comments. These communities of contributors guide and
 nurture ongoing software development. People still write code, but this
 analysis shows that the collective structures that have supported and sustained
-that writing are changing dramtically. Public software repositories are
+that writing are changing dramatically. Public software repositories are
 changing from places of social coherence and cohesion to become more like mere
 mirrors of a single person's work.
 
@@ -154,6 +154,7 @@ author_pr_densities_tbl <- dat$author_pr_densities_ctb100
 sc_issue_authors <- dat$author_dens_issues_step_change100
 sc_pr_authors <- dat$author_dens_prs_step_change100
 sc_comments <- dat$issue_comments_step_change
+pr_to_issues <- dat$pr_to_issues
 
 primary_sources <- unique (repo_tbl$source)
 n_repos_primary <- length (unique (
@@ -237,9 +238,9 @@ Pull requests are not the place for most people who simply want to ask
 questions, or to request that software be adapted or modified for their own
 particular purposes. Pull requests from non-core contributors generally follow
 explicit requests in issues. I'll briefly examine pull requests at the end of
-this analysis. In the meantime, it's sufficient to note that pull requests
-represent a very minor portion (always < 10%) of all interactions with
-repositories on GitHub, with the rest coming through issues.
+this analysis. I'll also show there that pull requests represent only a minor
+portion of all interactions with repositories on GitHub, with the rest coming
+through issues.
 
 The focus of these analyses is on the primary point of community interactions
 with open-source software, and these have always been issues and not pull
@@ -805,70 +806,97 @@ solo_by_source |>
 Many aspects of these analyses align with what other people have reported about
 the people who keep open source software alive. A 2024 survey of open-source
 maintainers found that 61% of them maintain their project entirely alone, and
-that unpaid maintainers were disproportionately likely to be the ones flying
-solo [@socket2024solomaintainers]. Tidelift's own 2024 survey of maintainers
-found that 60% remain entirely unpaid and nearly 60% have quit, or seriously
+that unpaid maintainers were disproportionately likely to be working alone
+[@socket2024solomaintainers]. A 2024 survey of maintainers by Tidelift found
+that 60% remain entirely unpaid and nearly 60% have quit, or seriously
 considered quitting, projects they maintain, citing reasons such as competing
 life demands, loss of interest, or burnout [@tidelift2024maintainer].
 
 In November 2025, Kubernetes' steering and security committees retired Ingress
-NGINX - one of the most widely deployed pieces of cloud-native infrastructure
-in existence, maintained for years by one or two people working nights and
-weekends - after concluding that no amount of public appeal could attract the
-additional help needed to keep it going [@kubernetes2025ingressnginx]. NGINX
-is, or at least was, a critical piece of open-source infrastructure that would
-sit very high in all "Q4" high-popularity strata here. And the exact kinds of
-declines observed here translated in that case to a complete inability to find
-even a single person willing to maintain the project.
+NGINX. This was one of the most widely deployed pieces of cloud-native
+infrastructure in existence, and would sit very high in all "Q4"
+high-popularity strata here. NGINX had been maintained for years by voluntary
+open-source contributors, and no amount of public appeal was able to attract
+the additional help needed for it to survive [@kubernetes2025ingressnginx]. The
+exact kinds of declines observed here manifest in this case to a complete
+inability to find even a single person willing to maintain the project.
 
 Good software always evolves, and part of that evolution frequently includes
 maintainers finding and handing over to other people to continue their work.
 Preparatory steps for eventual maintenance transition always emerge from pools
 or streams of newcomers arriving at a project. GitHub made it far easier than
-ever before for newcomers to just magically appear, through opening issues to
-ask questions. Many projects actively cultivate an open and welcoming
-atmosphere as an attempt to attract as many newcomers as possible.
+ever before for newcomers to just magically appear, mostly through opening
+issues to ask questions. Many projects actively cultivate an open and welcoming
+atmosphere as an attempt to attract as many newcomers as possible, yet even
+that practice seems to be declining [@hoshikawa2026goodfirstissue].
 
 The real difficulties begin with attempts to retain the interest of newcomers.
 A decade-old study of one large Apache project found fewer than one in five
 people who initially appeared on software repositories became long-term
-contributors [@steinmacher2013newcomers]. A 2026 longitudinal study of "good
-first issue" labelling across 37 popular OSS projects found that after holding
-steady for three years, the share of issues labelled as newcomer-friendly began
-a statistically significant decline starting in January 2024
-[@hoshikawa2026goodfirstissue]. The authors offer no single explanation for
-this decline, and merely refer to "_informal shifts in maintainer practice_."
-This study thus highlights that causes for the declines observed here may also
-be endogenous, driven from changes within repositories themselves.
-
-A decade before any of these findings, Nadia Eghbal's _Roads and Bridges_
-described the ways by which critical open-source infrastructure was sustained
-by a handful of unpaid volunteers, and argued that the true shortage was in
-people rather than money [@eghbal2016roadsbridges].
-
-The decline's timing loosely coincides with two other, independently
-documented shifts: GitHub Copilot's move from limited preview to general
-availability in mid-2022 [@wikipedia2026copilot], and a well-documented
-collapse in Stack Overflow's own new-question volume beginning around the
-same time [@orosz2025stackoverflow; @holscher2025stackoverflow] - the
-other major venue for the same kind of peer-to-peer technical exchange
-this dataset measures.
+contributors [@steinmacher2013newcomers]. A decade before any of these
+findings, Nadia Eghbal's _Roads and Bridges_ described the ways by which
+critical open-source infrastructure was sustained by a handful of unpaid
+volunteers, and argued that the true shortages were always in people rather
+than money [@eghbal2016roadsbridges]. Finally, the pervasive nature of the
+declines observed here also reflects the well-documented collapse of Stack
+Overflow as a community platform [@orosz2025stackoverflow;
+@holscher2025stackoverflow].
 
 ### What about AI?
 
 The declines observed here began several years before the advent of AI as we
 now know it. AI has almost certainly contributed, including through mechanisms
 such as "algorithmic monoculture" [@bommasani2022monoculture] discouraging
-diverse inputs into software.
+diverse inputs into software. Changes over the last year or two certainly seem
+to be accelerated versions or preceding changes, including in [repo creation
+rates](#fig-commit-rate-plot), [numbers](#fig-trend-plots) and [arrival
+rates](#fig-new-author-rate) of new contributors, and in [solo-author
+projects](#fig-solo-share-plot). AI is very likely to have had an influence in
+all of these accelerated rates of decline, although after and on top of more
+general and broader factors.
 
-## In Conclusion
+There have been many claims of open-source projects "drowning" in a "flood" of
+AI-generated pull requests. (None of those are worth citing here, as I can find
+no actual data to assert such claims). As described above, first points of
+contact for new contributors are very generally issues, with pull requests
+(PRs) usually only made after initial discussion within issues. This reflects
+ubiquitous human conventions of only doing something for somebody else after
+first ascertaining they actually want or need it. There is nothing special
+about the general workflow of issue first, followed by PRs. It reflects the way
+human interactions are generally structured. Ask first, and then do.
 
-- Tools for code development have enormously multiplied through the period of
-decline observed here, and coding has become easier than ever.
-- This analysis indicates a structural shift across five distinct software
-ecosystems, from code emerging from, and maintained by, loosely overlapping
-communities, towards software development becoming an increasingly solitary
-endeavour.
+Data on PRs were also extracted here in the same way as data for issues. The
+only thing that does indeed seem to have changed is the ratio of PRs to issues
+(@fig-pr-to-issues-ratio). Proportions of PRs have been gradually increasing
+since 2021, with observable recent acceleration in some software systems,
+most notably in npm and CRAN.
+
+
+```{r}
+#| label: fig-pr-to-issues-ratio
+#| fig-cap: "Ratios of PRs to issues"
+#| fig-height: 5
+
+# Temporary removal of Sep 2026 data, until issue data have been updated
+pr_to_issues |>
+    dplyr::filter (source != "all") |>
+    dplyr::filter (month >= as.Date ("2021-01-01")) |>
+    dplyr::filter (month < as.Date ("2026-09-01")) |>
+    dplyr::filter (is.finite (ratio)) |>
+    dplyr::mutate (source = unname (SOURCE_DISPLAY_NAME [source])) |>
+    ggplot2::ggplot (ggplot2::aes (x = month, y = ratio, colour = source)) +
+    ggplot2::geom_line (linewidth = 0.7, alpha = 0.9) +
+    ggplot2::scale_y_log10 (labels = scales::percent) +
+    ggplot2::scale_colour_brewer (palette = "Set1") +
+    ggplot2::labs (
+        x = NULL,
+        y = "Ratio of PRs to issues (%)",
+        colour = NULL
+    ) +
+    ggplot2::theme_minimal () +
+    ggplot2::theme (legend.position = "top")
+```
+
 
 ## References {.unnumbered}
 
