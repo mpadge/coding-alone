@@ -862,8 +862,9 @@ contact for new contributors are very generally issues, with pull requests
 (PRs) usually only made after initial discussion within issues. This reflects
 ubiquitous human conventions of only doing something for somebody else after
 first ascertaining they actually want or need it. There is nothing special
-about the general workflow of issue first, followed by PRs. It reflects the way
-human interactions are generally structured. Ask first, and then do.
+about the general workflow adopted in software development of issue first,
+followed by PRs. It reflects the way human interactions are generally
+structured. Ask first, and then do.
 
 Data on PRs were also extracted here in the same way as data for issues. The
 only thing that does indeed seem to have changed is the ratio of PRs to issues
@@ -874,7 +875,7 @@ most notably in npm and CRAN.
 
 ```{r}
 #| label: fig-pr-to-issues-ratio
-#| fig-cap: "Ratios of PRs to issues"
+#| fig-cap: "Ratios of PRs to issues (with ratios on a logarithmic scale)"
 #| fig-height: 5
 
 # Temporary removal of Sep 2026 data, until issue data have been updated
@@ -896,6 +897,52 @@ pr_to_issues |>
     ggplot2::theme_minimal () +
     ggplot2::theme (legend.position = "top")
 ```
+
+### Doing before asking
+
+As stated above, most human societies cultivate habits of asking before doing.
+Pull requests reverse this custom. They represent a comparably more aggressive
+step of doing before asking. While causes for such cultural changes are likely
+complex, increased social isolation does seem to foster increased aggression
+[@twenge2001]. Although coding alone is likely to increase ratios of PRs to
+issues, the increases in @fig-pr-to-issues-ratio more likely reveal an
+additionally negative influence of AI coding tools.
+
+The large language models that underlie AI coding tools are trained on vast
+corpora of primarily online data. And people act differently online than they
+do in person. I posit that an even more likely cause for increased PR-to-issue
+ratios is the embedding within AI of the widely acknowledged "online
+disinhibition effect" [@suler2004].
+
+AI coding tools -- and of course AI in general -- are more reflective of
+pathologically disinhibited online behaviour than actual human social behaviour.
+Suler's [-@suler2004] original descriptions are insightful:
+
+> [People] don't have to own their own behavior by acknowledging it ... The
+> online self becomes a compartmentalized self... the person can avert
+> responsibility [in a form of] "emotional hit and run".
+>
+> [People can] live in an [sic] make-believe dimension, separate and apart from
+> the demands and responsibilities of the real world. [They] see their online
+> life as a kind of game with rules and norms that don't apply to everyday
+> living... They relinquish their responsible [sic] for what happens in a
+> make-believe play world that has nothing to do with reality.
+
+Perhaps all of the declines observed here reflect increases in the kinds of
+behaviour described by Suler more than 20 years ago. The easier it got to do
+everything online, including coding, the more the behaviours of those doing the
+coding become disinhibited from their pro-social, in-person behaviour. AI is
+just the culmination of that process.
+
+Suler's [-@suler2004] original conclusions were cautiously framed, and
+acknowledged a complex interplay between "benign" and "toxic" disinhibition.
+More recent research [@chu2026] has demonstrated a reality that lies more to
+the toxic than benign side, especially in online spaces dominated by men.
+I've [said elsewhere](https://mpadge.eu/blog/machina-machista.html) that,
+"_Your AI thinks you're a dude. And that's a problem for everybody who is
+not._" These analyses add nuance to that conclusion, by showing how AI coding
+assistants are a manifestation of their training being heavily influenced by
+the toxically disinhibited expressions of anti-social men.
 
 
 ## References {.unnumbered}
