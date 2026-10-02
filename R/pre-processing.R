@@ -103,6 +103,8 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
     )
     cli::cli_alert_success ("Issue comment rates")
 
+    pr_to_issues <- pr_to_issues_ratio (repo_tbl, issue_authors_tbl, pr_authors_tbl)
+    cli::cli_alert_success ("PR-to-issue ratio")
 
     res <- list (
         repo_tbl = repo_tbl,
@@ -120,7 +122,8 @@ pre_process_coding_alone <- function (out_dir = NULL, f_name = "pre-processed") 
         author_dens_issues_step_change100 = sc_issues [[2]],
         author_dens_prs_step_change001 = sc_prs [[1]],
         author_dens_prs_step_change100 = sc_prs [[2]],
-        issue_comments_step_change = cmts
+        issue_comments_step_change = cmts,
+        pr_to_issues = pr_to_issues
     )
 
     f <- fs::path (out_dir, paste0 (f_name, ".Rds"))
@@ -241,4 +244,32 @@ build_popularity_authors_tbl <- function (issue_authors_tbl, repo_tbl) {
             tbl
         }) |>
         dplyr::ungroup ()
+}
+
+# Count per repo per month, then sum over all repos for each month.
+count_by_month <- function (x, id_col, count_name) {
+    x |>
+        dplyr::distinct (repo_url, .data [[id_col]], .keep_all = TRUE) |>
+        dplyr::mutate (month = as.Date (format (created_at, "%Y-%m-01"))) |>
+        dplyr::group_by (repo_url, month) |>
+        dplyr::summarise (n = dplyr::n (), .groups = "drop") |>
+        dplyr::group_by (month) |>
+        dplyr::summarise (
+            !!count_name := sum (n),
+            .groups = "drop"
+        )
+}
+
+pr_to_issues_ratio <- function (repo_tbl, issue_authors_tbl, pr_authors_tbl) {
+
+    issue_counts <- count_by_month (issue_authors_tbl, "issue_number", "num_issues")
+    pr_counts <- count_by_month (pr_authors_tbl, "pr_number", "num_prs")
+
+    dplyr::full_join (issue_counts, pr_counts, by = "month") |>
+        dplyr::mutate (dplyr::across (
+            c (num_issues, num_prs),
+            \(n) tidyr::replace_na (n, 0L)
+        )) |>
+        dplyr::arrange (month) |>
+        dplyr::mutate (ratio = num_prs / num_issues)
 }
