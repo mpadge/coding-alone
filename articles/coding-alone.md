@@ -334,26 +334,23 @@ such as competing life demands, loss of interest, or burnout ([Tidelift
 2024](#ref-tidelift2024maintainer)).
 
 In November 2025, Kubernetes’ steering and security committees retired
-Ingress NGINX. This was one of the most widely deployed pieces of
-cloud-native infrastructure in existence, and would sit very high in all
-“Q4” high-popularity strata here. NGINX had been maintained for years by
-voluntary open-source contributors, and no amount of public appeal was
-able to attract the additional help needed for it to survive
-([Kubernetes SIG Network and Security Response Committee
-2025](#ref-kubernetes2025ingressnginx)). The exact kinds of declines
-observed here manifest in this case to a complete inability to find even
-a single person willing to maintain the project.
+Ingress NGINX ([Kubernetes SIG Network and Security Response Committee
+2025](#ref-kubernetes2025ingressnginx)). This was one of the most widely
+deployed pieces of cloud-native infrastructure in existence, and would
+sit very high in all “Q4” high-popularity strata here. NGINX had been
+maintained for years by voluntary open-source contributors, and yet the
+exact kinds of declines observed here manifest in this case to a
+complete inability to find even a single person willing to maintain the
+project.
 
 Good software always evolves, and part of that evolution frequently
-includes maintainers finding and handing over to other people to
-continue their work. Preparatory steps for eventual maintenance
-transition always emerge from pools or streams of newcomers arriving at
+includes maintainers searching for other people to continue their work.
+New maintainers always emerge from communities of newcomers arriving at
 a project. GitHub made it far easier than ever before for newcomers to
 just magically appear, mostly through opening issues to ask questions.
 Many projects actively cultivate an open and welcoming atmosphere as an
 attempt to attract as many newcomers as possible, yet even that practice
-seems to be declining ([Hoshikawa et al.
-2026](#ref-hoshikawa2026goodfirstissue)).
+seems to be declining ([Hoshikawa et al. 2026](#ref-hoshikawa2026)).
 
 The real difficulties begin with attempts to retain the interest of
 newcomers. A decade-old study of one large Apache project found fewer
@@ -364,9 +361,9 @@ findings, Nadia Eghbal’s *Roads and Bridges* described the ways by which
 critical open-source infrastructure was sustained by a handful of unpaid
 volunteers, and argued that the true shortages were always in people
 rather than money ([Eghbal 2016](#ref-eghbal2016roadsbridges)). Finally,
-the pervasive nature of the declines observed here also reflects the
-well-documented collapse of Stack Overflow as a community platform
-([Orosz 2025](#ref-orosz2025stackoverflow); [Holscher
+these results also reflect the well-documented collapse of Stack
+Overflow as a community platform ([Orosz
+2025](#ref-orosz2025stackoverflow); [Holscher
 2025](#ref-holscher2025stackoverflow)).
 
 ### What about AI?
@@ -408,10 +405,10 @@ Figure 11: Ratios of PRs to issues (with ratios on a logarithmic scale)
 ### Doing before asking
 
 As stated above, most human societies cultivate habits of asking before
-doing. Pull requests reverse this custom. They represent a comparably
-more aggressive step of doing before asking. While causes for such
-cultural changes are likely complex, increased social isolation does
-seem to foster increased aggression ([Twenge et al.
+doing. Unsolicited pull requests reverse this custom. They represent a
+comparably more aggressive step of doing before asking. While causes for
+such cultural changes are likely complex, increased social isolation
+does seem to foster increased aggression ([Twenge et al.
 2001](#ref-twenge2001)). Although coding alone is likely to increase
 ratios of PRs to issues, the increases in
 [Figure 11](#fig-pr-to-issues-ratio) more likely reveal an additionally
@@ -457,6 +454,30 @@ who is not.*” These analyses add nuance to that conclusion, by showing
 how AI coding assistants are a manifestation of their training being
 heavily influenced by the toxically disinhibited expressions of
 anti-social men.
+
+## What can we do about this?
+
+First and foremost, everything here shows an immediate need to do
+anything and everything to cultivate, nurture, and maintain communities.
+Always seek to collaborate rather than doing things yourself. Even if
+you don’t know anybody to collaborate with, inviting collaboration on
+your open-source repositories can have a big effect ([Hoshikawa et al.
+2026](#ref-hoshikawa2026)). And the results of Chu et al.
+([2026](#ref-chu2026)) provide strong evidence for the pro-social
+effects of community diversity – invite and encourage as many different
+kinds of people you can.
+
+Perhaps most importantly if you use AI coding assistants, ensure you use
+them in socially aware ways. These machines are trained to implement
+their own work-arounds to any software issues they encounter. And they
+often do so silently. Start with clear instructions in an [`AGENTS.md`
+file](https://agents.md/) or similar **NOT** to so that silently, rather
+to tell you, to help you as a human being connect with the human
+developers of other software. At the very least, never let an AI coding
+tool open an unsolicited pull request on any repository you do not know
+well. That is doing without asking, which is rude. Always ask first, and
+do so with your own, human words. Help to re-establish open-source
+communities as genuinely collaborative spaces.
 
 ## References
 
