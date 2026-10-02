@@ -11,13 +11,13 @@ Source:
 [`DESCRIPTION`](https://github.com/mpadge/coding-alone/blob/main/DESCRIPTION)
 
 Padgham M (2026). *codingAlone: The Effect of Peer Review on Open-Source
-Community Engagement*. R package version 0.2.1.006,
+Community Engagement*. R package version 0.2.1.009,
 <https://github.com/mpadge/coding-alone>.
 
     @Manual{,
       title = {codingAlone: The Effect of Peer Review on Open-Source Community Engagement},
       author = {Mark Padgham},
       year = {2026},
-      note = {R package version 0.2.1.006},
+      note = {R package version 0.2.1.009},
       url = {https://github.com/mpadge/coding-alone},
     }

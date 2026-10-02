@@ -19,7 +19,7 @@ outsiders who ask questions, report bugs, or leave comments. These
 communities of contributors guide and nurture ongoing software
 development. People still write code, but this analysis shows that the
 collective structures that have supported and sustained that writing are
-changing dramtically. Public software repositories are changing from
+changing dramatically. Public software repositories are changing from
 places of social coherence and cohesion to become more like mere mirrors
 of a single person’s work.
 
@@ -117,10 +117,9 @@ repository’s code. Pull requests are not the place for most people who
 simply want to ask questions, or to request that software be adapted or
 modified for their own particular purposes. Pull requests from non-core
 contributors generally follow explicit requests in issues. I’ll briefly
-examine pull requests at the end of this analysis. In the meantime, it’s
-sufficient to note that pull requests represent a very minor portion
-(always \< 10%) of all interactions with repositories on GitHub, with
-the rest coming through issues.
+examine pull requests at the end of this analysis. I’ll also show there
+that pull requests represent only a minor portion of all interactions
+with repositories on GitHub, with the rest coming through issues.
 
 The focus of these analyses is on the primary point of community
 interactions with open-source software, and these have always been
@@ -227,11 +226,11 @@ shrinking even faster.
 
 | Source | Repo creation (%) | Commits (%) | Distinct Authors (%) | Issue Comments (%) |
 |:---|---:|---:|---:|---:|
-| JOSS | \- | -56% | -61% | -83% |
-| rOpenSci | \- | -54% | -61% | -71% |
-| CRAN | -38% | -49% | -64% | -78% |
-| npm | -55% | -22% | -63% | -70% |
-| PyPI | -29% | -18% | -36% | -50% |
+| JOSS | \- | -57% | -61% | -84% |
+| rOpenSci | \- | -56% | -63% | -74% |
+| CRAN | -38% | -48% | -64% | -78% |
+| npm | -55% | -22% | -63% | -71% |
+| PyPI | -30% | -18% | -36% | -51% |
 
 Percentage changes in statistics of Figs. 1-4, estimated from linear
 regressions fitted to all data from Jan 2021 across all popularity
@@ -247,7 +246,7 @@ affected by additional constraints and influences.) {.table
 
 The rates at which new authors of GitHub issues appear have also
 progressively decreased across all software systems
-([Figure 6](#fig-new-author-rate)). In 17 of those 20 combinations of
+([Figure 6](#fig-new-author-rate)). In 18 of those 20 combinations of
 software source-by-popularity stratum, the new-arrival rate has fallen
 by *more* than overall author density has, meaning the decline
 documented above isn’t simply existing regulars posting a little less
@@ -314,8 +313,8 @@ The combined effect of these decreases must of course be a progression
 towards increasing numbers of repositories being maintained by one
 person only. This is exactly what [Figure 10](#fig-solo-share-plot)
 shows. Taken collectively, 27% of repositories were effectively
-maintained by a single person in January 2021. By September 2026, that
-share had risen to 43%.
+maintained by a single person in January 2021. By October 2026, that
+share had risen to 44%.
 
 ![](coding-alone-figures/fig-solo-share-plot-1.png)
 
@@ -327,63 +326,48 @@ Many aspects of these analyses align with what other people have
 reported about the people who keep open source software alive. A 2024
 survey of open-source maintainers found that 61% of them maintain their
 project entirely alone, and that unpaid maintainers were
-disproportionately likely to be the ones flying solo ([Socket
-2024](#ref-socket2024solomaintainers)). Tidelift’s own 2024 survey of
-maintainers found that 60% remain entirely unpaid and nearly 60% have
-quit, or seriously considered quitting, projects they maintain, citing
-reasons such as competing life demands, loss of interest, or burnout
-([Tidelift 2024](#ref-tidelift2024maintainer)).
+disproportionately likely to be working alone ([Socket
+2024](#ref-socket2024solomaintainers)). A 2024 survey of maintainers by
+Tidelift found that 60% remain entirely unpaid and nearly 60% have quit,
+or seriously considered quitting, projects they maintain, citing reasons
+such as competing life demands, loss of interest, or burnout ([Tidelift
+2024](#ref-tidelift2024maintainer)).
 
 In November 2025, Kubernetes’ steering and security committees retired
-Ingress NGINX - one of the most widely deployed pieces of cloud-native
-infrastructure in existence, maintained for years by one or two people
-working nights and weekends - after concluding that no amount of public
-appeal could attract the additional help needed to keep it going
+Ingress NGINX. This was one of the most widely deployed pieces of
+cloud-native infrastructure in existence, and would sit very high in all
+“Q4” high-popularity strata here. NGINX had been maintained for years by
+voluntary open-source contributors, and no amount of public appeal was
+able to attract the additional help needed for it to survive
 ([Kubernetes SIG Network and Security Response Committee
-2025](#ref-kubernetes2025ingressnginx)). NGINX is, or at least was, a
-critical piece of open-source infrastructure that would sit very high in
-all “Q4” high-popularity strata here. And the exact kinds of declines
-observed here translated in that case to a complete inability to find
-even a single person willing to maintain the project.
+2025](#ref-kubernetes2025ingressnginx)). The exact kinds of declines
+observed here manifest in this case to a complete inability to find even
+a single person willing to maintain the project.
 
 Good software always evolves, and part of that evolution frequently
 includes maintainers finding and handing over to other people to
 continue their work. Preparatory steps for eventual maintenance
 transition always emerge from pools or streams of newcomers arriving at
 a project. GitHub made it far easier than ever before for newcomers to
-just magically appear, through opening issues to ask questions. Many
-projects actively cultivate an open and welcoming atmosphere as an
-attempt to attract as many newcomers as possible.
+just magically appear, mostly through opening issues to ask questions.
+Many projects actively cultivate an open and welcoming atmosphere as an
+attempt to attract as many newcomers as possible, yet even that practice
+seems to be declining ([Hoshikawa et al.
+2026](#ref-hoshikawa2026goodfirstissue)).
 
 The real difficulties begin with attempts to retain the interest of
 newcomers. A decade-old study of one large Apache project found fewer
 than one in five people who initially appeared on software repositories
 became long-term contributors ([Steinmacher et al.
-2013](#ref-steinmacher2013newcomers)). A 2026 longitudinal study of
-“good first issue” labelling across 37 popular OSS projects found that
-after holding steady for three years, the share of issues labelled as
-newcomer-friendly began a statistically significant decline starting in
-January 2024 ([Hoshikawa et al.
-2026](#ref-hoshikawa2026goodfirstissue)). The authors offer no single
-explanation for this decline, and merely refer to “*informal shifts in
-maintainer practice*.” This study thus highlights that causes for the
-declines observed here may also be endogenous, driven from changes
-within repositories themselves.
-
-A decade before any of these findings, Nadia Eghbal’s *Roads and
-Bridges* described the ways by which critical open-source infrastructure
-was sustained by a handful of unpaid volunteers, and argued that the
-true shortage was in people rather than money ([Eghbal
-2016](#ref-eghbal2016roadsbridges)).
-
-The decline’s timing loosely coincides with two other, independently
-documented shifts: GitHub Copilot’s move from limited preview to general
-availability in mid-2022 ([Wikipedia contributors
-2026](#ref-wikipedia2026copilot)), and a well-documented collapse in
-Stack Overflow’s own new-question volume beginning around the same time
+2013](#ref-steinmacher2013newcomers)). A decade before any of these
+findings, Nadia Eghbal’s *Roads and Bridges* described the ways by which
+critical open-source infrastructure was sustained by a handful of unpaid
+volunteers, and argued that the true shortages were always in people
+rather than money ([Eghbal 2016](#ref-eghbal2016roadsbridges)). Finally,
+the pervasive nature of the declines observed here also reflects the
+well-documented collapse of Stack Overflow as a community platform
 ([Orosz 2025](#ref-orosz2025stackoverflow); [Holscher
-2025](#ref-holscher2025stackoverflow)) - the other major venue for the
-same kind of peer-to-peer technical exchange this dataset measures.
+2025](#ref-holscher2025stackoverflow)).
 
 ### What about AI?
 
@@ -391,17 +375,88 @@ The declines observed here began several years before the advent of AI
 as we now know it. AI has almost certainly contributed, including
 through mechanisms such as “algorithmic monoculture” ([Bommasani et al.
 2022](#ref-bommasani2022monoculture)) discouraging diverse inputs into
-software.
+software. Changes over the last year or two certainly seem to be
+accelerated versions or preceding changes, including in [repo creation
+rates](#fig-commit-rate-plot), [numbers](#fig-trend-plots) and [arrival
+rates](#fig-new-author-rate) of new contributors, and in [solo-author
+projects](#fig-solo-share-plot). AI is very likely to have had an
+influence in all of these accelerated rates of decline, although after
+and on top of more general and broader factors.
 
-## In Conclusion
+There have been many claims of open-source projects “drowning” in a
+“flood” of AI-generated pull requests. (None of those are worth citing
+here, as I can find no actual data to assert such claims). As described
+above, first points of contact for new contributors are very generally
+issues, with pull requests (PRs) usually only made after initial
+discussion within issues. This reflects ubiquitous human conventions of
+only doing something for somebody else after first ascertaining they
+actually want or need it. There is nothing special about the general
+workflow adopted in software development of issue first, followed by
+PRs. It reflects the way human interactions are generally structured.
+Ask first, and then do.
 
-- Tools for code development have enormously multiplied through the
-  period of decline observed here, and coding has become easier than
-  ever.
-- This analysis indicates a structural shift across five distinct
-  software ecosystems, from code emerging from, and maintained by,
-  loosely overlapping communities, towards software development becoming
-  an increasingly solitary endeavour.
+Data on PRs were also extracted here in the same way as data for issues.
+The only thing that does indeed seem to have changed is the ratio of PRs
+to issues ([Figure 11](#fig-pr-to-issues-ratio)). Proportions of PRs
+have been gradually increasing since 2021, with observable recent
+acceleration in some software systems, most notably in npm and CRAN.
+
+![](coding-alone-figures/fig-pr-to-issues-ratio-1.png)
+
+Figure 11: Ratios of PRs to issues (with ratios on a logarithmic scale)
+
+### Doing before asking
+
+As stated above, most human societies cultivate habits of asking before
+doing. Pull requests reverse this custom. They represent a comparably
+more aggressive step of doing before asking. While causes for such
+cultural changes are likely complex, increased social isolation does
+seem to foster increased aggression ([Twenge et al.
+2001](#ref-twenge2001)). Although coding alone is likely to increase
+ratios of PRs to issues, the increases in
+[Figure 11](#fig-pr-to-issues-ratio) more likely reveal an additionally
+negative influence of AI coding tools.
+
+The large language models that underlie AI coding tools are trained on
+vast corpora of primarily online data. And people act differently online
+than they do in person. I posit that an even more likely cause for
+increased PR-to-issue ratios is the embedding within AI of the widely
+acknowledged “online disinhibition effect” ([Suler
+2004](#ref-suler2004)).
+
+AI coding tools – and of course AI in general – are more reflective of
+pathologically disinhibited online behaviour than actual human social
+behaviour. Suler’s ([2004](#ref-suler2004)) original descriptions are
+insightful:
+
+> \[People\] don’t have to own their own behavior by acknowledging it …
+> The online self becomes a compartmentalized self… the person can avert
+> responsibility \[in a form of\] “emotional hit and run”.
+>
+> \[People can\] live in an \[sic\] make-believe dimension, separate and
+> apart from the demands and responsibilities of the real world.
+> \[They\] see their online life as a kind of game with rules and norms
+> that don’t apply to everyday living… They relinquish their responsible
+> \[sic\] for what happens in a make-believe play world that has nothing
+> to do with reality.
+
+Perhaps all of the declines observed here reflect increases in the kinds
+of behaviour described by Suler more than 20 years ago. The easier it
+got to do everything online, including coding, the more the behaviours
+of those doing the coding become disinhibited from their pro-social,
+in-person behaviour. AI is just the culmination of that process.
+
+Suler’s ([2004](#ref-suler2004)) original conclusions were cautiously
+framed, and acknowledged a complex interplay between “benign” and
+“toxic” disinhibition. More recent research ([Chu et al.
+2026](#ref-chu2026)) has demonstrated a reality that lies more to the
+toxic than benign side, especially in online spaces dominated by men.
+I’ve [said elsewhere](https://mpadge.eu/blog/machina-machista.html)
+that, “*Your AI thinks you’re a dude. And that’s a problem for everybody
+who is not.*” These analyses add nuance to that conclusion, by showing
+how AI coding assistants are a manifestation of their training being
+heavily influenced by the toxically disinhibited expressions of
+anti-social men.
 
 ## References
 
@@ -410,6 +465,11 @@ Percy Liang. 2022. ‘Picking on the Same Person: Does Algorithmic
 Monoculture Lead to Outcome Homogenization?’ *Advances in Neural
 Information Processing Systems (NeurIPS)*.
 <https://arxiv.org/abs/2211.13972>.
+
+Chu, Xiaowei, Nannan Zhou, Xue Lu, Xiaoyu Zhang, and Yu Liu. 2026.
+‘Anonymity, Online Disinhibition, and Cyber Aggression: A Systematic
+Review and Meta-Analysis’. *Trauma, Violence, & Abuse* Epub ahead of
+print. <https://doi.org/10.1177/15248380261476605>.
 
 Eghbal, Nadia. 2016. *Roads and Bridges: The Unseen Labor Behind Our
 Digital Infrastructure*. Ford Foundation.
@@ -449,11 +509,17 @@ Projects?’ *2013 6th International Workshop on Cooperative and Human
 Aspects of Software Engineering (CHASE)*, 25–32.
 <https://doi.org/10.1109/CHASE.2013.6614728>.
 
+Suler, John. 2004. ‘The Online Disinhibition Effect’. *CyberPsychology,
+Behavior, and Social Networking* 7 (3): 321–26.
+<https://doi.org/10.1089/1094931041291295>.
+
 Tidelift. 2024. *The 2024 Tidelift Maintainer Impact Report*. Tidelift.
 <https://www.tidelift.com/open-source-maintainer-survey-2024>.
 
-Wikipedia contributors. 2026. *GitHub Copilot*. Wikipedia.
-<https://en.wikipedia.org/wiki/GitHub_Copilot>.
+Twenge, Jean M., Roy F. Baumeister, Dianne M. Tice, and Tanja S. Stucke.
+2001. ‘If You Can’t Join Them, Beat Them: Effects of Social Exclusion on
+Aggressive Behavior’. *Journal of Personality and Social Psychology* 81
+(6): 1058–69. <https://doi.org/10.1037/0022-3514.81.6.1058>.
 
 ------------------------------------------------------------------------
 
@@ -468,7 +534,7 @@ questions have already been answered, and the need for engagement
 decreases.
 
 This appendix demonstrates that repository age does not influence the
-main conclusions. [Figure 11](#fig-cohort-age) shows two lines for each
+main conclusions. [Figure 12](#fig-cohort-age) shows two lines for each
 software source: One exclusively for repositories started in the
 indicated year, and one for repositories in their second year of life in
 that year. Any effects of repository age should manifest in differences
@@ -481,4 +547,4 @@ the results shown in the main text.
 
 ![](coding-alone-figures/fig-cohort-age-1.png)
 
-Figure 11: Effects of cohort age on rates of new issues
+Figure 12: Effects of cohort age on rates of new issues
