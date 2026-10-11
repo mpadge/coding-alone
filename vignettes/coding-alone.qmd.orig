@@ -223,6 +223,16 @@ n_repos_primary <- length (unique (
 #| fig-cap: "Relationships between numbers of authors and repository popularity, accounting for the effects of repository age on both. Large communities are very strongly associated with software popularity in all cases."
 #| fig-height: 10
 
+# label_log() formats the exponent of each break, so use powers of ten where
+# possible, falling back to default breaks for very narrow ranges
+pow10_breaks <- function (lims) {
+    pw <- 10 ^ seq (ceiling (log10 (lims [1])), floor (log10 (lims [2])))
+    if (length (pw) < 2) {
+        pw <- scales::breaks_log () (lims)
+    }
+    pw
+}
+
 tbl <- popularity_authors_tbl
 tbl$source <- factor (tbl$source, levels = unique (tbl$source))
 
@@ -234,16 +244,22 @@ ggplot2::ggplot (tbl, ggplot2::aes (n_authors, popularity_adj)) +
     ggplot2::geom_smooth (
         method = "lm", formula = y ~ x, colour = "#c0392b", se = TRUE
     ) +
-    ggplot2::scale_x_log10 () +
-    ggplot2::scale_y_log10 () +
+    ggplot2::scale_x_log10 (breaks = pow10_breaks, labels = scales::label_log ()) +
+    ggplot2::scale_y_log10 (breaks = pow10_breaks, labels = scales::label_log ()) +
     ggplot2::facet_wrap (
-        ~source, scales = "free", ncol = if (narrow) 1 else NULL
+        ~source, scales = "free", ncol = if (narrow) 1 else NULL,
+        labeller = ggplot2::as_labeller (SOURCE_DISPLAY_NAME)
     ) +
     ggplot2::labs (
         x = "Total unique issue authors",
         y = "Popularity, adjusted to source's median repo lifespan"
     ) +
-    ggplot2::theme_minimal ()
+    ggplot2::theme_minimal () +
+    ggplot2::theme (
+        strip.text = ggplot2::element_text (
+            size = 8 * ggplot2::.pt, face = "bold"
+        )
+    )
 ```
 
 Good software - as measured by popularity - is overwhelmingly produced by
