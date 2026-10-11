@@ -28,6 +28,8 @@
 #' assumed to already be single-metric, and this only sets the plot title.
 #' @param ref_date The same `ref_date` passed to `step_change_tbl()`, used
 #' only to label the plot.
+#' @param narrow If `TRUE`, stack all facets in a single column for
+#' narrow screens.
 #' @return A ggplot object.
 #'
 #' @examples
@@ -38,7 +40,8 @@
 #' @export
 plot_step_change <- function (tbl, source_display = NULL,
                               metric = c ("issues", "comments"),
-                              ref_date = as.Date ("2021-01-01")) {
+                              ref_date = as.Date ("2021-01-01"),
+                              narrow = FALSE) {
 
     metric <- match.arg (metric)
 
@@ -81,7 +84,11 @@ plot_step_change <- function (tbl, source_display = NULL,
         ) +
         ggplot2::theme_minimal () +
         ggplot2::theme (legend.position = "none") +
-        ggplot2::facet_wrap (~source, nrow = 1)
+        ggplot2::facet_wrap (
+            ~source,
+            nrow = if (narrow) NULL else 1,
+            ncol = if (narrow) 1 else NULL
+        )
 }
 
 # ---- matched-cohort age-vs-calendar-time analysis --------------------------
@@ -99,6 +106,8 @@ plot_step_change <- function (tbl, source_display = NULL,
 #' @param min_repo_months Cells with less exposure than this are dropped
 #' before plotting, since a handful of repo-months makes for an unstable
 #' rate estimate.
+#' @param narrow If `TRUE`, stack all facets in a single column for
+#' narrow screens.
 #' @return A ggplot object.
 #'
 #' @examples
@@ -107,7 +116,8 @@ plot_step_change <- function (tbl, source_display = NULL,
 #' plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
 #' }
 #' @export
-plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30) {
+plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30,
+                             narrow = FALSE) {
 
     cohort_year <- rate <- age_year <- age_label <- source <-
         n_repo_months <- NULL
@@ -129,7 +139,10 @@ plot_cohort_age <- function (tbl, source_display = NULL, min_repo_months = 30) {
     ) +
         ggplot2::geom_line (linewidth = 0.9) +
         ggplot2::geom_point (size = 1.6) +
-        ggplot2::facet_wrap (~source, scales = "free_y") +
+        ggplot2::facet_wrap (
+            ~source,
+            scales = "free_y", ncol = if (narrow) 1 else NULL
+        ) +
         ggplot2::scale_y_log10 () +
         ggplot2::scale_colour_brewer (palette = "Dark2") +
         ggplot2::labs (
@@ -302,6 +315,8 @@ plot_ropensci_reviewed_step_change <- function (tbl, metric = c ("issues", "comm
 #' @param start_year Optional year to crop the plotted window to, as in
 #' `plot_activity()` - display-only, doesn't affect the underlying
 #' repo-months/rate calculations.
+#' @param narrow If `TRUE`, stack all facets in a single column for
+#' narrow screens.
 #' @return A ggplot object.
 #'
 #' @examples
@@ -315,7 +330,8 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
                                   window = 12L,
                                   date_start = as.Date ("2015-01-01"),
                                   date_end = NULL,
-                                  start_year = NULL) {
+                                  start_year = NULL,
+                                  narrow = FALSE) {
 
     month <- rate <- source <- popularity_stratum <- NULL
 
@@ -347,7 +363,10 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
         ggplot2::aes (month, rate, colour = popularity_stratum)
     ) +
         ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::facet_wrap (~source, scales = "free_y") +
+        ggplot2::facet_wrap (
+            ~source,
+            scales = "free_y", ncol = if (narrow) 1 else NULL
+        ) +
         ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
         ggplot2::labs (
             x = NULL,
@@ -355,7 +374,14 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
             colour = "Popularity\nstratum"
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top") +
+        ggplot2::theme (
+            legend.position = "top",
+            # Match the size of panel labels in `plot_activity()`, which are
+            # `annotate ("text", size = 8)` (in mm), here converted to pt.
+            strip.text = ggplot2::element_text (
+                size = 8 * ggplot2::.pt, face = "bold"
+            )
+        ) +
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 }
 
@@ -379,6 +405,8 @@ plot_new_author_rate <- function (issue_authors_tbl, repo_tbl,
 #' @param start_year Optional year to crop the plotted window to, as in
 #' `plot_activity()` - display-only, doesn't affect the underlying
 #' interval calculations.
+#' @param narrow If `TRUE`, stack all facets in a single column for
+#' narrow screens.
 #' @return A ggplot object.
 #'
 #' @examples
@@ -392,7 +420,8 @@ plot_author_interval <- function (issue_authors_tbl, repo_tbl,
                                   window = 12L,
                                   date_start = as.Date ("2015-01-01"),
                                   date_end = NULL,
-                                  start_year = NULL) {
+                                  start_year = NULL,
+                                  narrow = FALSE) {
 
     month <- popularity_stratum <- source <- geo_mean_days <- NULL
 
@@ -424,7 +453,10 @@ plot_author_interval <- function (issue_authors_tbl, repo_tbl,
         ggplot2::aes (month, geo_mean_days, colour = popularity_stratum)
     ) +
         ggplot2::geom_line (linewidth = 0.8, alpha = 0.9) +
-        ggplot2::facet_wrap (~source, scales = "free_y") +
+        ggplot2::facet_wrap (
+            ~source,
+            scales = "free_y", ncol = if (narrow) 1 else NULL
+        ) +
         ggplot2::scale_y_log10 () +
         ggplot2::scale_colour_brewer (palette = "RdYlBu", direction = -1) +
         ggplot2::labs (
@@ -433,6 +465,13 @@ plot_author_interval <- function (issue_authors_tbl, repo_tbl,
             colour = "Popularity\nstratum"
         ) +
         ggplot2::theme_minimal () +
-        ggplot2::theme (legend.position = "top") +
+        ggplot2::theme (
+            legend.position = "top",
+            # As in `plot_new_author_rate()`: match panel labels of
+            # `plot_activity()`.
+            strip.text = ggplot2::element_text (
+                size = 8 * ggplot2::.pt, face = "bold"
+            )
+        ) +
         ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 }

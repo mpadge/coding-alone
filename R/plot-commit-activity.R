@@ -19,7 +19,9 @@
 #' @param start_year Optional year to crop the plotted window to, as in
 #' `plot_activity()` - display-only, doesn't affect the underlying
 #' repo-months/rate calculations.
-#' @return A `patchwork` object (two stacked ggplot panels).
+#' @param narrow If `TRUE`, stack the two panels vertically (one column)
+#' for narrow screens.
+#' @return A `patchwork` object (two ggplot panels).
 #'
 #' @examples
 #' \dontrun{
@@ -33,7 +35,8 @@ plot_commit_rate <- function (commit_counts_tbl,
                               window = 12L,
                               date_start = as.Date ("2015-01-01"),
                               date_end = NULL,
-                              start_year = NULL) {
+                              start_year = NULL,
+                              narrow = FALSE) {
 
     month <- rate <- source <- n_created <- total_created <- pct_created <- NULL
 
@@ -120,5 +123,5 @@ plot_commit_rate <- function (commit_counts_tbl,
             hjust = 2.2, vjust = 3, size = 6
         )
 
-    patchwork::wrap_plots (p_creation, p_commit, ncol = 2)
+    patchwork::wrap_plots (p_creation, p_commit, ncol = if (narrow) 1 else 2)
 }

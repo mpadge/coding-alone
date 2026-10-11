@@ -28,6 +28,12 @@ never needs the data again.
 -->
 
 ```{r chunk-setup, echo = FALSE}
+# Set `narrow <- TRUE` to generate narrow-screen figures, in which all panels
+# (facets or patchwork) are stacked vertically in a single column. Narrow
+# figures are written to a separate directory, so the default figures are
+# left untouched.
+narrow <- FALSE
+
 knitr::opts_chunk$set (
     echo = FALSE,
     message = FALSE,
@@ -41,6 +47,40 @@ knitr::opts_chunk$set (
     autodep = TRUE
 )
 options (knitr.kable.NA = "-")
+
+# Narrow figures need less width, and more height to fit vertically stacked
+# panels. Heights for all multi-panel chunks are given here (chunks not
+# listed, which have a single panel, are unchanged).
+if (narrow) {
+    narrow_fig_height <- c (
+        "fig-popularity-authors" = 14,
+        "fig-commit-rate-plot" = 8,
+        "fig-trend-plots" = 16,
+        "fig-new-author-rate" = 14,
+        "fig-new-author-intervals" = 14,
+        "fig-cohort-age" = 14
+    )
+    knitr::opts_chunk$set (fig.width = 5)
+    # These stay as horizontal panels for any value of `narrow`, so keep
+    # their original width.
+    knitr::opts_hooks$set (fig.width = function (options) {
+        horizontal <- c (
+            "fig-step-change-authors", "fig-step-change-commits",
+            "fig-new-author-step-change"
+        )
+        if (options$label %in% horizontal) {
+            options$fig.width <- 9
+        }
+        options
+    })
+    knitr::opts_hooks$set (fig.height = function (options) {
+        h <- narrow_fig_height [options$label]
+        if (!is.na (h)) {
+            options$fig.height <- unname (h)
+        }
+        options
+    })
+}
 
 # `knitr::knit()`'s default plot hook wraps figures in raw HTML
 # (<div class="figure">...<img>...</div>), which carries no crossref
@@ -196,7 +236,9 @@ ggplot2::ggplot (tbl, ggplot2::aes (n_authors, popularity_adj)) +
     ) +
     ggplot2::scale_x_log10 () +
     ggplot2::scale_y_log10 () +
-    ggplot2::facet_wrap (~source, scales = "free") +
+    ggplot2::facet_wrap (
+        ~source, scales = "free", ncol = if (narrow) 1 else NULL
+    ) +
     ggplot2::labs (
         x = "Total unique issue authors",
         y = "Popularity, adjusted to source's median repo lifespan"
@@ -294,7 +336,7 @@ as "step changes" between January 2021 and the present (`r now`)
 
 plot_commit_rate (
     commit_counts_tbl, issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
-    start_year = 2016
+    start_year = 2016, narrow = narrow
 )
 ```
 
@@ -348,7 +390,7 @@ p5 <- dplyr::filter (a_strata, src == "ropensci") |>
     plot_activity (start_year = 2016, "rOpenSci") +
     ggplot2::guides (colour = ggplot2::guide_legend (reverse = TRUE))
 
-patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = 2)
+patchwork::wrap_plots (p1, p2, p3, p4, p5, ncol = if (narrow) 1 else 2)
 ```
 
 For each software source, lines are shown for the four distributional quartiles
@@ -617,7 +659,7 @@ shrinking supply of people showing up for the first time at all.
 #| fig-height: 6
 plot_new_author_rate (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
-    start_year = 2021
+    start_year = 2021, narrow = narrow
 )
 ```
 
@@ -687,7 +729,7 @@ new_authors_sc_display <- dplyr::transmute (
 
 plot_author_interval (
     issue_authors_tbl, repo_tbl, SOURCE_DISPLAY_NAME,
-    start_year = 2020
+    start_year = 2020, narrow = narrow
 )
 ```
 
@@ -1024,5 +1066,5 @@ cohort_tbl <- cohort_age_rate_tbl (issue_authors_tbl, repo_tbl, primary_sources)
 #| fig-cap: "Effects of cohort age on rates of new issues"
 #| fig-height: 7
 
-plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME)
+plot_cohort_age (cohort_tbl, SOURCE_DISPLAY_NAME, narrow = narrow)
 ```
