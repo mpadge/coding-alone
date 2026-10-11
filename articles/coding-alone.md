@@ -1,10 +1,26 @@
 # Coding Alone
 
+> **Summary**
+>
+> It’s been over 30 years since Robert Putnam started writing about the
+> American phenomenon of “bowling alone”. This analyses shows how the
+> same thing is now happening to coding. Over the last few years, the
+> world has rapidly moved from open-source software being produced and
+> maintained by online communities, to software projects being built and
+> maintained in isolation. By single developers, with ever-decreasing
+> input from others. AI coding tools are now dramatically accelerating
+> movement away from code as a collective endeavour to “coding alone”. I
+> conclude by describing how such progression need not be considered
+> inevitable. Every step has reflected the collective influence of
+> countless individual human decisions. We can still decide to help
+> re-activate open-source software communities, including through using
+> AI coding tools in ways that help retain community.
+
 In 1995, Robert Putnam noticed that more Americans were bowling than
 ever before, but the growth was in solo or casual bowling at the expense
 of organised, collective bowling. He argued that this was reflective of
 a broader collapse of associational habits which used to knit Americans
-into overlapping social groups. Local clubs, unions, congregations,
+into overlapping social groups. Local clubs, unions, congregations, and
 leagues had been quietly hollowing out for a generation, not because
 people had lost interest in the underlying activities, but because
 they’d stopped doing them together ([Putnam
@@ -42,11 +58,11 @@ have “starred” software repositories on GitHub.
 
 All of the following analyses use random selections of repositories from
 several common software distribution systems, including [npm for
-Javascript](https://npmjs.com), [PyPI for Python](pypi.org), [CRAN for
-R](https://cran.r-project.org), and two GitHub-based software review
-organizations, [JOSS (the Journal of Open-Source
-Software)](https://joss.theoj.org), and
-[rOpenSci](https://ropensci.org). Data extracted for each of these can
+Javascript](https://npmjs.com), [PyPI for Python](https://pypi.org/),
+[CRAN for R](https://cran.r-project.org/), and two GitHub-based software
+review organizations, [JOSS (the Journal of Open-Source
+Software)](https://joss.theoj.org/), and
+[rOpenSci](https://ropensci.org/). Data extracted for each of these can
 show whether larger communities help produce better software, as
 measured through popularity.
 
@@ -90,8 +106,8 @@ request new features. A corpus of repositories was taken from the five
 sources described above.
 
 Analyses included every repository reviewed by
-[JOSS](https://joss.theoj.org) and [rOpenSci](https://ropensci.org),
-every package currently on [CRAN](https://cran.r-project.org), and
+[JOSS](https://joss.theoj.org/) and [rOpenSci](https://ropensci.org/),
+every package currently on [CRAN](https://cran.r-project.org/), and
 samples from the other three. Samples were stratified by popularity to
 ensure even sampling and representation regardless of popularity. In
 total, 3,139,779 issues were analysed across 52,461 repositories.
@@ -149,7 +165,7 @@ percentages) and of commits per month (bottom). All rates are 12-month
 trailing averages.
 
 Decreases in repository creation could of course simply reflect people
-moving towards alternative code hosting sites. other than GitHub. Such
+moving towards alternative code hosting sites other than GitHub. Such
 effects are not considered further here, but all analyses that follow
 are derived from software which (still) identifies GitHub as its primary
 source, and are therefore independent of whether or not people are
@@ -203,7 +219,7 @@ quartiles, from lowest (Q1) to highest (Q4).
 
 Total numbers of comments on each issue show a similar pattern
 ([Figure 5](#fig-step-change-commits)), with similarly reversed trends
-for PyPi as well as npm. Taken together, these two figures reveal both
+for PyPI as well as npm. Taken together, these two figures reveal both
 numbers of issue authors and numbers of comments per issue have declined
 severely in all software systems over the past few years. Only for
 python packages in PyPI have declines been less severe for the most
@@ -277,10 +293,10 @@ authors ([Figure 8](#fig-new-author-intervals)).
 Figure 8: Intervals in days between successive arrival of new authors.
 
 These rates have also uniformly increased over the past few years. They
-are also notably far higher for [CRAN](https://cran.r-project.org),
-[JOSS](https://joss.theoj.org), and [rOpenSci](https://ropensci.org), in
-which new authors now arrive more than once per month only for the most
-popular packages. Only PyPi appears to not suffer this trend, with
+are also notably far higher for [CRAN](https://cran.r-project.org/),
+[JOSS](https://joss.theoj.org/), and [rOpenSci](https://ropensci.org/),
+in which new authors now arrive more than once per month only for the
+most popular packages. Only PyPI appears to not suffer this trend, with
 intervals between the arrival of new authors progressively decreasing
 over the past couple of years.
 
@@ -318,7 +334,7 @@ share had risen to 44%.
 
 ![](coding-alone-figures/fig-solo-share-plot-1.png)
 
-Figure 10: Share ot active repositories with only one person active
+Figure 10: Share of active repositories with only one person active
 
 ## What does this mean?
 
