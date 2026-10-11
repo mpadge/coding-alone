@@ -8,7 +8,8 @@ plot_step_change(
   tbl,
   source_display = NULL,
   metric = c("issues", "comments"),
-  ref_date = as.Date("2021-01-01")
+  ref_date = as.Date("2021-01-01"),
+  narrow = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ assumed to already be single-metric, and this only sets the plot title.}
 
 \item{ref_date}{The same \code{ref_date} passed to \code{step_change_tbl()}, used
 only to label the plot.}
+
+\item{narrow}{If \code{TRUE}, stack all facets in a single column for
+narrow screens.}
 }
 \value{
 A ggplot object.

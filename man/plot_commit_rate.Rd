@@ -12,7 +12,8 @@ plot_commit_rate(
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL,
-  start_year = NULL
+  start_year = NULL,
+  narrow = FALSE
 )
 }
 \arguments{
@@ -30,9 +31,12 @@ plot_commit_rate(
 \item{start_year}{Optional year to crop the plotted window to, as in
 \code{plot_activity()} - display-only, doesn't affect the underlying
 repo-months/rate calculations.}
+
+\item{narrow}{If \code{TRUE}, stack the two panels vertically (one column)
+for narrow screens.}
 }
 \value{
-A \code{patchwork} object (two stacked ggplot panels).
+A \code{patchwork} object (two ggplot panels).
 }
 \description{
 Two-panel figure: each source's percentage share of repos created (top,

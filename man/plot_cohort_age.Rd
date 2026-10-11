@@ -4,7 +4,12 @@
 \alias{plot_cohort_age}
 \title{Plot non-core rate by creation-year cohort and fixed repo age}
 \usage{
-plot_cohort_age(tbl, source_display = NULL, min_repo_months = 30)
+plot_cohort_age(
+  tbl,
+  source_display = NULL,
+  min_repo_months = 30,
+  narrow = FALSE
+)
 }
 \arguments{
 \item{tbl}{As returned by \code{cohort_age_rate_tbl()}.}
@@ -14,6 +19,9 @@ plot_cohort_age(tbl, source_display = NULL, min_repo_months = 30)
 \item{min_repo_months}{Cells with less exposure than this are dropped
 before plotting, since a handful of repo-months makes for an unstable
 rate estimate.}
+
+\item{narrow}{If \code{TRUE}, stack all facets in a single column for
+narrow screens.}
 }
 \value{
 A ggplot object.
