@@ -17,7 +17,7 @@ plot_cohort_age())."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">codingAlone</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.017</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,8 @@ facet (sources sit on very different absolute wait times, as in
 <span>  window <span class="op">=</span> <span class="fl">12L</span>,</span>
 <span>  date_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2015-01-01"</span><span class="op">)</span>,</span>
 <span>  date_end <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  start_year <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  start_year <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  narrow <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,6 +97,11 @@ facet (sources sit on very different absolute wait times, as in
 <dd><p>Optional year to crop the plotted window to, as in
 <code><a href="plot_activity.html">plot_activity()</a></code> - display-only, doesn't affect the underlying
 interval calculations.</p></dd>
+
+
+<dt id="arg-narrow">narrow<a class="anchor" aria-label="anchor" href="#arg-narrow"></a></dt>
+<dd><p>If <code>TRUE</code>, stack all facets in a single column for
+narrow screens.</p></dd>
 
 </dl></div>
     <div class="section level2">

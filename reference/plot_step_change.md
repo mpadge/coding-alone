@@ -17,7 +17,8 @@ plot_step_change(
   tbl,
   source_display = NULL,
   metric = c("issues", "comments"),
-  ref_date = as.Date("2021-01-01")
+  ref_date = as.Date("2021-01-01"),
+  narrow = FALSE
 )
 ```
 
@@ -46,6 +47,10 @@ plot_step_change(
   The same `ref_date` passed to
   [`step_change_tbl()`](step_change_tbl.md), used only to label the
   plot.
+
+- narrow:
+
+  If `TRUE`, stack all facets in a single column for narrow screens.
 
 ## Value
 

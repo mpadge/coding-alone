@@ -10,7 +10,12 @@ cohorts within a source).
 ## Usage
 
 ``` r
-plot_cohort_age(tbl, source_display = NULL, min_repo_months = 30)
+plot_cohort_age(
+  tbl,
+  source_display = NULL,
+  min_repo_months = 30,
+  narrow = FALSE
+)
 ```
 
 ## Arguments
@@ -28,6 +33,10 @@ plot_cohort_age(tbl, source_display = NULL, min_repo_months = 30)
 
   Cells with less exposure than this are dropped before plotting, since
   a handful of repo-months makes for an unstable rate estimate.
+
+- narrow:
+
+  If `TRUE`, stack all facets in a single column for narrow screens.
 
 ## Value
 

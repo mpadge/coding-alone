@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">codingAlone</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.017</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1.019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,7 +149,7 @@
           <code><a href="fetch_pr_authors.html">fetch_pr_authors()</a></code>
 
         </dt>
-        <dd>Fetch pull-request-author data (<code>github_pr_authors()</code>, for many repos, with intermediate batches dumped to disk.</dd>
+        <dd>Fetch pull-request-author data (<code><a href="../reference/github_pr_authors.html">github_pr_authors()</a></code>, for many repos, with intermediate batches dumped to disk.</dd>
 
         <dt>
 
@@ -178,6 +178,13 @@
 
         </dt>
         <dd>Extract every issue (pull requests excluded) opened against a single GitHub repo, with the opener's handle and a <code>contribution</code> score: that handle's fractional share (0-1) of all commits ever landed on the repo's default branch, or 0 if the author isn't a contributor at all (see the note at the top of this file for why this is a coarser but far cheaper substitute for "was this author already a contributor at the time they opened the issue"). Also carries each issue's comment count, and the repo's own GitHub creation timestamp, used elsewhere as the start of a repo's exposure window.</dd>
+
+        <dt>
+
+          <code><a href="github_pr_authors.html">github_pr_authors()</a></code>
+
+        </dt>
+        <dd>Extract every pull request opened against a single GitHub repo, with the opener's handle and a <code>contribution</code> score: that handle's fractional share (0-1) of all commits ever landed on the repo's default branch, or 0 if the author isn't a contributor at all (see the note at the top of github-issues.R for why this is a coarser but far cheaper substitute for "was this author already a contributor at the time they opened the pull request"). Also carries each pull request's comment count, and the repo's own GitHub creation timestamp, used elsewhere as the start of a repo's exposure window.</dd>
 
         <dt>
 

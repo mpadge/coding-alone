@@ -19,7 +19,8 @@ plot_commit_rate(
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL,
-  start_year = NULL
+  start_year = NULL,
+  narrow = FALSE
 )
 ```
 
@@ -54,9 +55,14 @@ plot_commit_rate(
   [`plot_activity()`](plot_activity.md) - display-only, doesn't affect
   the underlying repo-months/rate calculations.
 
+- narrow:
+
+  If `TRUE`, stack the two panels vertically (one column) for narrow
+  screens.
+
 ## Value
 
-A `patchwork` object (two stacked ggplot panels).
+A `patchwork` object (two ggplot panels).
 
 ## Details
 

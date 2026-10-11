@@ -18,7 +18,8 @@ plot_author_interval(
   window = 12L,
   date_start = as.Date("2015-01-01"),
   date_end = NULL,
-  start_year = NULL
+  start_year = NULL,
+  narrow = FALSE
 )
 ```
 
@@ -47,6 +48,10 @@ plot_author_interval(
   Optional year to crop the plotted window to, as in
   [`plot_activity()`](plot_activity.md) - display-only, doesn't affect
   the underlying interval calculations.
+
+- narrow:
+
+  If `TRUE`, stack all facets in a single column for narrow screens.
 
 ## Value
 

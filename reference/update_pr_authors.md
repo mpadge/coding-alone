@@ -2,13 +2,14 @@
 
 Unlike [`fetch_pr_authors()`](fetch_pr_authors.md), which skips any repo
 already marked done, this re-fetches every repo in `repo_urls`, but each
-repo's own `github_pr_authors()` call is scoped with `since` set to that
-repo's most recent `last_updated` value already on disk - so GitHub only
-returns pull requests that are new, or that changed (e.g. picked up new
-comments) since that time. A repo not yet present in the checkpoint is
-fetched in full, exactly as [`fetch_pr_authors()`](fetch_pr_authors.md)
-would. Rows returned for an already-known pull request replace the stale
-row; all other existing rows are left untouched.
+repo's own [`github_pr_authors()`](github_pr_authors.md) call is scoped
+with `since` set to that repo's most recent `last_updated` value already
+on disk - so GitHub only returns pull requests that are new, or that
+changed (e.g. picked up new comments) since that time. A repo not yet
+present in the checkpoint is fetched in full, exactly as
+[`fetch_pr_authors()`](fetch_pr_authors.md) would. Rows returned for an
+already-known pull request replace the stale row; all other existing
+rows are left untouched.
 
 ## Usage
 
