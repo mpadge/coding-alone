@@ -175,6 +175,11 @@ The focus of these analyses is on the primary point of community interactions
 with open-source software, and these have always been issues and not pull
 requests.
 
+#### But don't repositories settle down with age?
+
+Nope. Repository age has no effect on the analyses or conclusions here, as
+shown in [the appendix](#appendix).
+
 ---
 
 ## Main Findings
