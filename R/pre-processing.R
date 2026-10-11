@@ -253,7 +253,8 @@ build_popularity_authors_tbl <- function (issue_authors_tbl, repo_tbl) {
 count_by_month <- function (x, id_col, count_name, repo_tbl) {
 
     # Suppress no visible binding notes:
-    repo_url <- created_at <- month <- n <- source <- NULL
+    repo_url <- created_at <- month <- n <- source <-
+        .data <- `:=` <- NULL
 
     per_repo <- x |>
         dplyr::distinct (repo_url, .data [[id_col]], .keep_all = TRUE) |>
