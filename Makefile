@@ -20,8 +20,8 @@ vignette: $(VIGNETTE).qmd.orig ## Precompile the review-dividend vignette from l
 		Rscript -e "knitr::knit ('$(notdir $(VIGNETTE)).qmd.orig', output = '$(notdir $(VIGNETTE)).qmd')"
 		Rscript -e 'pkgdown::build_article("$(notdir $(VIGNETTE))")'
 
-knitr: $(README).Rmd ## Render README as markdown
-	echo "rmarkdown::render('$(README).Rmd',output_file='$(README).md')" | R --no-save -q
+knitr: $(README)-src.Rmd ## Render README as markdown
+	echo "rmarkdown::render('$(README)-src.Rmd',output_file='$(README).md')" | R --no-save -q
 
 check: ## Run `rcmdcheck`
 	Rscript -e 'rcmdcheck::rcmdcheck()'
